@@ -43,16 +43,17 @@ agrega `@vitejs/plugin-basic-ssl` y corre `npm run dev -- --host`.
 
 ## Scripts
 
-| Script              | Qué hace                                                |
-| ------------------- | ------------------------------------------------------- |
-| `npm run dev`       | Servidor de desarrollo.                                 |
-| `npm run lint`      | ESLint + revisión de formato con Prettier.              |
-| `npm run format`    | Formatea todo con Prettier.                             |
-| `npm run typecheck` | Revisa tipos con `tsc`.                                 |
-| `npm run test`      | Pruebas con Vitest.                                     |
-| `npm run build`     | Compila a `dist/`.                                      |
-| `npm run db:push`   | Aplica las migraciones pendientes al proyecto enlazado. |
-| `npm run db:types`  | Regenera `src/lib/tipos-db.ts` desde el esquema.        |
+| Script                  | Qué hace                                                |
+| ----------------------- | ------------------------------------------------------- |
+| `npm run dev`           | Servidor de desarrollo.                                 |
+| `npm run lint`          | ESLint + revisión de formato con Prettier.              |
+| `npm run format`        | Formatea todo con Prettier.                             |
+| `npm run typecheck`     | Revisa tipos con `tsc`.                                 |
+| `npm run test`          | Pruebas con Vitest.                                     |
+| `npm run build`         | Compila a `dist/`.                                      |
+| `npm run db:push`       | Aplica las migraciones pendientes al proyecto enlazado. |
+| `npm run db:types`      | Regenera `src/lib/tipos-db.ts` desde el esquema.        |
+| `npm run db:probar-rls` | Prueba las reglas de acceso con los usuarios de prueba. |
 
 La CI (GitHub Actions) corre `lint`, `typecheck`, `test` y `build` en cada PR y en cada push a `main`.
 
@@ -71,6 +72,7 @@ src/
 supabase/
 ├─ migrations/              una migración por cambio de esquema
 ├─ seed.sql                 zonas, punto de prueba y contorno provisional
+├─ probar-rls.mjs           prueba de las reglas de acceso con los usuarios de prueba
 └─ contorno-provisional.svg se sube a Storage al poner en marcha el proyecto
 ```
 
@@ -149,13 +151,40 @@ a contenido publicado vuelve a pasar por un revisor.
    ```
 4. En el panel de Supabase → Authentication → Sign In / Providers, **desactiva "Allow new users to sign up"**.
    Los usuarios del gestor se invitan desde Authentication → Users → Invite.
-5. Al primer admin se le asigna el rol desde el SQL Editor:
+5. En Authentication → URL Configuration, pon como **Site URL** la URL de producción de Vercel y agrega
+   `http://localhost:5173/**` en **Redirect URLs**, para que los enlaces de los correos vuelvan a la app.
+6. Al primer admin se le asigna el rol desde el SQL Editor:
    ```sql
    update public.perfiles set rol = 'admin' where id = (select id from auth.users where email = '<correo>');
    ```
    Después, el admin asigna los demás roles (cada usuario invitado empieza sin rol, es decir, sin permisos).
 
 El plan gratuito pausa el proyecto tras una semana sin actividad: si pasa, se reactiva desde el panel.
+
+## Usuarios de prueba y prueba de RLS
+
+En `la-merced-dev` hay un usuario de prueba por rol, creados con **Add user → Create new user** y
+**Auto Confirm User** marcado:
+
+| Rol       | Correo                             |
+| --------- | ---------------------------------- |
+| `editor`  | `martinguille17+editor@gmail.com`  |
+| `revisor` | `martinguille17+revisor@gmail.com` |
+| `admin`   | `martinguille17+admin@gmail.com`   |
+
+Las contraseñas las tiene el responsable del bloque 1 y se comparten por el canal privado del equipo.
+Son cuentas solo para desarrollo: el equipo de investigación recibe cuentas propias por invitación.
+
+Para comprobar que las reglas de acceso siguen funcionando (por ejemplo, después de una migración):
+
+```bash
+npm run db:probar-rls
+```
+
+Pide la contraseña de cada usuario sin mostrarla y comprueba, entre otras cosas, que el visitante no ve
+fichas en borrador, que el editor no puede aprobar y que el revisor sí. Al terminar borra todo lo que
+creó. Si usas otros usuarios, pasa sus correos con `CORREO_EDITOR`, `CORREO_REVISOR` y `CORREO_ADMIN`.
+Necesita Node 22 o más reciente.
 
 ## Despliegue
 
