@@ -13,7 +13,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:push": "supabase db push",
-    "db:types": "supabase gen types typescript --linked --schema public > src/lib/tipos-db.ts && prettier --write src/lib/tipos-db.ts"
+    "db:types": "supabase gen types typescript --linked --schema public > src/lib/tipos-db.ts && prettier --write src/lib/tipos-db.ts",
+    "db:probar-rls": "node supabase/probar-rls.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
