@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+  <title>Contorno provisional de la fachada principal</title>
+  <!-- Silueta genérica de referencia; se reemplaza por el contorno trazado sobre la ilustración final (Sprint 3). -->
+  <path d="M60 1180 V520 H190 V300 L230 240 L270 300 V520 H630 V300 L670 240 L710 300 V520 H840 V1180 Z"/>
+  <path d="M270 520 L450 330 L630 520"/>
+  <path d="M380 1180 V900 A70 70 0 0 1 520 900 V1180"/>
+  <path d="M410 640 A40 40 0 0 1 490 640 V720 H410 Z"/>
+</svg>
