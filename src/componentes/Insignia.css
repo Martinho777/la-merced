@@ -1,0 +1,48 @@
+/* Insignia / chip (docs/diseno/componentes.md → Badge / chip). */
+
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  /* Alto de 24px: no hay token de alto de chip, se usa el más cercano (icon-md = 24px). */
+  min-height: var(--icon-md);
+  padding: 0 var(--pad-chip-x);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.insignia__icono {
+  flex-shrink: 0;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.insignia--neutral {
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.insignia--marca {
+  background: var(--yellow-50);
+  color: var(--yellow-800);
+}
+
+.insignia--info {
+  background: var(--sky-50);
+  color: var(--sky-700);
+}
+
+.insignia--exito {
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+.insignia--advertencia {
+  background: var(--orange-50);
+  color: var(--orange-700);
+}
+
+.insignia--error {
+  background: var(--red-50);
+  color: var(--red-800);
+}
