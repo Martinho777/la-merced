@@ -1,0 +1,296 @@
+/* Generado por scripts/generar-tokens.mjs desde docs/diseno/tokens.json.
+   No lo edites a mano: cambia el JSON y corre `npm run tokens`. */
+
+:root {
+  --font-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --surface: #ffffff;
+  --surface-sunken: #f7f5ef;
+  --ink: #151917;
+  --ink-muted: #4f5552;
+  --ink-subtle: #787e7b;
+  --border: #e6e2d6;
+  --border-strong: var(--ink-subtle);
+  --yellow-50: #fef7e3;
+  --yellow-100: #fdedc2;
+  --yellow-200: #fadb8a;
+  --yellow-400: #fcd13f;
+  --yellow-500: #efbe26;
+  --yellow-600: #b87e00;
+  --yellow-800: #8a5d00;
+  --yellow-900: #5e3f00;
+  --green-50: #e6faf2;
+  --green-100: #c2f2de;
+  --green-400: #07d082;
+  --green-600: #0a9e63;
+  --green-700: #0b7a4f;
+  --green-900: #064a30;
+  --orange-50: #fff1e5;
+  --orange-100: #ffdcc2;
+  --orange-400: #ff8a3d;
+  --orange-700: #a84b08;
+  --orange-800: #8a3a05;
+  --red-50: #ffedec;
+  --red-100: #ffd3d1;
+  --red-400: #fc3b37;
+  --red-600: #c4302b;
+  --red-800: #8e1f1b;
+  --sky-50: #ebf5fe;
+  --sky-100: #cfe6fc;
+  --sky-400: #5aaaf2;
+  --sky-600: #2f83cf;
+  --sky-700: #1e6cb5;
+  --sky-900: #0e3f6e;
+  --santi-beak: #fdc72c;
+  --santi-eye: #36221e;
+  --bg: var(--surface);
+  --text: var(--ink);
+  --text-muted: var(--ink-muted);
+  --text-on-dark: var(--surface);
+  --brand: var(--yellow-400);
+  --brand-edge: var(--yellow-600);
+  --brand-tint: var(--yellow-50);
+  --accent: var(--sky-400);
+  --link: var(--sky-700);
+  --focus: var(--sky-700);
+  --point-essential: var(--red-600);
+  --point-optional: var(--yellow-400);
+  --point-completed: var(--green-700);
+  --success: var(--green-700);
+  --error: var(--red-600);
+  --info: var(--sky-700);
+  --warning: var(--orange-700);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --pad-screen-x: 16px;
+  --pad-button-x: 24px;
+  --pad-button-y: 14px;
+  --pad-button-sm-x: 16px;
+  --pad-button-sm-y: 10px;
+  --pad-card: 16px;
+  --pad-sheet: 24px;
+  --pad-chip-x: 12px;
+  --pad-chip-y: 4px;
+  --pad-bubble: 12px 16px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 24px;
+  --radius-xl: 36px;
+  --radius-pill: 999px;
+  --shadow-button-primary: 0 4px 0 #b87e00;
+  --shadow-button-accent: 0 4px 0 #2f83cf;
+  --shadow-button-secondary: 0 4px 0 #e6e2d6;
+  --shadow-card: 0 1px 2px rgba(21, 25, 23, 0.06), 0 4px 12px rgba(21, 25, 23, 0.06);
+  --shadow-raised: 0 8px 24px rgba(21, 25, 23, 0.14);
+  --shadow-sheet: 0 -8px 24px rgba(21, 25, 23, 0.12);
+  --touch-min: 48px;
+  --button-h-md: 52px;
+  --button-h-sm: 40px;
+  --icon-sm: 20px;
+  --icon-md: 24px;
+  --icon-lg: 32px;
+  --marker: 36px;
+  --progress-h: 10px;
+  --header-h: 56px;
+  --santi-sm: 64px;
+  --santi-md: 120px;
+  --santi-lg: 200px;
+  --content-max: 480px;
+  --border-hairline: 1px;
+  --border-control: 2px;
+  --border-focus: 3px;
+  --opacity-scrim: 0.48;
+  --opacity-unavailable: 0.4;
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 280ms;
+  --duration-spinner: 800ms;
+  --ease-out: ease-out;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+[data-theme='contrast'] {
+  --surface: #ffffff;
+  --surface-sunken: #ffffff;
+  --ink: #000000;
+  --ink-muted: #2b2b2b;
+  --ink-subtle: #4a4a4a;
+  --border: #000000;
+  --border-strong: var(--ink-subtle);
+  --yellow-50: #fff6d9;
+  --yellow-100: #fdedc2;
+  --yellow-200: #fadb8a;
+  --yellow-400: #fcd13f;
+  --yellow-500: #efbe26;
+  --yellow-600: #000000;
+  --yellow-800: #5e3f00;
+  --yellow-900: #5e3f00;
+  --green-50: #e6faf2;
+  --green-100: #c2f2de;
+  --green-400: #07d082;
+  --green-600: #0a9e63;
+  --green-700: #005c38;
+  --green-900: #064a30;
+  --orange-50: #fff1e5;
+  --orange-100: #ffdcc2;
+  --orange-400: #ff8a3d;
+  --orange-700: #8a3a05;
+  --orange-800: #8a3a05;
+  --red-50: #ffedec;
+  --red-100: #ffd3d1;
+  --red-400: #fc3b37;
+  --red-600: #a3201b;
+  --red-800: #8e1f1b;
+  --sky-50: #ebf5fe;
+  --sky-100: #cfe6fc;
+  --sky-400: #5aaaf2;
+  --sky-600: #2f83cf;
+  --sky-700: #0a4c8a;
+  --sky-900: #0e3f6e;
+  --santi-beak: #fdc72c;
+  --santi-eye: #36221e;
+  --bg: var(--surface);
+  --text: var(--ink);
+  --text-muted: var(--ink-muted);
+  --text-on-dark: var(--surface);
+  --brand: var(--yellow-400);
+  --brand-edge: var(--yellow-600);
+  --brand-tint: var(--yellow-50);
+  --accent: var(--sky-400);
+  --link: var(--sky-700);
+  --focus: var(--ink);
+  --point-essential: var(--red-600);
+  --point-optional: var(--yellow-400);
+  --point-completed: var(--green-700);
+  --success: var(--green-700);
+  --error: var(--red-600);
+  --info: var(--sky-700);
+  --warning: var(--orange-700);
+  --shadow-button-primary: 0 4px 0 #000000;
+  --shadow-button-accent: 0 4px 0 #000000;
+  --shadow-button-secondary: 0 4px 0 #000000;
+  --shadow-card: none;
+  --shadow-raised: none;
+  --shadow-sheet: none;
+}
+
+/* Estilos de texto: tamaños en rem (16px = 1rem). */
+
+.texto-display {
+  font-family: var(--font-sans);
+  font-size: 2rem;
+  line-height: 2.375rem;
+  font-weight: 700;
+  letter-spacing: -0.0625rem;
+}
+
+.texto-title-1 {
+  font-family: var(--font-sans);
+  font-size: 1.625rem;
+  line-height: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.0375rem;
+}
+
+.texto-title-2 {
+  font-family: var(--font-sans);
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.025rem;
+}
+
+.texto-heading {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01875rem;
+}
+
+.texto-body-lg {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 400;
+  letter-spacing: -0.0125rem;
+}
+
+.texto-body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+  letter-spacing: -0.0125rem;
+}
+
+.texto-body-strong {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.0125rem;
+}
+
+.texto-small {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  letter-spacing: -0.00625rem;
+}
+
+.texto-small-strong {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.00625rem;
+}
+
+.texto-button {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.0125rem;
+}
+
+.texto-bubble {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.009375rem;
+}
+
+.texto-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03125rem;
+}
+
+.texto-caption {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.003125rem;
+}
+
+.texto-marker {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.0125rem;
+}

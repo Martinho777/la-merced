@@ -1,0 +1,35 @@
+/* Estilos globales. Solo usa tokens de tokens.css (ver docs/diseno/sistema-de-diseno.md). */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* La tipografía del body viene de la clase .texto-body en index.html. */
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Anillo de foco en todo elemento enfocable: 3px en `focus`, separado 2px. */
+:focus-visible {
+  outline: var(--border-focus) solid var(--focus);
+  outline-offset: var(--border-control);
+}
+
+/* Las etiquetas (eyebrows) son el único texto en mayúsculas. */
+.texto-label {
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
