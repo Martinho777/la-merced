@@ -1,0 +1,62 @@
+.pagina-estilos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.pagina-estilos h1,
+.pagina-estilos h2,
+.pagina-estilos h3,
+.pagina-estilos p {
+  margin: 0;
+}
+
+.pagina-estilos__cabecera,
+.pagina-estilos__seccion,
+.pagina-estilos__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pagina-estilos__cabecera {
+  gap: var(--space-2);
+}
+
+.pagina-estilos__eyebrow {
+  color: var(--yellow-800);
+}
+
+.pagina-estilos__nota {
+  color: var(--ink-muted);
+}
+
+.pagina-estilos__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.pagina-estilos__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pagina-estilos__muestra-texto {
+  display: flex;
+  flex-direction: column;
+}
+
+.pagina-estilos__marco {
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Tema activo en el selector. */
+.pagina-estilos .boton[aria-pressed='true'] {
+  background: var(--brand-tint);
+  border-color: var(--brand-edge);
+}
