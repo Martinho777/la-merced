@@ -1,0 +1,18 @@
+/* Santi (docs/diseno/sistema-de-diseno.md → Santi). */
+
+.santi {
+  display: block;
+  height: auto;
+}
+
+.santi--sm {
+  width: var(--santi-sm);
+}
+
+.santi--md {
+  width: var(--santi-md);
+}
+
+.santi--lg {
+  width: var(--santi-lg);
+}
