@@ -39,7 +39,7 @@ Each family has **only** the steps in `tokens.json`. Do not invent in-between sh
 
 | Step | Purpose |
 |---|---|
-| 50 | Tinted backgrounds (banners, Santi bubble). |
+| 50 | Tinted backgrounds (banners). |
 | 100 | Hover / pressed on a 50 tint; progress track. |
 | 200 | Decorative only (illustrations). |
 | 400 | The family's identity color, used **as a fill**. Text on it is `ink`. |
@@ -127,8 +127,8 @@ Rounded line icons, 2px stroke at 24px, round caps and joins, drawn in `ink` (or
 ## Santi
 
 Santi lives in the `Santi` asset group. He guides and celebrates; he never sits on top of the content he is explaining.
-- Sizes: `santi-sm` (64px) next to bubbles, `santi-md` (120px) on cards and confirmation, `santi-lg` (200px) on welcome and celebration.
-- His bubble: `yellow-50` fill, `ink` text in `bubble`, `radius-xl`, `shadow-raised`, a tail pointing to him.
+- Sizes: `santi-sm` (64px) next to bubbles, `santi-head` (88px) for his head next to a screen title, `santi-md` (160px) on cards, confirmation and next to screen titles, `santi-lg` (320px) on welcome, celebration and the camera explanation.
+- His bubble: `surface-sunken` fill, `ink` text in `bubble`, `radius-xl`, `shadow-raised`, a tail pointing to him.
 - One Santi per screen. In respect mode he wears headphones and stays still.
 - His colors are not UI colors: never use `green-400` or `red-400` for text, and do not tint buttons to match him.
 

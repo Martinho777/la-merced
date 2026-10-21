@@ -1,0 +1,57 @@
+/* Burbuja de Santi (docs/diseno/componentes.md → Santi bubble). Ocupa el ancho que le da la
+   pantalla; no tiene ancho máximo propio. */
+
+.santi-burbuja {
+  position: relative;
+  margin: 0;
+  padding: var(--pad-bubble);
+  border-radius: var(--radius-xl);
+  background: var(--surface-sunken);
+  box-shadow: var(--shadow-raised);
+  color: var(--ink);
+  text-align: center;
+  animation: santi-burbuja-entrar var(--duration-base) var(--ease-standard) both;
+}
+
+/* En alto contraste surface-sunken es blanco y no hay sombra: un borde ink la separa del fondo. */
+[data-theme='contrast'] .santi-burbuja {
+  border: var(--border-hairline) solid var(--ink);
+}
+
+/* Cola: un triángulo del color de la burbuja que apunta hacia Santi. */
+.santi-burbuja::after {
+  content: '';
+  position: absolute;
+  border: var(--space-3) solid transparent;
+}
+
+.santi-burbuja--cola-abajo::after {
+  top: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border-top-color: var(--surface-sunken);
+  border-bottom-width: 0;
+}
+
+.santi-burbuja--cola-arriba::after {
+  bottom: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border-bottom-color: var(--surface-sunken);
+  border-top-width: 0;
+}
+
+.santi-burbuja--cola-izquierda::after {
+  top: 50%;
+  right: 100%;
+  translate: 0 -50%;
+  border-right-color: var(--surface-sunken);
+  border-left-width: 0;
+}
+
+@keyframes santi-burbuja-entrar {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}

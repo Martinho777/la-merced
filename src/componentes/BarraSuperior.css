@@ -31,3 +31,26 @@
   width: var(--icon-md);
   height: var(--icon-md);
 }
+
+/* Botón de idioma: discreto, a la derecha, con área táctil de 48px. */
+.barra-superior__idioma {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  margin-inline-start: auto;
+  padding: 0 var(--space-2);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.barra-superior__icono-idioma {
+  flex-shrink: 0;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  color: var(--ink);
+}

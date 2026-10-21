@@ -37,6 +37,7 @@ export const POSES = [
   'thinking',
   'thinking-fx',
   'wave',
+  'wave-large',
 ] as const
 
 export type SantiPose = (typeof POSES)[number]

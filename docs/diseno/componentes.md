@@ -61,7 +61,8 @@ Specs for the base components of Sprint 2 and the pieces the next sprints reuse.
 
 ## Santi bubble
 
-- Fill `brand-tint`, text `bubble` in `ink`, padding `pad-bubble`, radius `radius-xl`, `shadow-raised`, max width 260px, tail toward Santi.
+- Fill `surface-sunken`, text `bubble` in `ink`, padding `pad-bubble`, radius `radius-xl`, `shadow-raised`, tail toward Santi. No max width of its own: it takes the width the screen gives it, inside the gutter.
+- High contrast: `surface-sunken` is white there and soft shadows are off, so the bubble gets a 1px `ink` border.
 - One or two short sentences. Enters with a 200ms scale-in after Santi; text is also announced to screen readers (`aria-live="polite"`).
 
 ## Audio bar (ficha narration)

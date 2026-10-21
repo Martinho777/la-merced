@@ -2,6 +2,7 @@
 
 .santi {
   display: block;
+  max-width: 100%;
   height: auto;
 }
 
@@ -9,10 +10,15 @@
   width: var(--santi-sm);
 }
 
+.santi--head {
+  width: var(--santi-head);
+}
+
 .santi--md {
   width: var(--santi-md);
 }
 
+/* En teléfonos bajos se achica para que quepan la burbuja y los botones de la pantalla. */
 .santi--lg {
-  width: var(--santi-lg);
+  width: min(var(--santi-lg), 45dvh);
 }

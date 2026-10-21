@@ -1,4 +1,69 @@
 {
+  "comun": {
+    "continuar": "Continuar",
+    "cargando": "Cargando…",
+    "reintentar": "Reintentar",
+    "proximamente": "Próximamente",
+    "cambiarIdioma": "Cambiar idioma. Idioma actual: {{idioma}}"
+  },
+  "idiomas": {
+    "es": "Español",
+    "cak": "Kaqchikel",
+    "en": "English"
+  },
+  "navegacion": {
+    "atras": "Atrás",
+    "volverAlInicio": "Atrás, volver al inicio",
+    "idioma": "Idioma",
+    "volverAIdioma": "Volver a elegir idioma",
+    "ruta": "Ruta",
+    "volverARuta": "Volver a elegir ruta",
+    "zonas": "Zonas",
+    "volverAZonas": "Volver a la elección de zonas",
+    "camara": "Cámara",
+    "volverACamara": "Volver a la explicación de la cámara"
+  },
+  "bienvenida": {
+    "titulo": "¡Hola! Soy Santi",
+    "subtitulo": "Te acompaño a descubrir La Merced.",
+    "empezar": "Empezar"
+  },
+  "idioma": {
+    "titulo": "Elige tu idioma"
+  },
+  "ruta": {
+    "titulo": "Elige tu ruta",
+    "intro": "¿Cómo quieres recorrer la fachada?",
+    "duracionPendiente": "[X] min",
+    "recomendada": {
+      "nombre": "Recomendada",
+      "detalle": "Todos los puntos · {{duracion}}"
+    },
+    "esencial": {
+      "nombre": "Esencial",
+      "detalle": "Lo más importante · {{duracion}}"
+    },
+    "libre": {
+      "nombre": "Libre",
+      "detalle": "Tú eliges el orden"
+    }
+  },
+  "zona": {
+    "titulo": "Elige tu zona",
+    "puntos_one": "{{count}} punto",
+    "puntos_other": "{{count}} puntos",
+    "sinImagen": "Imagen de la zona pendiente",
+    "error": "No se pudieron cargar las zonas. Revisa tu conexión."
+  },
+  "camara": {
+    "explicacion": "Apunta la cámara a la fachada para ubicarnos. Solo es una vez.",
+    "activar": "Activar cámara",
+    "saltar": "Saltar"
+  },
+  "enConstruccion": {
+    "titulo": "En construcción",
+    "texto": "Esta pantalla llega pronto."
+  },
   "zonas": {
     "fachada-principal": "Fachada principal",
     "fachada-secundaria": "Fachada secundaria",
