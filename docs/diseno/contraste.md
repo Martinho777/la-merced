@@ -7,8 +7,8 @@ Every pairing the UI is allowed to use, measured with the WCAG 2.2 formula in bo
 | Pairing | Used for | Light | High contrast |
 |---|---|---|---|
 | `ink` on `surface` | Body text | 17.75:1 ✅ AA · AAA | 21.00:1 ✅ AA · AAA |
-| `ink` on `surface-sunken` | Text on stucco areas and pressed cards | 16.28:1 ✅ AA · AAA | 21.00:1 ✅ AA · AAA |
-| `ink` on `yellow-50` | Text in Santi bubble / pressed card (high contrast) | 16.59:1 ✅ AA · AAA | 19.44:1 ✅ AA · AAA |
+| `ink` on `surface-sunken` | Text on stucco areas, pressed cards and Santi bubble | 16.28:1 ✅ AA · AAA | 21.00:1 ✅ AA · AAA |
+| `ink` on `yellow-50` | Text in pressed card (high contrast) | 16.59:1 ✅ AA · AAA | 19.44:1 ✅ AA · AAA |
 | `ink` on `yellow-400` | Primary button label | 12.11:1 ✅ AA · AAA | 14.33:1 ✅ AA · AAA |
 | `ink` on `green-400` | Text on Santi-green fills | 8.75:1 ✅ AA · AAA | 10.35:1 ✅ AA · AAA |
 | `ink` on `sky-400` | Accent button label | 7.16:1 ✅ AA · AAA | 8.47:1 ✅ AA · AAA |

@@ -1,4 +1,69 @@
 {
+  "comun": {
+    "continuar": "Continue",
+    "cargando": "Loading…",
+    "reintentar": "Try again",
+    "proximamente": "Coming soon",
+    "cambiarIdioma": "Change language. Current language: {{idioma}}"
+  },
+  "idiomas": {
+    "es": "Español",
+    "cak": "Kaqchikel",
+    "en": "English"
+  },
+  "navegacion": {
+    "atras": "Back",
+    "volverAlInicio": "Back to start",
+    "idioma": "Language",
+    "volverAIdioma": "Back to choose language",
+    "ruta": "Route",
+    "volverARuta": "Back to choose route",
+    "zonas": "Zones",
+    "volverAZonas": "Back to zones",
+    "camara": "Camera",
+    "volverACamara": "Back to the camera explanation"
+  },
+  "bienvenida": {
+    "titulo": "Hi! I'm Santi",
+    "subtitulo": "I'll help you discover La Merced.",
+    "empezar": "Start"
+  },
+  "idioma": {
+    "titulo": "Choose your language"
+  },
+  "ruta": {
+    "titulo": "Choose your route",
+    "intro": "How do you want to explore the façade?",
+    "duracionPendiente": "[X] min",
+    "recomendada": {
+      "nombre": "Recommended",
+      "detalle": "Every point · {{duracion}}"
+    },
+    "esencial": {
+      "nombre": "Essential",
+      "detalle": "The highlights · {{duracion}}"
+    },
+    "libre": {
+      "nombre": "Free",
+      "detalle": "You choose the order"
+    }
+  },
+  "zona": {
+    "titulo": "Choose your zone",
+    "puntos_one": "{{count}} point",
+    "puntos_other": "{{count}} points",
+    "sinImagen": "Zone image coming soon",
+    "error": "The zones couldn't be loaded. Check your connection."
+  },
+  "camara": {
+    "explicacion": "Point your camera at the façade so we can find our place. You only do this once.",
+    "activar": "Turn on camera",
+    "saltar": "Skip"
+  },
+  "enConstruccion": {
+    "titulo": "Under construction",
+    "texto": "This screen is coming soon."
+  },
   "zonas": {
     "fachada-principal": "Main façade",
     "fachada-secundaria": "Side façade",

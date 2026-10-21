@@ -100,8 +100,9 @@
   --progress-h: 10px;
   --header-h: 56px;
   --santi-sm: 64px;
-  --santi-md: 120px;
-  --santi-lg: 200px;
+  --santi-head: 88px;
+  --santi-md: 160px;
+  --santi-lg: 320px;
   --content-max: 480px;
   --border-hairline: 1px;
   --border-control: 2px;

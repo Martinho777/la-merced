@@ -1,0 +1,36 @@
+/* Entrada de la bienvenida: Santi, título, subtítulo y botón aparecen uno tras otro, subiendo un
+   poco. Con prefers-reduced-motion, base.css quita la animación y todo aparece de una vez. */
+
+.bienvenida__entrada {
+  animation: bienvenida-entrar var(--duration-slow) var(--ease-standard) both;
+}
+
+.bienvenida__entrada--santi {
+  animation-name: bienvenida-entrar-santi;
+}
+
+.bienvenida__entrada--2 {
+  animation-delay: var(--duration-fast);
+}
+
+.bienvenida__entrada--3 {
+  animation-delay: calc(var(--duration-fast) * 2);
+}
+
+.bienvenida__entrada--4 {
+  animation-delay: calc(var(--duration-fast) * 3);
+}
+
+@keyframes bienvenida-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-4));
+  }
+}
+
+@keyframes bienvenida-entrar-santi {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-4)) scale(0.9);
+  }
+}

@@ -6,6 +6,11 @@
   padding: var(--space-6) var(--pad-screen-x);
 }
 
+/* Las pantallas del visitante manejan su propio margen (barra, cuerpo y acciones). */
+.layout:has(> .pantalla) {
+  padding: 0;
+}
+
 .error {
   color: var(--error);
 }

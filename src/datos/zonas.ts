@@ -1,8 +1,15 @@
 import { supabase } from '@/lib/supabase'
 import { urlPublica } from '@/lib/storage'
-import type { Tables } from '@/lib/tipos-db'
+import type { Enums, Tables } from '@/lib/tipos-db'
 
-export type ResumenZona = Pick<Tables<'zonas'>, 'slug' | 'orden' | 'disponible'>
+type Idioma = Enums<'idioma'>
+
+export type ResumenZona = Pick<Tables<'zonas'>, 'slug' | 'orden' | 'disponible'> & {
+  /** Cuántos puntos tiene la zona en la base. */
+  totalPuntos: number
+  /** Ilustración de la zona para el selector, o null si todavía no tiene. */
+  ilustracion: { url: string; textoAlternativo: Partial<Record<Idioma, string>> } | null
+}
 
 export type ZonaConContorno = Pick<Tables<'zonas'>, 'slug' | 'usa_camara'> & {
   /** URL pública del contorno de alineación, o null si la zona no tiene. */
@@ -13,11 +20,27 @@ export type ZonaConContorno = Pick<Tables<'zonas'>, 'slug' | 'usa_camara'> & {
 export async function obtenerZonas(): Promise<ResumenZona[]> {
   const { data, error } = await supabase
     .from('zonas')
-    .select('slug, orden, disponible')
+    .select(
+      `slug, orden, disponible,
+       puntos(count),
+       ilustracion:medios!zonas_ilustracion_id_fkey(ruta, texto_alternativo)`,
+    )
     .order('orden', { ascending: true })
 
   if (error) throw new Error(`No se pudieron leer las zonas: ${error.message}`)
-  return data
+
+  return data.map((zona) => ({
+    slug: zona.slug,
+    orden: zona.orden,
+    disponible: zona.disponible,
+    totalPuntos: zona.puntos[0]?.count ?? 0,
+    ilustracion: zona.ilustracion
+      ? {
+          url: urlPublica(zona.ilustracion.ruta),
+          textoAlternativo: zona.ilustracion.texto_alternativo as Partial<Record<Idioma, string>>,
+        }
+      : null,
+  }))
 }
 
 /** Una zona con lo que necesita la pantalla de cámara. Null si el slug no existe. */

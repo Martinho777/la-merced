@@ -1,6 +1,11 @@
 import { createBrowserRouter, type RouteObject } from 'react-router'
 import { LayoutRaiz } from '@/app/LayoutRaiz'
-import { PantallaPrueba } from '@/visitante/PantallaPrueba'
+import { PantallaBienvenida } from '@/visitante/PantallaBienvenida'
+import { PantallaCamara } from '@/visitante/PantallaCamara'
+import { PantallaEnConstruccion } from '@/visitante/PantallaEnConstruccion'
+import { PantallaIdioma } from '@/visitante/PantallaIdioma'
+import { PantallaRuta } from '@/visitante/PantallaRuta'
+import { PantallaZona } from '@/visitante/PantallaZona'
 
 // Rutas solo de desarrollo. En el build de producción import.meta.env.DEV es false y Vite
 // elimina el import(), así que la página ni siquiera se compila.
@@ -20,7 +25,15 @@ export const router = createBrowserRouter([
   {
     element: <LayoutRaiz />,
     children: [
-      { path: '/', element: <PantallaPrueba /> },
+      // Entrada del visitante (bloque 4) y explicación de la cámara (bloque 3).
+      { path: '/', element: <PantallaBienvenida /> },
+      { path: '/idioma', element: <PantallaIdioma /> },
+      { path: '/ruta', element: <PantallaRuta /> },
+      { path: '/zona', element: <PantallaZona /> },
+      { path: '/camara', element: <PantallaCamara /> },
+      // Temporales hasta que lleguen la cámara, la alineación y el mapa (bloque 3).
+      { path: '/alineacion', element: <PantallaEnConstruccion /> },
+      { path: '/mapa', element: <PantallaEnConstruccion /> },
       {
         // El gestor va en su propio chunk: el visitante nunca lo descarga.
         path: '/gestor/*',
