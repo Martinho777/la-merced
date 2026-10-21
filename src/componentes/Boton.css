@@ -1,0 +1,112 @@
+/* Botón (docs/diseno/componentes.md → Button). */
+
+.boton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: var(--touch-min);
+  min-height: var(--button-h-md);
+  padding: var(--pad-button-y) var(--pad-button-x);
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.boton--ancho-completo {
+  width: 100%;
+}
+
+.boton__icono {
+  flex-shrink: 0;
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+.boton__spinner {
+  animation: boton-girar var(--duration-spinner) linear infinite;
+}
+
+@keyframes boton-girar {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* Tamaño sm: 40px a la vista, pero el área táctil sigue siendo de 48px. */
+.boton--sm {
+  min-height: var(--button-h-sm);
+  padding: var(--pad-button-sm-y) var(--pad-button-sm-x);
+}
+
+.boton--sm::before {
+  content: '';
+  position: absolute;
+  inset: calc((var(--button-h-sm) - var(--touch-min)) / 2) 0;
+}
+
+.boton--sm .boton__icono {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+/* Variantes */
+
+.boton--primario {
+  background: var(--brand);
+  box-shadow: var(--shadow-button-primary);
+}
+
+.boton--acento {
+  background: var(--accent);
+  box-shadow: var(--shadow-button-accent);
+}
+
+.boton--secundario {
+  background: var(--surface);
+  border: var(--border-control) solid var(--border-strong);
+  box-shadow: var(--shadow-button-secondary);
+}
+
+.boton--fantasma.boton--destructivo {
+  color: var(--error);
+}
+
+.boton--fantasma:focus-visible {
+  text-decoration: underline;
+}
+
+/* Presionado: baja 4px y pierde el borde 3D. `data-presionado` lo fuerza en /estilos. */
+.boton:is(.boton--primario, .boton--acento, .boton--secundario):is(
+    :active:not(:disabled, [aria-disabled='true']),
+    [data-presionado]
+  ) {
+  transform: translateY(var(--space-1));
+  box-shadow: none;
+}
+
+.boton--primario:is(:active:not(:disabled, [aria-disabled='true']), [data-presionado]) {
+  background: var(--yellow-500);
+}
+
+/* Deshabilitado: sin borde 3D y no enfocable (atributo `disabled` nativo). */
+.boton:disabled {
+  color: var(--ink-subtle);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.boton:disabled:not(.boton--fantasma) {
+  background: var(--surface-sunken);
+}
+
+.boton[aria-busy='true'] {
+  cursor: progress;
+}

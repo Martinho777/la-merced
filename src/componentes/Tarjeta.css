@@ -1,0 +1,93 @@
+/* Tarjeta (docs/diseno/componentes.md → Card). */
+
+.tarjeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--pad-card);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: var(--ink);
+  text-align: start;
+}
+
+.tarjeta__contenido {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.tarjeta__icono {
+  flex-shrink: 0;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+/* Esquinas anidadas: radio del contenedor menos su padding (el token más cercano). */
+.tarjeta__miniatura {
+  flex-shrink: 0;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.tarjeta__textos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tarjeta__subtitulo {
+  color: var(--ink-muted);
+}
+
+.tarjeta__final,
+.tarjeta__check {
+  flex-shrink: 0;
+}
+
+.tarjeta__check {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+/* Presionable: toda la tarjeta es el área táctil. */
+.tarjeta--presionable {
+  font: inherit;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.tarjeta--presionable:is(:active, [data-presionado]) {
+  background: var(--surface-sunken);
+}
+
+/* Seleccionada: solo cambia el borde (de 1px a 2px, en border-strong) y aparece el check; el fondo
+   no cambia. El padding compensa el borde para que nada se mueva. */
+.tarjeta--seleccionada {
+  padding: calc(var(--pad-card) - var(--border-control) + var(--border-hairline));
+  border: var(--border-control) solid var(--border-strong);
+}
+
+/* Alto contraste: surface-sunken es blanco y el borde en reposo es negro, así que el presionado
+   usa brand-tint y la seleccionada un borde ink, para que ambos estados se sigan notando. */
+[data-theme='contrast'] .tarjeta--presionable:is(:active, [data-presionado]) {
+  background: var(--brand-tint);
+}
+
+[data-theme='contrast'] .tarjeta--seleccionada {
+  border-color: var(--ink);
+}
+
+/* No disponible: el contenido se atenúa, la insignia queda a opacidad completa. */
+.tarjeta--no-disponible .tarjeta__contenido {
+  opacity: var(--opacity-unavailable);
+}

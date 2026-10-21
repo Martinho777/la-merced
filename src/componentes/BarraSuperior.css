@@ -1,0 +1,33 @@
+/* Barra superior con chevron de volver (docs/diseno/componentes.md → Top bar). */
+
+.barra-superior {
+  display: flex;
+  align-items: center;
+  min-height: var(--header-h);
+  padding: 0 var(--pad-screen-x);
+  background: var(--surface);
+}
+
+.barra-superior--con-borde {
+  border-bottom: var(--border-hairline) solid var(--border);
+}
+
+.barra-superior__volver {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: 0 var(--space-2) 0 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.barra-superior__chevron {
+  flex-shrink: 0;
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
