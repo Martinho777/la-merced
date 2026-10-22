@@ -21,7 +21,9 @@
     "zonas": "Zones",
     "volverAZonas": "Back to zones",
     "camara": "Camera",
-    "volverACamara": "Back to the camera explanation"
+    "volverACamara": "Back to the camera explanation",
+    "mapa": "Map",
+    "volverAlMapa": "Back to the map"
   },
   "bienvenida": {
     "titulo": "Hi! I'm Santi",
@@ -62,8 +64,8 @@
     "errorZona": "The zone couldn't be loaded. Check your connection."
   },
   "alineacion": {
-    "instruccion": "Line up the outline with the façade",
-    "listo": "Done",
+    "santi": "There's La Merced! Let's go to the map and explore the façade together.",
+    "verMapa": "See the map",
     "abriendo": "Opening the camera…",
     "continuarSinCamara": "Continue without camera",
     "errores": {
@@ -73,8 +75,7 @@
       "inseguro": "The camera only works over a secure connection (HTTPS).",
       "reproduccion": "We couldn't show the camera image.",
       "interrumpida": "The camera stopped.",
-      "desconocido": "We couldn't open the camera.",
-      "contorno": "The outline isn't available. You can continue anyway."
+      "desconocido": "We couldn't open the camera."
     }
   },
   "enConstruccion": {
@@ -85,5 +86,31 @@
     "fachada-principal": "Main façade",
     "fachada-secundaria": "Side façade",
     "interior": "Interior"
+  },
+  "mapa": {
+    "progreso_one": "{{visitados}} / {{count}} point",
+    "progreso_other": "{{visitados}} / {{count}} points",
+    "progresoAccesible": "Route progress",
+    "leyenda": {
+      "titulo": "Point types",
+      "esencial": "Essential",
+      "opcional": "Optional",
+      "visitado": "Visited"
+    },
+    "marcador": "Point {{numero}}, {{nombre}}, {{tipo}}, {{estado}}",
+    "marcadorSinNombre": "Point {{numero}}, {{tipo}}, {{estado}}",
+    "tipo": {
+      "esencial": "essential",
+      "opcional": "optional"
+    },
+    "estado": {
+      "visitado": "visited",
+      "noVisitado": "not visited"
+    },
+    "santi": {
+      "siguiente": "Tap point {{numero}}.",
+      "libre": "Choose a point to start."
+    },
+    "error": "The map couldn't be loaded. Check your connection."
   }
 }

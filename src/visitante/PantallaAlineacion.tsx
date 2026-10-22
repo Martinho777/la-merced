@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { TriangleAlert } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
+import { duracionHabla } from '@/componentes/Santi/habla'
+import { SantiHablando } from '@/componentes/Santi/SantiHablando'
+import { SantiBurbuja } from '@/componentes/SantiBurbuja'
 import { obtenerZona } from '@/datos/zonas'
 import {
   rutaConZona,
@@ -36,8 +39,8 @@ const CLAVE_ERROR = {
 } as const satisfies Record<MotivoError, string>
 
 /**
- * Pantalla 6 (/alineacion?zona=…): video de la cámara trasera con el contorno de la fachada encima.
- * La persona alinea a mano y sigue al mapa con "Listo" o "Saltar". Solo pide la cámara si llegó
+ * Pantalla 6 (/alineacion?zona=…): video de la cámara trasera con Santi encima, que habla (mueve la
+ * boca mientras aparece su burbuja) e invita a pasar al mapa ("Ver el mapa"). Mientras la cámara abre se puede "Saltar". Solo pide la cámara si llegó
  * desde "Activar cámara"; si niega el permiso, pasa al mapa sin más. La cámara se apaga al salir
  * por cualquier camino (botones, atrás, desmontar, ocultar la página) y también si la respuesta
  * del navegador llega cuando la pantalla ya no está.
@@ -51,8 +54,6 @@ export function PantallaAlineacion() {
   const activada = vieneDeActivar(state)
 
   const [estado, setEstado] = useState<Estado>({ tipo: 'cargando' })
-  const [urlContorno, setUrlContorno] = useState<string | null>(null)
-  const [contornoFallo, setContornoFallo] = useState(false)
   const [intento, setIntento] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const solicitudRef = useRef<SolicitudCamara | null>(null)
@@ -82,7 +83,6 @@ export function PantallaAlineacion() {
           setEstado({ tipo: 'salir', destino: paso === 'zonas' ? 'zonas' : 'mapa' })
           return
         }
-        setUrlContorno(zona.urlContorno)
 
         solicitud = solicitarCamara()
         solicitudRef.current = solicitud
@@ -164,7 +164,7 @@ export function PantallaAlineacion() {
 
   const mapa = rutaConZona('/mapa', slug)
 
-  /** Listo, Saltar y Continuar: apaga la cámara y pasa a la ilustración con una transición. */
+  /** Ver el mapa, Saltar y Continuar: apaga la cámara y pasa al mapa con una transición. */
   function irAlMapa() {
     if (saliendo.current) return
     saliendo.current = true
@@ -177,8 +177,6 @@ export function PantallaAlineacion() {
     setEstado({ tipo: 'cargando' })
     setIntento((n) => n + 1)
   }
-
-  const contornoDisponible = urlContorno !== null && !contornoFallo
 
   return (
     <div className="alineacion">
@@ -197,14 +195,6 @@ export function PantallaAlineacion() {
           {t('alineacion.abriendo')}
         </p>
       )}
-      {estado.tipo === 'activa' && (
-        <p className="alineacion__aviso texto-body-strong" role="status">
-          {!contornoDisponible && (
-            <TriangleAlert className="alineacion__icono" aria-hidden="true" />
-          )}
-          {contornoDisponible ? t('alineacion.instruccion') : t('alineacion.errores.contorno')}
-        </p>
-      )}
       {estado.tipo === 'error' && (
         <p className="alineacion__aviso texto-body-strong" role="alert">
           <TriangleAlert className="alineacion__icono" aria-hidden="true" />
@@ -212,23 +202,18 @@ export function PantallaAlineacion() {
         </p>
       )}
 
-      <div className="alineacion__visor">
-        {estado.tipo === 'activa' && contornoDisponible && (
-          // Decorativo: el aviso de arriba ya dice qué hacer con él.
-          <img
-            className="alineacion__contorno"
-            src={urlContorno}
-            alt=""
-            decoding="async"
-            onError={() => setContornoFallo(true)}
-          />
-        )}
-      </div>
+      {/* Santi aparece sobre la cámara cuando ya hay imagen; su burbuja se anuncia (aria-live). */}
+      {estado.tipo === 'activa' && (
+        <div className="alineacion__santi">
+          <SantiBurbuja cola="abajo">{t('alineacion.santi')}</SantiBurbuja>
+          <SantiHablando duracionMs={duracionHabla(t('alineacion.santi'))} />
+        </div>
+      )}
 
       <div className="alineacion__acciones">
         {estado.tipo === 'activa' && (
           <Boton anchoCompleto onClick={irAlMapa}>
-            {t('alineacion.listo')}
+            {t('alineacion.verMapa')}
           </Boton>
         )}
         {estado.tipo === 'error' && (
@@ -241,7 +226,7 @@ export function PantallaAlineacion() {
             {t('comun.reintentar')}
           </Boton>
         ) : (
-          estado.tipo !== 'error' && (
+          estado.tipo === 'cargando' && (
             <Boton variante="secundario" anchoCompleto onClick={irAlMapa}>
               {t('camara.saltar')}
             </Boton>

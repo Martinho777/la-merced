@@ -14,6 +14,8 @@ export type ResumenZona = Pick<Tables<'zonas'>, 'slug' | 'orden' | 'disponible'>
 export type ZonaConContorno = Pick<Tables<'zonas'>, 'slug' | 'usa_camara'> & {
   /** URL pública del contorno de alineación, o null si la zona no tiene. */
   urlContorno: string | null
+  /** URL pública de la ilustración de la zona (el mapa), o null si todavía no tiene. */
+  urlIlustracion: string | null
 }
 
 /** Todas las zonas en orden, para el selector (las no disponibles se muestran como "próximamente"). */
@@ -43,11 +45,15 @@ export async function obtenerZonas(): Promise<ResumenZona[]> {
   }))
 }
 
-/** Una zona con lo que necesita la pantalla de cámara. Null si el slug no existe. */
+/** Una zona con lo que necesitan la cámara y el mapa. Null si el slug no existe. */
 export async function obtenerZona(slug: string): Promise<ZonaConContorno | null> {
   const { data, error } = await supabase
     .from('zonas')
-    .select('slug, usa_camara, contorno:medios!zonas_contorno_id_fkey(ruta)')
+    .select(
+      `slug, usa_camara,
+       contorno:medios!zonas_contorno_id_fkey(ruta),
+       ilustracion:medios!zonas_ilustracion_id_fkey(ruta)`,
+    )
     .eq('slug', slug)
     .maybeSingle()
 
@@ -58,5 +64,6 @@ export async function obtenerZona(slug: string): Promise<ZonaConContorno | null>
     slug: data.slug,
     usa_camara: data.usa_camara,
     urlContorno: data.contorno ? urlPublica(data.contorno.ruta) : null,
+    urlIlustracion: data.ilustracion ? urlPublica(data.ilustracion.ruta) : null,
   }
 }

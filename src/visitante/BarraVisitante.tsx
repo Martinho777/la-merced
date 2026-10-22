@@ -21,7 +21,8 @@ type Props = {
 export function BarraVisitante({ volverA, etiqueta, etiquetaAccesible, sinIdioma = false }: Props) {
   const { t } = useTranslation()
   const navegar = useNavigate()
-  const { pathname } = useLocation()
+  // Con la búsqueda: el mapa y la cámara necesitan ?zona= al volver de /idioma.
+  const { pathname, search } = useLocation()
   const idioma = idiomaActual()
 
   return (
@@ -35,7 +36,7 @@ export function BarraVisitante({ volverA, etiqueta, etiquetaAccesible, sinIdioma
           : {
               codigo: idioma.toUpperCase(),
               etiquetaAccesible: t('comun.cambiarIdioma', { idioma: t(`idiomas.${idioma}`) }),
-              onCambiar: () => navegar('/idioma', { state: { volverA: pathname } }),
+              onCambiar: () => navegar('/idioma', { state: { volverA: `${pathname}${search}` } }),
             }
       }
     />

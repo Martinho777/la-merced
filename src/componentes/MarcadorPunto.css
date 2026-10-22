@@ -1,0 +1,81 @@
+/* Marcador de punto del mapa (docs/diseno/componentes.md → Map point marker). */
+
+.marcador {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  translate: -50% -50%;
+  cursor: pointer;
+}
+
+/* Disco con contorno blanco de 2px para leerse sobre la ilustración, y sombra flotante. */
+.marcador__disco {
+  display: grid;
+  place-items: center;
+  width: var(--marker);
+  height: var(--marker);
+  border-radius: var(--radius-pill);
+  outline: var(--border-control) solid var(--surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.marcador--esencial .marcador__disco {
+  background: var(--point-essential);
+  color: var(--text-on-dark);
+}
+
+.marcador--opcional .marcador__disco {
+  border: var(--border-control) dashed var(--ink);
+  background: var(--point-optional);
+  color: var(--ink);
+}
+
+.marcador--visitado .marcador__disco {
+  background: var(--point-completed);
+  color: var(--text-on-dark);
+}
+
+.marcador__check {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+/* Siguiente de la ruta: halo de 4px en yellow-200 y un pulso suave. */
+.marcador--siguiente .marcador__disco {
+  box-shadow:
+    0 0 0 var(--space-1) var(--yellow-200),
+    var(--shadow-raised);
+  animation: marcador-pulso calc(var(--duration-slow) * 4) var(--ease-standard) infinite alternate;
+}
+
+@keyframes marcador-pulso {
+  to {
+    transform: scale(1.08);
+  }
+}
+
+/* Muestra de la leyenda: disco del tamaño de un icono, sin posición. */
+.marcador--muestra {
+  position: static;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  translate: none;
+  cursor: default;
+}
+
+.marcador--muestra .marcador__disco {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  box-shadow: none;
+}
+
+.marcador--muestra .marcador__check {
+  width: var(--space-4);
+  height: var(--space-4);
+}

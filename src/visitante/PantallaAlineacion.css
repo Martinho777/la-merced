@@ -1,6 +1,5 @@
-/* Alineación con la cámara: el video ocupa toda la pantalla (no solo el ancho de contenido) y encima
-   van el aviso, el contorno y las acciones. Vertical: aviso arriba, contorno al centro y botones al
-   pie. Horizontal (como en el wireframe): botones en una columna a la derecha. */
+/* Cámara con Santi: el video ocupa toda la pantalla (no solo el ancho de contenido) y encima van el
+   aviso arriba, Santi con su burbuja abajo y el botón al pie. */
 
 .alineacion {
   position: fixed;
@@ -8,7 +7,7 @@
   display: grid;
   grid-template-areas:
     'aviso'
-    'visor'
+    'santi'
     'acciones';
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: var(--space-4);
@@ -33,7 +32,7 @@
 }
 
 .alineacion__aviso,
-.alineacion__visor,
+.alineacion__santi,
 .alineacion__acciones {
   position: relative;
 }
@@ -60,20 +59,31 @@
   height: var(--icon-md);
 }
 
-.alineacion__visor {
-  grid-area: visor;
-  min-width: 0;
+/* Santi abajo, sobre la cámara, con su burbuja encima. Entra subiendo cuando ya hay imagen. */
+.alineacion__santi {
+  grid-area: santi;
+  align-self: end;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--content-max);
   min-height: 0;
+  animation: alineacion-santi var(--duration-slow) var(--ease-standard) both;
 }
 
-/* Ocupa el visor sin influir en su tamaño (si no, en horizontal la altura de la imagen estiraría la
-   fila). `contain` conserva las proporciones del contorno en cualquier pantalla u orientación. */
-.alineacion__contorno {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+@keyframes alineacion-santi {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-8));
+  }
+}
+
+/* En teléfonos bajos se achica para que quepan la burbuja y el botón. */
+.alineacion__santi .santi {
+  width: min(var(--santi-lg), 38dvh);
 }
 
 .alineacion__acciones {
@@ -86,24 +96,7 @@
   justify-self: center;
 }
 
-@media (orientation: landscape) {
-  .alineacion {
-    grid-template-areas:
-      'aviso acciones'
-      'visor acciones';
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-columns: minmax(0, 1fr) auto;
-    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
-  }
-
-  /* Columna tan ancha como el botón más largo; ambos botones del mismo ancho. */
-  .alineacion__acciones {
-    align-self: end;
-    width: auto;
-  }
-}
-
-/* Paso de la cámara a la ilustración: fundido de pantalla con la duración y curva de los cambios de
+/* Paso de la cámara al mapa: fundido de pantalla con la duración y curva de los cambios de
    pantalla (docs/diseno/sistema-de-diseno.md → Motion). Solo navegaciones con viewTransition. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
