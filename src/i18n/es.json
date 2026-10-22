@@ -58,7 +58,24 @@
   "camara": {
     "explicacion": "Apunta la cámara a la fachada para ubicarnos. Solo es una vez.",
     "activar": "Activar cámara",
-    "saltar": "Saltar"
+    "saltar": "Saltar",
+    "errorZona": "No se pudo cargar la zona. Revisa tu conexión."
+  },
+  "alineacion": {
+    "instruccion": "Alinea el contorno con la fachada",
+    "listo": "Listo",
+    "abriendo": "Abriendo la cámara…",
+    "continuarSinCamara": "Continuar sin cámara",
+    "errores": {
+      "sinCamara": "No encontramos una cámara en este dispositivo.",
+      "ocupada": "La cámara está en uso por otra app. Ciérrala o continúa sin cámara.",
+      "noCompatible": "Este navegador no permite usar la cámara.",
+      "inseguro": "La cámara solo funciona con una conexión segura (HTTPS).",
+      "reproduccion": "No pudimos mostrar la imagen de la cámara.",
+      "interrumpida": "La cámara se detuvo.",
+      "desconocido": "No pudimos abrir la cámara.",
+      "contorno": "El contorno no está disponible. Puedes continuar igual."
+    }
   },
   "enConstruccion": {
     "titulo": "En construcción",

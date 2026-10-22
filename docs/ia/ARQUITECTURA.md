@@ -5,22 +5,23 @@
 
 ## Rutas (`src/app/router.tsx`)
 
-| Ruta                   | Componente                            | Datos                                    |
-| ---------------------- | ------------------------------------- | ---------------------------------------- |
-| `/`                    | `visitante/PantallaBienvenida`        | —                                        |
-| `/idioma`              | `visitante/PantallaIdioma`            | `lib/preferencias` (idioma)              |
-| `/ruta`                | `visitante/PantallaRuta`              | `lib/preferencias` (ruta)                |
-| `/zona`                | `visitante/PantallaZona`              | `datos/zonas.obtenerZonas`               |
-| `/camara`              | `visitante/PantallaCamara`            | — (solo explicación, no pide el permiso) |
-| `/alineacion`, `/mapa` | `visitante/PantallaEnConstruccion`    | —                                        |
-| `/gestor/*`            | `gestor/Gestor` (diferida)            | — (stub)                                 |
-| `/estilos`             | `desarrollo/PaginaEstilos` (solo DEV) | —                                        |
+| Ruta                | Componente                            | Datos                                       |
+| ------------------- | ------------------------------------- | ------------------------------------------- |
+| `/`                 | `visitante/PantallaBienvenida`        | —                                           |
+| `/idioma`           | `visitante/PantallaIdioma`            | `lib/preferencias` (idioma)                 |
+| `/ruta`             | `visitante/PantallaRuta`              | `lib/preferencias` (ruta)                   |
+| `/zona`             | `visitante/PantallaZona`              | `datos/zonas.obtenerZonas`                  |
+| `/camara?zona=`     | `visitante/PantallaCamara`            | `datos/zonas.obtenerZona` (no pide permiso) |
+| `/alineacion?zona=` | `visitante/PantallaAlineacion`        | `datos/zonas.obtenerZona`, `getUserMedia`   |
+| `/mapa?zona=`       | `visitante/PantallaEnConstruccion`    | —                                           |
+| `/gestor/*`         | `gestor/Gestor` (diferida)            | — (stub)                                    |
+| `/estilos`          | `desarrollo/PaginaEstilos` (solo DEV) | —                                           |
 
 ## Flujo de datos
 
 `pantalla → src/datos/* → src/lib/supabase → Supabase`. Las URLs de Storage salen de `src/lib/storage.ts`.
-`obtenerZona` y `obtenerPuntosDeZona` existen y tienen prueba (esta última), pero **ninguna pantalla las usa todavía**.
-La zona elegida en `/zona` no se transporta a `/camara` (estado local de la pantalla).
+`obtenerZona` la usan `/camara` y `/alineacion`; `obtenerPuntosDeZona` todavía no la usa ninguna pantalla.
+La zona elegida en `/zona` viaja como `?zona=<slug>` (helpers en `visitante/camara.ts`, junto con la solicitud de cámara).
 
 ## Pipelines de archivos generados
 

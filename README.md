@@ -39,7 +39,9 @@ La app queda en http://localhost:5173. El gestor está en http://localhost:5173/
 ### Probar la cámara en el teléfono
 
 `getUserMedia` exige HTTPS fuera de `localhost`. Usa la vista previa de Vercel de tu PR, o en local
-agrega `@vitejs/plugin-basic-ssl` y corre `npm run dev -- --host`.
+corre `npm run dev:https` (certificado autofirmado de `@vitejs/plugin-basic-ssl`, solo en desarrollo) y
+abre en el teléfono la dirección `Network: https://…` que imprime Vite, con el teléfono en la misma red.
+El navegador avisará que el certificado no es de confianza: acéptalo para esa dirección.
 
 ## Scripts
 

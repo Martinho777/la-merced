@@ -58,7 +58,24 @@
   "camara": {
     "explicacion": "Point your camera at the façade so we can find our place. You only do this once.",
     "activar": "Turn on camera",
-    "saltar": "Skip"
+    "saltar": "Skip",
+    "errorZona": "The zone couldn't be loaded. Check your connection."
+  },
+  "alineacion": {
+    "instruccion": "Line up the outline with the façade",
+    "listo": "Done",
+    "abriendo": "Opening the camera…",
+    "continuarSinCamara": "Continue without camera",
+    "errores": {
+      "sinCamara": "We couldn't find a camera on this device.",
+      "ocupada": "Another app is using the camera. Close it or continue without the camera.",
+      "noCompatible": "This browser can't use the camera.",
+      "inseguro": "The camera only works over a secure connection (HTTPS).",
+      "reproduccion": "We couldn't show the camera image.",
+      "interrumpida": "The camera stopped.",
+      "desconocido": "We couldn't open the camera.",
+      "contorno": "The outline isn't available. You can continue anyway."
+    }
   },
   "enConstruccion": {
     "titulo": "Under construction",

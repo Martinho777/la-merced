@@ -1,5 +1,6 @@
 import { createBrowserRouter, type RouteObject } from 'react-router'
 import { LayoutRaiz } from '@/app/LayoutRaiz'
+import { PantallaAlineacion } from '@/visitante/PantallaAlineacion'
 import { PantallaBienvenida } from '@/visitante/PantallaBienvenida'
 import { PantallaCamara } from '@/visitante/PantallaCamara'
 import { PantallaEnConstruccion } from '@/visitante/PantallaEnConstruccion'
@@ -25,14 +26,14 @@ export const router = createBrowserRouter([
   {
     element: <LayoutRaiz />,
     children: [
-      // Entrada del visitante (bloque 4) y explicación de la cámara (bloque 3).
+      // Entrada del visitante (bloque 4); explicación y alineación de la cámara (bloque 3).
       { path: '/', element: <PantallaBienvenida /> },
       { path: '/idioma', element: <PantallaIdioma /> },
       { path: '/ruta', element: <PantallaRuta /> },
       { path: '/zona', element: <PantallaZona /> },
       { path: '/camara', element: <PantallaCamara /> },
-      // Temporales hasta que lleguen la cámara, la alineación y el mapa (bloque 3).
-      { path: '/alineacion', element: <PantallaEnConstruccion /> },
+      { path: '/alineacion', element: <PantallaAlineacion /> },
+      // Temporal hasta que llegue la ilustración/mapa de la zona (recibe ?zona=<slug>).
       { path: '/mapa', element: <PantallaEnConstruccion /> },
       {
         // El gestor va en su propio chunk: el visitante nunca lo descarga.
