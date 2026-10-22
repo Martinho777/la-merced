@@ -21,7 +21,9 @@
     "zonas": "Zonas",
     "volverAZonas": "Volver a la elección de zonas",
     "camara": "Cámara",
-    "volverACamara": "Volver a la explicación de la cámara"
+    "volverACamara": "Volver a la explicación de la cámara",
+    "mapa": "Mapa",
+    "volverAlMapa": "Volver al mapa"
   },
   "bienvenida": {
     "titulo": "¡Hola! Soy Santi",
@@ -62,8 +64,8 @@
     "errorZona": "No se pudo cargar la zona. Revisa tu conexión."
   },
   "alineacion": {
-    "instruccion": "Alinea el contorno con la fachada",
-    "listo": "Listo",
+    "santi": "¡Ahí está La Merced! Vamos al mapa para recorrer la fachada juntos.",
+    "verMapa": "Ver el mapa",
     "abriendo": "Abriendo la cámara…",
     "continuarSinCamara": "Continuar sin cámara",
     "errores": {
@@ -73,8 +75,7 @@
       "inseguro": "La cámara solo funciona con una conexión segura (HTTPS).",
       "reproduccion": "No pudimos mostrar la imagen de la cámara.",
       "interrumpida": "La cámara se detuvo.",
-      "desconocido": "No pudimos abrir la cámara.",
-      "contorno": "El contorno no está disponible. Puedes continuar igual."
+      "desconocido": "No pudimos abrir la cámara."
     }
   },
   "enConstruccion": {
@@ -85,5 +86,31 @@
     "fachada-principal": "Fachada principal",
     "fachada-secundaria": "Fachada secundaria",
     "interior": "Interior"
+  },
+  "mapa": {
+    "progreso_one": "{{visitados}} / {{count}} punto",
+    "progreso_other": "{{visitados}} / {{count}} puntos",
+    "progresoAccesible": "Progreso del recorrido",
+    "leyenda": {
+      "titulo": "Tipos de punto",
+      "esencial": "Esencial",
+      "opcional": "Opcional",
+      "visitado": "Visitado"
+    },
+    "marcador": "Punto {{numero}}, {{nombre}}, {{tipo}}, {{estado}}",
+    "marcadorSinNombre": "Punto {{numero}}, {{tipo}}, {{estado}}",
+    "tipo": {
+      "esencial": "esencial",
+      "opcional": "opcional"
+    },
+    "estado": {
+      "visitado": "visitado",
+      "noVisitado": "no visitado"
+    },
+    "santi": {
+      "siguiente": "Toca el punto {{numero}}.",
+      "libre": "Elige un punto para empezar."
+    },
+    "error": "No se pudo cargar el mapa. Revisa tu conexión."
   }
 }

@@ -7,6 +7,9 @@ Proyecto UVG × FUNPANCHOY.
 - **Gestor de contenido** (`/gestor`): en el mismo proyecto, cargado aparte para que el visitante nunca lo descargue.
 - **Datos, usuarios y archivos**: Supabase (PostgreSQL, Auth y Storage).
 
+Los documentos formales del proyecto (entregas, cronograma, material de la URL) están en
+[`documentos/`](documentos/README.md), con un índice de dónde está cada uno.
+
 ## Requisitos
 
 - Node.js 24 (LTS). Con nvm: `nvm use` (lee `.nvmrc`).

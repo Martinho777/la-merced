@@ -7,7 +7,8 @@
 ## Implementado (visto en código)
 
 - Entrada del visitante: bienvenida, idioma (es/cak/en), ruta (recomendada/esencial/libre), zona y explicación de cámara.
-- Cámara (bloque 3): la explicación no pide permiso; `/alineacion` pide la cámara trasera solo tras "Activar cámara", superpone el contorno de la zona y sigue al mapa con Listo/Saltar o si se niega el permiso. Las zonas con `usa_camara` falso van directo al mapa. La zona viaja como `?zona=<slug>`.
+- Cámara (bloque 3): la explicación no pide permiso; `/alineacion` pide la cámara trasera solo tras "Activar cámara" y muestra a Santi encima de la imagen con un mensaje y "Ver el mapa" (sin contorno de alineación: el equipo decidió quitarlo). Mientras abre, "Saltar"; si se niega el permiso, va al mapa. Las zonas con `usa_camara` falso van directo al mapa. La zona viaja como `?zona=<slug>`.
+- Mapa (`/mapa`, vertical): ilustración con marcadores (`MarcadorPunto`); un dedo mueve, dos dedos pellizcan para el zoom y el doble toque alterna entre la fachada entera y la vista inicial (lógica en `visitante/gestos.ts`). Progreso, leyenda y Santi con el siguiente punto según la ruta guardada.
 - Selector de zonas leído de Supabase, con estados de carga/error/reintento y zonas "Próximamente".
 - Componentes base, sistema de tokens generado y tema de alto contraste **en CSS**; imágenes de Santi (35 poses).
 - Esquema, RLS y bucket `medios` en `supabase/migrations/`; tipos generados; CI.
@@ -22,8 +23,9 @@
 
 ## Solo estructura o marcador
 
-- `/mapa` (pantalla "En construcción", recibe `?zona=`); `/gestor` (stub, "Sprint 3").
-- Componentes especificados y no implementados: hero header, marcador de punto, barra de audio, hoja inferior/diálogo, banners.
+- `/punto` (pantalla "En construcción", recibe `?zona=&punto=`); `/gestor` (stub, "Sprint 3").
+- Visitas a puntos: no se registran todavía (no hay ficha); el mapa muestra todo sin visitar.
+- Componentes especificados y no implementados: hero header, barra de audio, hoja inferior/diálogo, banners.
 
 ## No existe (según búsqueda en `src/` y `package.json`)
 

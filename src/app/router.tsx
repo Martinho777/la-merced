@@ -5,6 +5,7 @@ import { PantallaBienvenida } from '@/visitante/PantallaBienvenida'
 import { PantallaCamara } from '@/visitante/PantallaCamara'
 import { PantallaEnConstruccion } from '@/visitante/PantallaEnConstruccion'
 import { PantallaIdioma } from '@/visitante/PantallaIdioma'
+import { PantallaMapa } from '@/visitante/PantallaMapa'
 import { PantallaRuta } from '@/visitante/PantallaRuta'
 import { PantallaZona } from '@/visitante/PantallaZona'
 
@@ -33,8 +34,9 @@ export const router = createBrowserRouter([
       { path: '/zona', element: <PantallaZona /> },
       { path: '/camara', element: <PantallaCamara /> },
       { path: '/alineacion', element: <PantallaAlineacion /> },
-      // Temporal hasta que llegue la ilustración/mapa de la zona (recibe ?zona=<slug>).
-      { path: '/mapa', element: <PantallaEnConstruccion /> },
+      { path: '/mapa', element: <PantallaMapa /> },
+      // Temporal hasta que llegue la ficha del punto (recibe ?zona=<slug>&punto=<slug>).
+      { path: '/punto', element: <PantallaEnConstruccion /> },
       {
         // El gestor va en su propio chunk: el visitante nunca lo descarga.
         path: '/gestor/*',

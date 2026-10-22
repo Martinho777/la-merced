@@ -1,0 +1,23 @@
+/* Santi hablando: los cuadros apilados, solo uno visible; el conjunto respira con un vaivén suave.
+   base.css quita la animación con prefers-reduced-motion. */
+
+.santi-hablando {
+  position: relative;
+  display: inline-grid;
+  animation: santi-respira calc(var(--duration-slow) * 6) var(--ease-standard) infinite alternate;
+}
+
+/* Todos en la misma celda de la cuadrícula: ocupan el mismo lugar sin posicionamiento absoluto. */
+.santi-hablando > .santi {
+  grid-area: 1 / 1;
+}
+
+.santi-hablando__cuadro {
+  visibility: hidden;
+}
+
+@keyframes santi-respira {
+  to {
+    transform: translateY(calc(var(--space-1) * -1.5));
+  }
+}
