@@ -1,15 +1,17 @@
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router'
 import { BarraVisitante } from '@/visitante/BarraVisitante'
 import '@/visitante/pantalla.css'
 
-/** Pantalla temporal para /alineacion y /mapa, hasta que llegue el bloque 3. */
+/** Pantalla temporal para /mapa, hasta que llegue la ilustración de la zona. Conserva ?zona= al volver. */
 export function PantallaEnConstruccion() {
   const { t } = useTranslation()
+  const { search } = useLocation()
 
   return (
     <div className="pantalla">
       <BarraVisitante
-        volverA="/camara"
+        volverA={`/camara${search}`}
         etiqueta={t('navegacion.camara')}
         etiquetaAccesible={t('navegacion.volverACamara')}
       />

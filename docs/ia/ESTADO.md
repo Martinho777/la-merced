@@ -7,13 +7,14 @@
 ## Implementado (visto en código)
 
 - Entrada del visitante: bienvenida, idioma (es/cak/en), ruta (recomendada/esencial/libre), zona y explicación de cámara.
+- Cámara (bloque 3): la explicación no pide permiso; `/alineacion` pide la cámara trasera solo tras "Activar cámara", superpone el contorno de la zona y sigue al mapa con Listo/Saltar o si se niega el permiso. Las zonas con `usa_camara` falso van directo al mapa. La zona viaja como `?zona=<slug>`.
 - Selector de zonas leído de Supabase, con estados de carga/error/reintento y zonas "Próximamente".
 - Componentes base, sistema de tokens generado y tema de alto contraste **en CSS**; imágenes de Santi (35 poses).
 - Esquema, RLS y bucket `medios` en `supabase/migrations/`; tipos generados; CI.
 
 ## Parcial
 
-- **Cámara**: solo la pantalla de explicación; no se pide el permiso ni hay vista de cámara.
+- **Cámara**: sin probar en dispositivos físicos (Chrome Android, Samsung Internet, iOS). "Solo es una vez" no se recuerda entre visitas (no hay requisito de persistencia).
 - **Preferencias**: la ruta se guarda pero ninguna pantalla posterior la usa; la duración de rutas es un marcador ("[X] min").
 - **Kaqchikel**: 3 de 44 claves traducidas; el resto cae a español (`src/i18n/PENDIENTE-cak.md`).
 - **Datos de contenido**: el seed tiene un único punto de prueba con ficha solo en español.
@@ -21,7 +22,7 @@
 
 ## Solo estructura o marcador
 
-- `/alineacion` y `/mapa` (pantalla "En construcción"); `/gestor` (stub, "Sprint 3").
+- `/mapa` (pantalla "En construcción", recibe `?zona=`); `/gestor` (stub, "Sprint 3").
 - Componentes especificados y no implementados: hero header, marcador de punto, barra de audio, hoja inferior/diálogo, banners.
 
 ## No existe (según búsqueda en `src/` y `package.json`)

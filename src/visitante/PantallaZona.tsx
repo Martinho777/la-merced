@@ -9,6 +9,7 @@ import type { Opcion } from '@/componentes/opciones'
 import { obtenerZonas, type ResumenZona } from '@/datos/zonas'
 import { idiomaActual } from '@/i18n'
 import { BarraVisitante } from '@/visitante/BarraVisitante'
+import { rutaConZona } from '@/visitante/camara'
 import { puedeElegirse, zonaInicial } from '@/visitante/zonas'
 import type es from '@/i18n/es.json'
 import '@/visitante/pantalla.css'
@@ -136,7 +137,11 @@ export function PantallaZona() {
         )}
       </div>
       <div className="pantalla__acciones">
-        <Boton anchoCompleto disabled={zona === null} onClick={() => navegar('/camara')}>
+        <Boton
+          anchoCompleto
+          disabled={zona === null}
+          onClick={() => zona && navegar(rutaConZona('/camara', zona))}
+        >
           {t('comun.continuar')}
         </Boton>
       </div>

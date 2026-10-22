@@ -1,0 +1,121 @@
+/* Alineación con la cámara: el video ocupa toda la pantalla (no solo el ancho de contenido) y encima
+   van el aviso, el contorno y las acciones. Vertical: aviso arriba, contorno al centro y botones al
+   pie. Horizontal (como en el wireframe): botones en una columna a la derecha. */
+
+.alineacion {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-areas:
+    'aviso'
+    'visor'
+    'acciones';
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-4);
+  padding: calc(var(--space-4) + env(safe-area-inset-top))
+    calc(var(--pad-screen-x) + env(safe-area-inset-right))
+    calc(var(--space-8) + env(safe-area-inset-bottom))
+    calc(var(--pad-screen-x) + env(safe-area-inset-left));
+  overflow: hidden;
+  /* Fondo mientras la cámara arranca o si no hay imagen; el aviso usa el par `surface` sobre `ink`. */
+  background: var(--ink);
+  color: var(--text-on-dark);
+}
+
+/* El video llena la pantalla y recorta lo que sobre; el resto de la capa va encima (orden del DOM). */
+.alineacion__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--ink);
+}
+
+.alineacion__aviso,
+.alineacion__visor,
+.alineacion__acciones {
+  position: relative;
+}
+
+.alineacion__aviso {
+  grid-area: aviso;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: var(--content-max);
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--text-on-dark);
+  text-align: center;
+  box-shadow: var(--shadow-raised);
+}
+
+.alineacion__icono {
+  flex-shrink: 0;
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+.alineacion__visor {
+  grid-area: visor;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Ocupa el visor sin influir en su tamaño (si no, en horizontal la altura de la imagen estiraría la
+   fila). `contain` conserva las proporciones del contorno en cualquier pantalla u orientación. */
+.alineacion__contorno {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.alineacion__acciones {
+  grid-area: acciones;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--content-max);
+  justify-self: center;
+}
+
+@media (orientation: landscape) {
+  .alineacion {
+    grid-template-areas:
+      'aviso acciones'
+      'visor acciones';
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  }
+
+  /* Columna tan ancha como el botón más largo; ambos botones del mismo ancho. */
+  .alineacion__acciones {
+    align-self: end;
+    width: auto;
+  }
+}
+
+/* Paso de la cámara a la ilustración: fundido de pantalla con la duración y curva de los cambios de
+   pantalla (docs/diseno/sistema-de-diseno.md → Motion). Solo navegaciones con viewTransition. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-standard);
+}
+
+/* base.css no alcanza a estos pseudoelementos: con movimiento reducido, corte directo. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}
