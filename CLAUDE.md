@@ -24,6 +24,7 @@ Supabase (Postgres, Auth, Storage), Vercel, Vitest. Node 24 (`.nvmrc`). Alias `@
 | Convenciones de equipo, esquema, RLS, despliegue                             | `README.md`, `supabase/migrations/`          |
 | Frontera de acceso a datos                                                   | `eslint.config.js`                           |
 | Estado real y decisiones abiertas                                            | `docs/ia/ESTADO.md`, `docs/ia/DECISIONES.md` |
+| Propósito, alcance, flujos y criterios de aceptación del producto            | `docs/producto/` (`ALCANCE.md` primero)      |
 
 Cada documento gobierna su dominio; no hay precedencia universal. Si dos documentos normativos se
 contradicen, **informa y pide una decisión humana**; no elijas tú.
@@ -42,7 +43,7 @@ remotas; cambiar CI, despliegue o seguridad; refactorizar fuera del alcance; dec
 ejecutar comandos destructivos sin permiso, inventar traducciones al kaqchikel, inventar contenido histórico
 o niveles de confianza patrimonial, ni declarar verificaciones que no ejecutaste.
 
-## Tres decisiones innegociables
+## Cinco decisiones innegociables
 
 **A. El Design System es normativo.** Antes de cambiar algo visual, lee la fuente que corresponda.
 Reutiliza `src/componentes/` y los tokens. No inventes colores, espaciados, tipografías, radios, animaciones
@@ -58,6 +59,15 @@ diferencia bloquea tu trabajo, detente y pregunta. Detalle: `.claude/rules/fuent
 **C. La documentación no sustituye las pruebas.** Nada está terminado porque "el código parece correcto".
 Ejecuta las verificaciones y reporta resultados reales; no modifiques pruebas para ocultar errores; no
 afirmes que algo funciona en un dispositivo real sin haberlo probado. Detalle: `.claude/rules/verificacion.md`.
+
+**D. El contexto de producto es normativo.** Antes de implementar una funcionalidad, consulta su propósito,
+alcance y criterios en `docs/producto/` (`ALCANCE.md` primero). No amplíes el alcance ni sustituyas una
+decisión de experiencia por una solución técnica más compleja sin aprobación. Que algo esté en el alcance
+no lo convierte en tarea. Detalle: `.claude/rules/producto.md`.
+
+**E. Preparar una migración y aplicarla son acciones distintas.** Aprobar un cambio de esquema autoriza, como
+mucho, escribir el archivo; no autoriza ejecutarlo en ningún entorno. Aplicarla exige una instrucción humana
+explícita aparte. Detalle: `.claude/rules/seguridad-datos.md`.
 
 ## Convenciones
 
@@ -94,4 +104,5 @@ Separa siempre: **implementado**, **verificado automáticamente**, **pendiente d
 ## Más información
 
 `.claude/rules/` (reglas por área, se cargan según los archivos que toques) · `docs/ia/` (estado, arquitectura,
-decisiones) · `README.md` (instalación, base de datos, despliegue).
+decisiones) · `docs/producto/` (producto) · `documentos/README.md` (índice de los PDF formales) ·
+`README.md` (instalación, base de datos, despliegue).
