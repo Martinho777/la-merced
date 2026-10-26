@@ -22,6 +22,7 @@ paths:
 - No ejecutes `db:push`, `supabase …` ni nada contra el proyecto remoto. El responsable del bloque 1 aplica las migraciones y lo anota en el PR.
 - RLS activo en toda tabla. Regla de contenido: el visitante solo ve fichas `aprobado`; todo cambio a una ficha publicada vuelve a revisión. No debilites estas políticas.
 - `npm run db:types` consulta el proyecto enlazado: pide aprobación antes.
+- **Doble autorización (decisión E, aprobada; ver `docs/ia/DECISIONES.md`).** Preparar una migración y aplicarla son acciones independientes. La aprobación de un cambio de esquema autoriza, como mucho, escribir el archivo; no autoriza ejecutarlo en ningún entorno (local, dev ni producción). Aplicarla requiere una instrucción humana explícita aparte, y quien la da es el responsable que aplica las migraciones.
 
 ## Contenido patrimonial
 
