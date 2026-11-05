@@ -34,7 +34,7 @@ import {
   estadoDePunto,
   progreso,
   puntosConPosicion,
-  rutaDePunto,
+  rutaDeConfirmacion,
   siguientePunto,
 } from '@/visitante/mapa'
 import { esperaTrasEnfocar, useMovimientoReducido } from '@/visitante/movimiento'
@@ -74,7 +74,7 @@ function capturar(elemento: Element, idPuntero: number) {
  * Pantalla 7 (/mapa?zona=…): la ilustración de la zona con sus puntos. Un dedo mueve, dos dedos
  * acercan o alejan (pellizcar) y el doble toque alterna entre la fachada entera y la vista que llena
  * el lienzo; también hay botones para todo eso. Tocar un punto lo selecciona, acerca el mapa y, tras
- * dejar ver el acercamiento, abre su pantalla. Debajo, la leyenda y Santi indicando el siguiente
+ * dejar ver el acercamiento, abre su confirmación. Debajo, la leyenda y Santi indicando el siguiente
  * punto de la ruta elegida.
  */
 export function PantallaMapa() {
@@ -298,7 +298,7 @@ export function PantallaMapa() {
     recordarSeleccion(slug, elegido)
     aplicarAnimada((v) => enfocarPunto(v, medidas.current, elegido.x, elegido.y))
     espera.current = window.setTimeout(
-      () => navegar(rutaDePunto(slug, punto.slug)),
+      () => navegar(rutaDeConfirmacion(slug, punto.slug)),
       esperaTrasEnfocar(movimientoReducido),
     )
   }

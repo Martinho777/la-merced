@@ -78,9 +78,38 @@
       "desconocido": "We couldn't open the camera."
     }
   },
-  "enConstruccion": {
-    "titulo": "Under construction",
-    "texto": "This screen is coming soon."
+  "punto": {
+    "identificador": "Detail {{numero}}",
+    "identificadorConZona": "{{identificador}} · {{zona}}",
+    "error": "This point couldn't be loaded. Check your connection.",
+    "confirmacion": {
+      "intro": "You saw it on the map!",
+      "titulo": "That's the one!",
+      "frase": "You chose {{nombre}}. Shall we explore it?",
+      "verDetalle": "Yes, see details"
+    },
+    "audio": {
+      "titulo": "Listen to the story",
+      "proximamente": "Audio coming soon",
+      "error": "The audio couldn't be loaded",
+      "reproducir": "Play the story",
+      "pausar": "Pause the story",
+      "transcripcion": "Transcript"
+    },
+    "queVes": "What you're seeing",
+    "historia": "History",
+    "contenidoPendiente": "Content pending research.",
+    "archivo": {
+      "titulo": "In the archive",
+      "desliza": "Swipe to see more",
+      "sinFecha": "Date pending",
+      "sinCredito": "Credit pending"
+    },
+    "marcarCompletado": "Mark as completed",
+    "completado": "Completed",
+    "navegacion": "Route navigation",
+    "anterior": "Previous",
+    "siguiente": "Next"
   },
   "zonas": {
     "fachada-principal": "Main façade",

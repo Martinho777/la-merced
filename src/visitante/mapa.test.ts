@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
   estadoDePunto,
+  numeroDeDetalle,
   progreso,
   puntosConPosicion,
   puntosDeRuta,
+  rutaDeConfirmacion,
   rutaDePunto,
   siguientePunto,
+  vecinosEnRuta,
 } from '@/visitante/mapa'
 
 const punto = (orden: number, esEsencial: boolean, pos: number | null = 0.5) => ({
@@ -61,5 +64,38 @@ describe('mapa', () => {
     expect(rutaDePunto('fachada-principal', 'punto-3')).toBe(
       '/punto?zona=fachada-principal&punto=punto-3',
     )
+    expect(rutaDeConfirmacion('fachada-principal', 'punto-3')).toBe(
+      '/confirmacion?zona=fachada-principal&punto=punto-3',
+    )
+  })
+
+  it('el identificador lleva dos cifras y no depende de la cantidad de puntos', () => {
+    expect(numeroDeDetalle(5)).toBe('05')
+    expect(numeroDeDetalle(12)).toBe('12')
+    expect(numeroDeDetalle(120)).toBe('120')
+  })
+})
+
+describe('anterior y siguiente', () => {
+  const slugs = (v: ReturnType<typeof vecinosEnRuta>) => [v.anterior?.slug, v.siguiente?.slug]
+
+  it('siguen el orden de la ruta aunque los datos vengan desordenados', () => {
+    expect(slugs(vecinosEnRuta(puntos, 'recomendada', 'punto-2'))).toEqual(['punto-1', 'punto-3'])
+    expect(slugs(vecinosEnRuta(puntos, 'libre', 'punto-3'))).toEqual(['punto-2', 'punto-4'])
+  })
+
+  it('el primero no tiene anterior y el último no tiene siguiente', () => {
+    expect(slugs(vecinosEnRuta(puntos, 'recomendada', 'punto-1'))).toEqual([undefined, 'punto-2'])
+    expect(slugs(vecinosEnRuta(puntos, 'recomendada', 'punto-4'))).toEqual(['punto-3', undefined])
+  })
+
+  it('la ruta esencial salta los opcionales', () => {
+    expect(slugs(vecinosEnRuta(puntos, 'esencial', 'punto-2'))).toEqual([undefined, 'punto-3'])
+    expect(slugs(vecinosEnRuta(puntos, 'esencial', 'punto-3'))).toEqual(['punto-2', undefined])
+  })
+
+  it('un punto fuera de la ruta usa el orden de todos, y uno inexistente no tiene vecinos', () => {
+    expect(slugs(vecinosEnRuta(puntos, 'esencial', 'punto-1'))).toEqual([undefined, 'punto-2'])
+    expect(slugs(vecinosEnRuta(puntos, 'libre', 'no-existe'))).toEqual([undefined, undefined])
   })
 })

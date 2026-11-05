@@ -61,8 +61,31 @@ Cómo agregarlas:
 | `alineacion.errores.reproduccion` | No pudimos mostrar la imagen de la cámara.                          | We couldn't show the camera image.                                               |
 | `alineacion.errores.interrumpida` | La cámara se detuvo.                                                | The camera stopped.                                                              |
 | `alineacion.errores.desconocido`  | No pudimos abrir la cámara.                                         | We couldn't open the camera.                                                     |
-| `enConstruccion.titulo`           | En construcción                                                     | Under construction                                                               |
-| `enConstruccion.texto`            | Esta pantalla llega pronto.                                         | This screen is coming soon.                                                      |
+| `punto.identificador`             | Detalle {{numero}}                                                  | Detail {{numero}}                                                                |
+| `punto.identificadorConZona`      | {{identificador}} · {{zona}}                                        | {{identificador}} · {{zona}}                                                     |
+| `punto.error`                     | No se pudo cargar este punto. Revisa tu conexión.                   | This point couldn't be loaded. Check your connection.                            |
+| `punto.confirmacion.intro`        | ¡Lo viste en el mapa!                                               | You saw it on the map!                                                           |
+| `punto.confirmacion.titulo`       | ¡Ese es!                                                            | That's the one!                                                                  |
+| `punto.confirmacion.frase`        | Elegiste {{nombre}}. ¿Lo exploramos?                                | You chose {{nombre}}. Shall we explore it?                                       |
+| `punto.confirmacion.verDetalle`   | Sí, ver detalle                                                     | Yes, see details                                                                 |
+| `punto.audio.titulo`              | Escuchar historia                                                   | Listen to the story                                                              |
+| `punto.audio.proximamente`        | Audio próximamente                                                  | Audio coming soon                                                                |
+| `punto.audio.error`               | No se pudo cargar el audio                                          | The audio couldn't be loaded                                                     |
+| `punto.audio.reproducir`          | Reproducir la historia                                              | Play the story                                                                   |
+| `punto.audio.pausar`              | Pausar la historia                                                  | Pause the story                                                                  |
+| `punto.audio.transcripcion`       | Transcripción                                                       | Transcript                                                                       |
+| `punto.queVes`                    | Qué estás viendo                                                    | What you're seeing                                                               |
+| `punto.historia`                  | Historia                                                            | History                                                                          |
+| `punto.contenidoPendiente`        | Contenido pendiente de investigación.                               | Content pending research.                                                        |
+| `punto.archivo.titulo`            | En el archivo                                                       | In the archive                                                                   |
+| `punto.archivo.desliza`           | Desliza para ver más                                                | Swipe to see more                                                                |
+| `punto.archivo.sinFecha`          | Fecha pendiente                                                     | Date pending                                                                     |
+| `punto.archivo.sinCredito`        | Crédito pendiente                                                   | Credit pending                                                                   |
+| `punto.marcarCompletado`          | Marcar como completado                                              | Mark as completed                                                                |
+| `punto.completado`                | Completado                                                          | Completed                                                                        |
+| `punto.navegacion`                | Navegación del recorrido                                            | Route navigation                                                                 |
+| `punto.anterior`                  | Anterior                                                            | Previous                                                                         |
+| `punto.siguiente`                 | Siguiente                                                           | Next                                                                             |
 | `zonas.fachada-principal`         | Fachada principal                                                   | Main façade                                                                      |
 | `zonas.fachada-secundaria`        | Fachada secundaria                                                  | Side façade                                                                      |
 | `zonas.interior`                  | Interior                                                            | Interior                                                                         |

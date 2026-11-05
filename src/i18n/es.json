@@ -78,9 +78,38 @@
       "desconocido": "No pudimos abrir la cámara."
     }
   },
-  "enConstruccion": {
-    "titulo": "En construcción",
-    "texto": "Esta pantalla llega pronto."
+  "punto": {
+    "identificador": "Detalle {{numero}}",
+    "identificadorConZona": "{{identificador}} · {{zona}}",
+    "error": "No se pudo cargar este punto. Revisa tu conexión.",
+    "confirmacion": {
+      "intro": "¡Lo viste en el mapa!",
+      "titulo": "¡Ese es!",
+      "frase": "Elegiste {{nombre}}. ¿Lo exploramos?",
+      "verDetalle": "Sí, ver detalle"
+    },
+    "audio": {
+      "titulo": "Escuchar historia",
+      "proximamente": "Audio próximamente",
+      "error": "No se pudo cargar el audio",
+      "reproducir": "Reproducir la historia",
+      "pausar": "Pausar la historia",
+      "transcripcion": "Transcripción"
+    },
+    "queVes": "Qué estás viendo",
+    "historia": "Historia",
+    "contenidoPendiente": "Contenido pendiente de investigación.",
+    "archivo": {
+      "titulo": "En el archivo",
+      "desliza": "Desliza para ver más",
+      "sinFecha": "Fecha pendiente",
+      "sinCredito": "Crédito pendiente"
+    },
+    "marcarCompletado": "Marcar como completado",
+    "completado": "Completado",
+    "navegacion": "Navegación del recorrido",
+    "anterior": "Anterior",
+    "siguiente": "Siguiente"
   },
   "zonas": {
     "fachada-principal": "Fachada principal",
