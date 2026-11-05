@@ -14,6 +14,15 @@ export const PROPORCION = 2
 /** Cuánto más que "cubrir" se puede acercar. */
 const ACERCAMIENTO_MAXIMO = 3
 
+/** Cuánto más que "cubrir" acerca el zoom automático al tocar un punto. */
+const ACERCAMIENTO_PUNTO = 1.6
+
+/** Paso de los botones de acercar y alejar. */
+export const FACTOR_CONTROL = 1.5
+
+/** Margen (px) con el borde del lienzo para considerar que un punto se ve bien. */
+const MARGEN_VISIBLE = 48
+
 const tamanoBase = (lienzo: Lienzo) => ({ ancho: lienzo.ancho, alto: lienzo.ancho / PROPORCION })
 
 /**
@@ -87,4 +96,60 @@ export function alternarZoom(vista: Vista, lienzo: Lienzo, punto: Punto): Vista 
   const { contener, cubrir } = escalas(lienzo)
   const objetivo = vista.escala <= contener + 0.01 ? cubrir : contener
   return zoomEn(vista, lienzo, punto, objetivo / vista.escala)
+}
+
+/** Coloca en el centro un punto de la escena (x e y de 0 a 1), a la escala dada y dentro de límites. */
+function centrarEn(escala: number, lienzo: Lienzo, x: number, y: number): Vista {
+  const base = tamanoBase(lienzo)
+  return acotar(
+    {
+      escala,
+      x: lienzo.ancho / 2 - x * base.ancho * escala,
+      y: lienzo.alto / 2 - y * base.alto * escala,
+    },
+    lienzo,
+  )
+}
+
+/**
+ * Zoom automático al tocar un punto: lo centra y acerca, sin alejar si ya se estaba más cerca. Cerca
+ * de un borde, `acotar` no lo deja en el centro pero sigue dentro del lienzo.
+ */
+export function enfocarPunto(vista: Vista, lienzo: Lienzo, x: number, y: number): Vista {
+  const { cubrir, maxima } = escalas(lienzo)
+  const escala = Math.min(maxima, Math.max(vista.escala, cubrir * ACERCAMIENTO_PUNTO))
+  return centrarEn(escala, lienzo, x, y)
+}
+
+/** Si el punto quedó fuera de la vista (o pegado al borde), lo centra sin cambiar la escala. */
+export function traerAVista(vista: Vista, lienzo: Lienzo, x: number, y: number): Vista {
+  const base = tamanoBase(lienzo)
+  const px = vista.x + x * base.ancho * vista.escala
+  const py = vista.y + y * base.alto * vista.escala
+  const visible =
+    px >= MARGEN_VISIBLE &&
+    px <= lienzo.ancho - MARGEN_VISIBLE &&
+    py >= MARGEN_VISIBLE &&
+    py <= lienzo.alto - MARGEN_VISIBLE
+  return visible ? vista : centrarEn(vista.escala, lienzo, x, y)
+}
+
+/**
+ * El lienzo cambió de tamaño (girar el teléfono, aparece o se cierra algo a su alrededor): conserva
+ * el mismo lugar de la fachada en el centro y la misma proporción respecto a "cubrir".
+ */
+export function reajustar(vista: Vista, antes: Lienzo, ahora: Lienzo): Vista {
+  const base = tamanoBase(antes)
+  if (base.ancho <= 0 || base.alto <= 0) return vistaInicial(ahora)
+  const x = (antes.ancho / 2 - vista.x) / (base.ancho * vista.escala)
+  const y = (antes.alto / 2 - vista.y) / (base.alto * vista.escala)
+  const escala = (vista.escala * escalas(ahora).cubrir) / escalas(antes).cubrir
+  return centrarEn(escala, ahora, x, y)
+}
+
+/** Dos vistas son la misma salvo errores de redondeo. */
+export function mismaVista(a: Vista, b: Vista): boolean {
+  return (
+    Math.abs(a.escala - b.escala) < 0.001 && Math.abs(a.x - b.x) < 0.5 && Math.abs(a.y - b.y) < 0.5
+  )
 }

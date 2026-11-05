@@ -81,4 +81,8 @@ Cómo agregarlas:
 | `mapa.estado.noVisitado`          | no visitado                                                         | not visited                                                                      |
 | `mapa.santi.siguiente`            | Toca el punto {{numero}}.                                           | Tap point {{numero}}.                                                            |
 | `mapa.santi.libre`                | Elige un punto para empezar.                                        | Choose a point to start.                                                         |
+| `mapa.controles.titulo`           | Controles del mapa                                                  | Map controls                                                                     |
+| `mapa.controles.acercar`          | Acercar el mapa                                                     | Zoom in on the map                                                               |
+| `mapa.controles.alejar`           | Alejar el mapa                                                      | Zoom out of the map                                                              |
+| `mapa.controles.restablecer`      | Restablecer la vista del mapa                                       | Reset the map view                                                               |
 | `mapa.error`                      | No se pudo cargar el mapa. Revisa tu conexión.                      | The map couldn't be loaded. Check your connection.                               |

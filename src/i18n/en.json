@@ -111,6 +111,12 @@
       "siguiente": "Tap point {{numero}}.",
       "libre": "Choose a point to start."
     },
+    "controles": {
+      "titulo": "Map controls",
+      "acercar": "Zoom in on the map",
+      "alejar": "Zoom out of the map",
+      "restablecer": "Reset the map view"
+    },
     "error": "The map couldn't be loaded. Check your connection."
   }
 }

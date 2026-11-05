@@ -111,6 +111,12 @@
       "siguiente": "Toca el punto {{numero}}.",
       "libre": "Elige un punto para empezar."
     },
+    "controles": {
+      "titulo": "Controles del mapa",
+      "acercar": "Acercar el mapa",
+      "alejar": "Alejar el mapa",
+      "restablecer": "Restablecer la vista del mapa"
+    },
     "error": "No se pudo cargar el mapa. Revisa tu conexión."
   }
 }
