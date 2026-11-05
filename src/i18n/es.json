@@ -88,9 +88,14 @@
     "interior": "Interior"
   },
   "mapa": {
-    "progreso_one": "{{visitados}} / {{count}} punto",
-    "progreso_other": "{{visitados}} / {{count}} puntos",
+    "progreso": "{{visitados}}/{{total}}",
+    "progresoValor_one": "{{visitados}} de {{count}} punto",
+    "progresoValor_other": "{{visitados}} de {{count}} puntos",
     "progresoAccesible": "Progreso del recorrido",
+    "ayuda": {
+      "texto": "Toca un punto para descubrirlo. Usa dos dedos para acercar el mapa.",
+      "entendido": "Entendido"
+    },
     "leyenda": {
       "titulo": "Tipos de punto",
       "esencial": "Esencial",

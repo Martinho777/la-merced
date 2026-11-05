@@ -88,9 +88,14 @@
     "interior": "Interior"
   },
   "mapa": {
-    "progreso_one": "{{visitados}} / {{count}} point",
-    "progreso_other": "{{visitados}} / {{count}} points",
+    "progreso": "{{visitados}}/{{total}}",
+    "progresoValor_one": "{{visitados}} of {{count}} point",
+    "progresoValor_other": "{{visitados}} of {{count}} points",
     "progresoAccesible": "Route progress",
+    "ayuda": {
+      "texto": "Tap a point to discover it. Use two fingers to zoom in on the map.",
+      "entendido": "Got it"
+    },
     "leyenda": {
       "titulo": "Point types",
       "esencial": "Essential",

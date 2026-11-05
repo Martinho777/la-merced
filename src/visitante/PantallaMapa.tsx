@@ -38,6 +38,7 @@ import {
   siguientePunto,
 } from '@/visitante/mapa'
 import { esperaTrasEnfocar, useMovimientoReducido } from '@/visitante/movimiento'
+import { cerrarAyudaMapa, debeMostrarseAyudaMapa, useCompletados } from '@/visitante/progreso'
 import {
   leerSesionMapa,
   recordarSeleccion,
@@ -50,9 +51,6 @@ import './PantallaMapa.css'
 
 type ClaveZona = `zonas.${keyof typeof es.zonas}`
 type Posicion = { x: number; y: number }
-
-// Todavía no hay ficha de punto que marque visitas: por ahora ninguno está visitado.
-const NINGUNO_VISITADO: ReadonlySet<string> = new Set()
 
 /** Píxeles que hay que mover un dedo para que deje de ser un toque y pase a ser un arrastre. */
 const UMBRAL_ARRASTRE = 8
@@ -88,6 +86,8 @@ export function PantallaMapa() {
   const [ruta] = useState(() => leerRuta() ?? RUTA_POR_DEFECTO)
   const movimientoReducido = useMovimientoReducido()
   const { estado, reintentar } = useRecorrido(slug, idioma)
+  const completados = useCompletados(slug)
+  const [ayudaVisible, setAyudaVisible] = useState(debeMostrarseAyudaMapa)
 
   const lienzoRef = useRef<HTMLDivElement>(null)
   const medidas = useRef<Lienzo>({ ancho: 0, alto: 0 })
@@ -315,8 +315,8 @@ export function PantallaMapa() {
   }
 
   const puntos = estado.tipo === 'listo' ? estado.recorrido.puntos : []
-  const siguiente = siguientePunto(puntos, ruta, NINGUNO_VISITADO)
-  const avance = progreso(puntos, ruta, NINGUNO_VISITADO)
+  const siguiente = siguientePunto(puntos, ruta, completados)
+  const avance = progreso(puntos, ruta, completados)
 
   // La ilustración de la base gana; si no hay, la local (src/assets/zonas/).
   const urlIlustracion = estado.tipo === 'listo' ? estado.recorrido.zona.urlIlustracion : null
@@ -330,7 +330,7 @@ export function PantallaMapa() {
       nombre: punto.ficha?.titulo ?? '',
       tipo: t(punto.es_esencial ? 'mapa.tipo.esencial' : 'mapa.tipo.opcional'),
       estado: t(
-        estadoDePunto(punto, NINGUNO_VISITADO) === 'visitado'
+        estadoDePunto(punto, completados) === 'visitado'
           ? 'mapa.estado.visitado'
           : 'mapa.estado.noVisitado',
       ),
@@ -372,7 +372,11 @@ export function PantallaMapa() {
           <BarraProgreso
             valor={avance.visitados}
             maximo={avance.total}
-            contador={t('mapa.progreso', { visitados: avance.visitados, count: avance.total })}
+            contador={t('mapa.progreso', { visitados: avance.visitados, total: avance.total })}
+            valorAccesible={t('mapa.progresoValor', {
+              visitados: avance.visitados,
+              count: avance.total,
+            })}
             etiquetaAccesible={t('mapa.progresoAccesible')}
           />
         )}
@@ -433,7 +437,7 @@ export function PantallaMapa() {
                   <MarcadorPunto
                     key={punto.slug}
                     numero={punto.orden}
-                    estado={estadoDePunto(punto, NINGUNO_VISITADO)}
+                    estado={estadoDePunto(punto, completados)}
                     siguiente={punto.slug === siguiente?.slug}
                     seleccionado={punto.slug === seleccion?.slug}
                     x={punto.pos_x}
@@ -467,11 +471,29 @@ export function PantallaMapa() {
         {estado.tipo === 'listo' && (
           <div className="mapa__santi">
             <Santi pose="head-smile" tamano="sm" />
-            <SantiBurbuja cola="izquierda">
-              {siguiente
-                ? t('mapa.santi.siguiente', { numero: siguiente.orden })
-                : t('mapa.santi.libre')}
-            </SantiBurbuja>
+            {/* Un solo Santi en pantalla: en la primera visita da la instrucción y, al cerrarla,
+                vuelve a indicar el siguiente punto. No tapa el mapa ni sus controles. */}
+            <div className="mapa__santi-mensaje">
+              <SantiBurbuja cola="izquierda">
+                {ayudaVisible
+                  ? t('mapa.ayuda.texto')
+                  : siguiente
+                    ? t('mapa.santi.siguiente', { numero: siguiente.orden })
+                    : t('mapa.santi.libre')}
+              </SantiBurbuja>
+              {ayudaVisible && (
+                <Boton
+                  variante="secundario"
+                  tamano="sm"
+                  onClick={() => {
+                    cerrarAyudaMapa()
+                    setAyudaVisible(false)
+                  }}
+                >
+                  {t('mapa.ayuda.entendido')}
+                </Boton>
+              )}
+            </div>
           </div>
         )}
       </div>

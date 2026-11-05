@@ -66,9 +66,12 @@ Cómo agregarlas:
 | `zonas.fachada-principal`         | Fachada principal                                                   | Main façade                                                                      |
 | `zonas.fachada-secundaria`        | Fachada secundaria                                                  | Side façade                                                                      |
 | `zonas.interior`                  | Interior                                                            | Interior                                                                         |
-| `mapa.progreso_one`               | {{visitados}} / {{count}} punto                                     | {{visitados}} / {{count}} point                                                  |
-| `mapa.progreso_other`             | {{visitados}} / {{count}} puntos                                    | {{visitados}} / {{count}} points                                                 |
+| `mapa.progreso`                   | {{visitados}}/{{total}}                                             | {{visitados}}/{{total}}                                                          |
+| `mapa.progresoValor_one`          | {{visitados}} de {{count}} punto                                    | {{visitados}} of {{count}} point                                                 |
+| `mapa.progresoValor_other`        | {{visitados}} de {{count}} puntos                                   | {{visitados}} of {{count}} points                                                |
 | `mapa.progresoAccesible`          | Progreso del recorrido                                              | Route progress                                                                   |
+| `mapa.ayuda.texto`                | Toca un punto para descubrirlo. Usa dos dedos para acercar el mapa. | Tap a point to discover it. Use two fingers to zoom in on the map.               |
+| `mapa.ayuda.entendido`            | Entendido                                                           | Got it                                                                           |
 | `mapa.leyenda.titulo`             | Tipos de punto                                                      | Point types                                                                      |
 | `mapa.leyenda.esencial`           | Esencial                                                            | Essential                                                                        |
 | `mapa.leyenda.opcional`           | Opcional                                                            | Optional                                                                         |

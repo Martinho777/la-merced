@@ -158,6 +158,19 @@
   gap: var(--space-3);
 }
 
-.mapa__santi .santi-burbuja {
+.mapa__santi .santi {
+  flex-shrink: 0;
+}
+
+.mapa__santi-mensaje {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.mapa__santi .santi-burbuja {
+  align-self: stretch;
 }

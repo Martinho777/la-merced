@@ -113,6 +113,10 @@ describe('pantalla del mapa', () => {
     </MemoryRouter>,
   )
 
+  it('sin datos no muestra a Santi ni la ayuda, que llega con el mapa cargado', () => {
+    expect(html).not.toContain('Entendido')
+  })
+
   it('tiene el lienzo de gestos', () => {
     expect(html).toContain('class="mapa__lienzo"')
   })

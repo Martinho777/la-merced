@@ -7,9 +7,17 @@ type Props = {
   contador: string
   /** Qué mide la barra, para lectores de pantalla ("Progreso del recorrido"). */
   etiquetaAccesible: string
+  /** Lo que se anuncia si el contador solo no se entiende al oírlo ("3 de 12 puntos"). */
+  valorAccesible?: string
 }
 
-export function BarraProgreso({ valor, maximo, contador, etiquetaAccesible }: Props) {
+export function BarraProgreso({
+  valor,
+  maximo,
+  contador,
+  etiquetaAccesible,
+  valorAccesible,
+}: Props) {
   const acotado = Math.min(Math.max(valor, 0), maximo)
   const porcentaje = maximo > 0 ? (acotado / maximo) * 100 : 0
 
@@ -22,7 +30,7 @@ export function BarraProgreso({ valor, maximo, contador, etiquetaAccesible }: Pr
         aria-valuemin={0}
         aria-valuemax={maximo}
         aria-valuenow={acotado}
-        aria-valuetext={contador}
+        aria-valuetext={valorAccesible ?? contador}
       >
         <div className="barra-progreso__relleno" style={{ width: `${porcentaje}%` }} />
       </div>

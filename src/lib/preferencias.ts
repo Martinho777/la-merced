@@ -66,3 +66,38 @@ export function leerRuta(almacen = almacenDelNavegador()): Ruta | null {
 export function guardarRuta(ruta: Ruta, almacen = almacenDelNavegador()): void {
   guardar(CLAVE_RUTA, ruta, almacen)
 }
+
+/** Clave de los puntos completados de una zona: cada zona lleva su propio progreso. */
+export const claveCompletados = (zona: string) => `la-merced:completados:${zona}`
+const CLAVE_AYUDA_MAPA = 'la-merced:ayuda-mapa-vista'
+
+/**
+ * Slugs de los puntos completados de una zona, sin repetidos. Si lo guardado no se puede leer o está
+ * dañado, se empieza de cero. Solo se guardan los slugs: el contador siempre se calcula.
+ */
+export function leerCompletados(zona: string, almacen = almacenDelNavegador()): string[] {
+  try {
+    const datos: unknown = JSON.parse(almacen?.getItem(claveCompletados(zona)) ?? '[]')
+    if (!Array.isArray(datos)) return []
+    return [...new Set(datos.filter((id): id is string => typeof id === 'string' && id !== ''))]
+  } catch {
+    return []
+  }
+}
+
+export function guardarCompletados(
+  zona: string,
+  slugs: readonly string[],
+  almacen = almacenDelNavegador(),
+): void {
+  guardar(claveCompletados(zona), JSON.stringify(slugs), almacen)
+}
+
+/** Si el visitante ya cerró la ayuda inicial del mapa. Va aparte del progreso. */
+export function leerAyudaMapaVista(almacen = almacenDelNavegador()): boolean {
+  return leer(CLAVE_AYUDA_MAPA, ['1'], almacen) === '1'
+}
+
+export function guardarAyudaMapaVista(almacen = almacenDelNavegador()): void {
+  guardar(CLAVE_AYUDA_MAPA, '1', almacen)
+}
