@@ -17,7 +17,9 @@
 
 - Entrada del visitante: bienvenida, idioma (es/cak/en), ruta (recomendada/esencial/libre), zona y explicación de cámara.
 - Cámara (bloque 3): la explicación no pide permiso; `/alineacion` pide la cámara trasera solo tras "Activar cámara" y muestra a Santi encima de la imagen con un mensaje y "Ver el mapa" (sin contorno de alineación: el equipo decidió quitarlo). Mientras abre, "Saltar"; si se niega el permiso, va al mapa. Las zonas con `usa_camara` falso van directo al mapa. La zona viaja como `?zona=<slug>`.
-- Mapa (`/mapa`, vertical): ilustración con marcadores (`MarcadorPunto`); un dedo mueve, dos dedos pellizcan para el zoom y el doble toque alterna entre la fachada entera y la vista inicial (lógica en `visitante/gestos.ts`). Progreso, leyenda y Santi con el siguiente punto según la ruta guardada.
+- Mapa (`/mapa`, vertical): ilustración con marcadores (`MarcadorPunto`); un dedo mueve, dos dedos pellizcan para el zoom y el doble toque alterna entre la fachada entera y la vista inicial, con botones de acercar, alejar y restablecer como alternativa (lógica en `visitante/gestos.ts`). Tocar un punto lo selecciona y lo acerca antes de abrir su confirmación; con movimiento reducido el cambio es inmediato (`visitante/movimiento.ts`). Progreso "3/12" calculado de los puntos completados, guardados por zona en el teléfono (`visitante/progreso.ts`). Leyenda y Santi con el siguiente punto según la ruta guardada; en la primera visita, Santi da la instrucción inicial.
+- Experiencia por punto: confirmación (`/confirmacion`) y ficha (`/punto`) con barra de audio, secciones, archivo, Anterior/Siguiente y la acción explícita de completar. Las fotos, el audio y el archivo se muestran si los datos los traen; si faltan, los espacios quedan vacíos y el contenido se indica como pendiente.
+- Datos de demostración (`datos/puntos-demo.ts`): completan hasta 12 puntos mientras la base tenga menos de `MINIMO_PUNTOS_REALES` (`datos/recorrido.ts`). No son contenido patrimonial.
 - Selector de zonas leído de Supabase, con estados de carga/error/reintento y zonas "Próximamente".
 - Componentes base, sistema de tokens generado y tema de alto contraste **en CSS**; imágenes de Santi (35 poses).
 - Esquema, RLS y bucket `medios` en `supabase/migrations/`; tipos generados; CI.
@@ -27,13 +29,14 @@
 Las pruebas de la tabla existen en el repositorio; **no se ejecutaron al escribir este archivo** (falta `node_modules`).
 La última columna es lo que ninguna prueba automática puede dar por cumplido.
 
-| Funcionalidad                              | Pruebas automáticas que existen                                  | Comprobación manual o en dispositivo                          |
-| ------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------- |
-| Entrada (bienvenida, idioma, ruta, zona)   | `preferencias.test.ts`, `traducciones.test.ts`, `zonas.test.tsx` | No consta ninguna                                             |
-| Explicación de cámara (`/camara`)          | `camara-pantallas.test.tsx`, `camara.test.ts`                    | No consta ninguna                                             |
-| Alineación (`/alineacion`, `getUserMedia`) | `camara.test.ts`, `camara-pantallas.test.tsx`                    | **No**: sin probar en Chrome Android, Samsung Internet ni iOS |
-| Mapa inicial (`/mapa`, gestos)             | `mapa.test.ts`, `gestos.test.ts`, `mapa-pantallas.test.tsx`      | **No**: los gestos táctiles no se han probado en un teléfono  |
-| Santi hablando sobre la cámara             | `habla.test.ts`                                                  | No consta ninguna                                             |
+| Funcionalidad                                    | Pruebas automáticas que existen                                                                         | Comprobación manual o en dispositivo                                                           |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Entrada (bienvenida, idioma, ruta, zona)         | `preferencias.test.ts`, `traducciones.test.ts`, `zonas.test.tsx`                                        | No consta ninguna                                                                              |
+| Explicación de cámara (`/camara`)                | `camara-pantallas.test.tsx`, `camara.test.ts`                                                           | No consta ninguna                                                                              |
+| Alineación (`/alineacion`, `getUserMedia`)       | `camara.test.ts`, `camara-pantallas.test.tsx`                                                           | **No**: sin probar en Chrome Android, Samsung Internet ni iOS                                  |
+| Mapa (`/mapa`, gestos, progreso, ayuda)          | `mapa.test.ts`, `gestos.test.ts`, `mapa-pantallas.test.tsx`, `progreso.test.ts`, `preferencias.test.ts` | **No**: los gestos táctiles no se han probado en un teléfono                                   |
+| Confirmación y ficha (`/confirmacion`, `/punto`) | `punto-pantallas.test.tsx`, `puntos.test.ts`, `recorrido.test.ts`                                       | Solo en navegador de escritorio con datos simulados; no contra Supabase real ni en un teléfono |
+| Santi hablando sobre la cámara                   | `habla.test.ts`                                                                                         | No consta ninguna                                                                              |
 
 Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo no da ninguno por cumplido;** lo decide el equipo:
 
@@ -47,34 +50,37 @@ Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo
 ## Parcial
 
 - **Cámara**: sin probar en dispositivos físicos (Chrome Android, Samsung Internet, iOS). "Solo es una vez" no se recuerda entre visitas (no hay requisito de persistencia).
-- **Mapa (inicial)**: la ruta guardada ya la lee `PantallaMapa` (siguiente punto y progreso), pero **no se guarda qué puntos se visitaron** (`NINGUNO_VISITADO` en `PantallaMapa.tsx`), no hay botones alternativos de zoom (brecha de accesibilidad pendiente, no una excepción aprobada al Design System; ver Discrepancias) y los puntos reales dependen de investigación. No se da por cumplido el mapa del Sprint 3 (`docs/producto/SPRINTS.md`).
+- **Mapa**: los puntos reales, sus posiciones y sus fichas dependen de investigación; mientras tanto se completan con datos de demostración. No se da por cumplido el mapa del Sprint 3 (`docs/producto/SPRINTS.md`).
 - **Preferencias**: la duración de las rutas sigue siendo un marcador ("[X] min").
 - **Kaqchikel**: 3 de 74 claves traducidas; el resto cae a español (`src/i18n/PENDIENTE-cak.md`).
-- **Datos de contenido**: el seed tiene un único punto de prueba (con ficha solo en español); la ficha no se muestra porque `/punto` aún es un marcador.
+- **Datos de contenido**: el seed tiene un único punto de prueba (con ficha solo en español), que se muestra junto a los de demostración.
+- **Ficha**: no incluye dato de Santi, fuentes, nivel de confianza ni "Ver en 3D".
 
 ## Solo estructura o marcador
 
-- `/punto` (pantalla "En construcción", recibe `?zona=&punto=`); `/gestor` (stub, "Sprint 3").
-- Visitas a puntos: no se registran todavía (no hay ficha); el mapa muestra todo sin visitar.
-- Componentes especificados y no implementados: hero header, barra de audio, hoja inferior/diálogo, banners.
+- `/gestor` (stub, "Sprint 3").
+- Componentes especificados y no implementados: hoja inferior/diálogo, banners.
 
 ## No existe (según búsqueda en `src/` y `package.json`)
 
-Ficha de punto, audio, modelos 3D, login/CRUD del gestor, PWA / uso sin conexión, GSAP, interruptor de tema `contrast`
-en producción (solo en `/estilos`), ajuste de texto grande, modo respeto.
+Modelos 3D, login/CRUD del gestor, PWA / uso sin conexión, GSAP, interruptor de tema `contrast`
+en producción (solo en `/estilos`), ajuste de texto grande, modo respeto, estampa animada al completar un punto.
 
 ## Discrepancias especificación ↔ código (informativas)
 
-| Especificado                                                                                           | Implementado                                                                                                                                       |
-| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sistema-de-diseno.md` (Motion): GSAP                                                                  | Animaciones CSS; GSAP no instalado                                                                                                                 |
-| `sistema-de-diseno.md` (Themes): `data-theme="contrast"` desde ajustes de accesibilidad                | Solo `desarrollo/PaginaEstilos.tsx` lo activa                                                                                                      |
-| `componentes.md` (Top bar): borde inferior cuando el contenido pasa por debajo                         | `BarraSuperior` tiene la prop `conBorde`; ninguna pantalla la usa                                                                                  |
-| `README.md` (Convenciones): ESLint impide llamar a Supabase fuera de `datos/` y `lib/`                 | La regla solo bloquea el paquete, no `@/lib/supabase`                                                                                              |
-| `README.md` (Estructura): `assets/santi` "SVG por capas"; `visitante/` con ficha; `app/` con providers | WebP; la ficha y los providers no existen (el mapa ya existe)                                                                                      |
-| `sistema-de-diseno.md` (Touch and sizes): los gestos siempre tienen alternativa de botón (zoom +/−)    | Brecha de accesibilidad pendiente, **no una excepción aprobada**: el mapa se acerca solo con gestos y una prueba exige que no haya botones de zoom |
-| `docs/producto/SPRINTS.md` (Sprint 2): alineación con contorno provisional, botones "Listo" y "Saltar" | Sin contorno (decisión del equipo según el estado previo); botones "Ver el mapa", "Saltar" y "Continuar sin cámara"                                |
-| `docs/producto/SPRINTS.md` (Sprint 2): "el mapa no es del Sprint 2"                                    | Existe un mapa inicial (PR #8)                                                                                                                     |
+| Especificado                                                                                           | Implementado                                                                                                        |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `sistema-de-diseno.md` (Motion): GSAP                                                                  | Animaciones CSS; GSAP no instalado                                                                                  |
+| `sistema-de-diseno.md` (Themes): `data-theme="contrast"` desde ajustes de accesibilidad                | Solo `desarrollo/PaginaEstilos.tsx` lo activa                                                                       |
+| `componentes.md` (Top bar): borde inferior cuando el contenido pasa por debajo                         | `BarraSuperior` tiene la prop `conBorde`; ninguna pantalla la usa                                                   |
+| `README.md` (Convenciones): ESLint impide llamar a Supabase fuera de `datos/` y `lib/`                 | La regla solo bloquea el paquete, no `@/lib/supabase`                                                               |
+| `README.md` (Estructura): `assets/santi` "SVG por capas"; `visitante/` con ficha; `app/` con providers | WebP; la ficha y los providers no existen (el mapa ya existe)                                                       |
+| `sistema-de-diseno.md` (Motion): zoom a un punto de 450ms                                              | 280ms (`--duration-slow`): no existe un token de 450ms                                                              |
+| `componentes.md` (Hero header): relleno `ink` o `yellow-400`                                           | La ficha usa `green-700` con texto `surface`, pedido en la tarea                                                    |
+| `componentes.md` (Badge): conteos con formato "3 / 12"                                                 | El mapa muestra "3/12", pedido en la tarea; a los lectores de pantalla se les anuncia "3 de 12 puntos"              |
+| `FLUJOS.md` (Diagrama 2): al cerrar la ficha el punto queda visitado, con estampa animada              | El punto se completa con una acción explícita en la ficha, pedida en la tarea; sin estampa                          |
+| `docs/producto/SPRINTS.md` (Sprint 2): alineación con contorno provisional, botones "Listo" y "Saltar" | Sin contorno (decisión del equipo según el estado previo); botones "Ver el mapa", "Saltar" y "Continuar sin cámara" |
+| `docs/producto/SPRINTS.md` (Sprint 2): "el mapa no es del Sprint 2"                                    | Existe un mapa inicial (PR #8)                                                                                      |
 
 ## Rama sin fusionar
 

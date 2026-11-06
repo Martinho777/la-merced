@@ -8,6 +8,8 @@ type Props = {
   estado: EstadoMarcador
   /** Siguiente punto de la ruta: halo y pulso suave (sin pulso con movimiento reducido). */
   siguiente?: boolean
+  /** El punto elegido en el mapa. Es independiente de `estado`: seleccionar no lo completa. */
+  seleccionado?: boolean
   /** Posición sobre la ilustración, de 0 a 1. */
   x: number
   y: number
@@ -25,12 +27,18 @@ export function MarcadorPunto({
   numero,
   estado,
   siguiente = false,
+  seleccionado = false,
   x,
   y,
   etiquetaAccesible,
   onPresionar,
 }: Props) {
-  const clases = ['marcador', `marcador--${estado}`, siguiente && 'marcador--siguiente']
+  const clases = [
+    'marcador',
+    `marcador--${estado}`,
+    siguiente && 'marcador--siguiente',
+    seleccionado && 'marcador--seleccionado',
+  ]
     .filter(Boolean)
     .join(' ')
 
@@ -40,6 +48,7 @@ export function MarcadorPunto({
       className={clases}
       style={{ left: `${x * 100}%`, top: `${y * 100}%` }}
       aria-label={etiquetaAccesible}
+      aria-current={seleccionado || undefined}
       onClick={onPresionar}
     >
       <span className="marcador__disco texto-marker" aria-hidden="true">

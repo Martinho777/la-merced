@@ -10,6 +10,7 @@ vi.mock('@/datos/zonas', () => ({ obtenerZona: () => new Promise(() => {}) }))
 vi.mock('@/datos/puntos', () => ({ obtenerPuntosDeZona: () => new Promise(() => {}) }))
 
 const { PantallaMapa } = await import('@/visitante/PantallaMapa')
+const { ControlesMapa } = await import('@/visitante/ControlesMapa')
 
 describe('marcador de punto', () => {
   const marcador = (estado: 'esencial' | 'opcional' | 'visitado', siguiente = false) =>
@@ -45,6 +46,23 @@ describe('marcador de punto', () => {
     expect(marcador('opcional', true)).toContain('marcador--opcional marcador--siguiente')
   })
 
+  it('el seleccionado se anuncia y no cambia su estado', () => {
+    const html = renderToStaticMarkup(
+      <MarcadorPunto
+        numero={7}
+        estado="esencial"
+        seleccionado
+        x={0.25}
+        y={0.5}
+        etiquetaAccesible="Punto 7"
+        onPresionar={() => {}}
+      />,
+    )
+    expect(html).toContain('marcador--esencial marcador--seleccionado')
+    expect(html).toContain('aria-current="true"')
+    expect(html).toContain('>7</span>')
+  })
+
   it('la muestra de la leyenda es decorativa', () => {
     expect(renderToStaticMarkup(<MuestraMarcador estado="opcional" />)).toContain(
       'aria-hidden="true"',
@@ -60,6 +78,34 @@ describe('imágenes locales de la fachada principal', () => {
   })
 })
 
+describe('controles del mapa', () => {
+  const nulo = () => {}
+  const controles = (puedeAcercar: boolean, puedeAlejar: boolean, puedeRestablecer: boolean) =>
+    renderToStaticMarkup(
+      <ControlesMapa
+        puedeAcercar={puedeAcercar}
+        puedeAlejar={puedeAlejar}
+        puedeRestablecer={puedeRestablecer}
+        onAcercar={nulo}
+        onAlejar={nulo}
+        onRestablecer={nulo}
+      />,
+    )
+
+  it('son botones con nombre accesible', () => {
+    const html = controles(true, true, true)
+    expect(html).toContain('aria-label="Acercar el mapa"')
+    expect(html).toContain('aria-label="Alejar el mapa"')
+    expect(html).toContain('aria-label="Restablecer la vista del mapa"')
+    expect(html).not.toContain('disabled')
+  })
+
+  it('se deshabilitan en los límites', () => {
+    expect(controles(false, true, true).match(/disabled=""/g)).toHaveLength(1)
+    expect(controles(false, false, false).match(/disabled=""/g)).toHaveLength(3)
+  })
+})
+
 describe('pantalla del mapa', () => {
   const html = renderToStaticMarkup(
     <MemoryRouter initialEntries={['/mapa?zona=fachada-principal']}>
@@ -67,10 +113,12 @@ describe('pantalla del mapa', () => {
     </MemoryRouter>,
   )
 
-  it('tiene el lienzo de gestos y ningún botón de zoom (se acerca pellizcando)', () => {
+  it('sin datos no muestra a Santi ni la ayuda, que llega con el mapa cargado', () => {
+    expect(html).not.toContain('Entendido')
+  })
+
+  it('tiene el lienzo de gestos', () => {
     expect(html).toContain('class="mapa__lienzo"')
-    expect(html).not.toContain('Acercar')
-    expect(html).not.toContain('Alejar')
   })
 
   it('mientras carga lo anuncia y muestra la leyenda y el botón de volver a zonas', () => {

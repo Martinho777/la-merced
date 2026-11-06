@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { guardarIdioma, guardarRuta, leerIdioma, leerRuta } from '@/lib/preferencias'
+import {
+  claveCompletados,
+  guardarAyudaMapaVista,
+  guardarCompletados,
+  guardarIdioma,
+  guardarRuta,
+  leerAyudaMapaVista,
+  leerCompletados,
+  leerIdioma,
+  leerRuta,
+} from '@/lib/preferencias'
 
 /** Storage en memoria, como el localStorage de un navegador. */
 function almacenEnMemoria() {
@@ -61,5 +71,55 @@ describe('preferencias', () => {
   it('sin window (fuera del navegador) usa los valores por defecto sin lanzar', () => {
     expect(leerIdioma()).toBeNull()
     expect(() => guardarRuta('libre')).not.toThrow()
+  })
+})
+
+describe('puntos completados', () => {
+  it('se guardan por zona, sin mezclarse', () => {
+    const almacen = almacenEnMemoria()
+    guardarCompletados('fachada-principal', ['a', 'b'], almacen)
+    guardarCompletados('interior', ['c'], almacen)
+    expect(leerCompletados('fachada-principal', almacen)).toEqual(['a', 'b'])
+    expect(leerCompletados('interior', almacen)).toEqual(['c'])
+    expect(leerCompletados('fachada-secundaria', almacen)).toEqual([])
+  })
+
+  it.each([
+    ['JSON roto', '{no es json'],
+    ['un número', '3'],
+    ['un objeto', '{"a":1}'],
+    ['null', 'null'],
+  ])('con datos dañados (%s) empieza de cero', (_nombre, guardado) => {
+    const almacen = almacenEnMemoria()
+    almacen.setItem(claveCompletados('z'), guardado)
+    expect(leerCompletados('z', almacen)).toEqual([])
+  })
+
+  it('quita repetidos y lo que no es un identificador', () => {
+    const almacen = almacenEnMemoria()
+    almacen.setItem(claveCompletados('z'), '["a","a",3,null,"","b"]')
+    expect(leerCompletados('z', almacen)).toEqual(['a', 'b'])
+  })
+
+  it('si localStorage lanza o no existe, no rompe nada', () => {
+    expect(() => guardarCompletados('z', ['a'], almacenQueFalla)).not.toThrow()
+    expect(leerCompletados('z', almacenQueFalla)).toEqual([])
+    expect(leerCompletados('z', null)).toEqual([])
+  })
+})
+
+describe('ayuda inicial del mapa', () => {
+  it('se recuerda al cerrarla y es independiente del progreso', () => {
+    const almacen = almacenEnMemoria()
+    guardarCompletados('z', ['a'], almacen)
+    expect(leerAyudaMapaVista(almacen)).toBe(false)
+    guardarAyudaMapaVista(almacen)
+    expect(leerAyudaMapaVista(almacen)).toBe(true)
+    expect(leerCompletados('z', almacen)).toEqual(['a'])
+  })
+
+  it('si localStorage lanza, se muestra sin romper nada', () => {
+    expect(() => guardarAyudaMapaVista(almacenQueFalla)).not.toThrow()
+    expect(leerAyudaMapaVista(almacenQueFalla)).toBe(false)
   })
 })

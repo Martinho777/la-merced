@@ -3,9 +3,10 @@ import { LayoutRaiz } from '@/app/LayoutRaiz'
 import { PantallaAlineacion } from '@/visitante/PantallaAlineacion'
 import { PantallaBienvenida } from '@/visitante/PantallaBienvenida'
 import { PantallaCamara } from '@/visitante/PantallaCamara'
-import { PantallaEnConstruccion } from '@/visitante/PantallaEnConstruccion'
+import { PantallaConfirmacion } from '@/visitante/PantallaConfirmacion'
 import { PantallaIdioma } from '@/visitante/PantallaIdioma'
 import { PantallaMapa } from '@/visitante/PantallaMapa'
+import { PantallaPunto } from '@/visitante/PantallaPunto'
 import { PantallaRuta } from '@/visitante/PantallaRuta'
 import { PantallaZona } from '@/visitante/PantallaZona'
 
@@ -35,8 +36,9 @@ export const router = createBrowserRouter([
       { path: '/camara', element: <PantallaCamara /> },
       { path: '/alineacion', element: <PantallaAlineacion /> },
       { path: '/mapa', element: <PantallaMapa /> },
-      // Temporal hasta que llegue la ficha del punto (recibe ?zona=<slug>&punto=<slug>).
-      { path: '/punto', element: <PantallaEnConstruccion /> },
+      // Experiencia por punto: ambas reciben ?zona=<slug>&punto=<slug>.
+      { path: '/confirmacion', element: <PantallaConfirmacion /> },
+      { path: '/punto', element: <PantallaPunto /> },
       {
         // El gestor va en su propio chunk: el visitante nunca lo descarga.
         path: '/gestor/*',

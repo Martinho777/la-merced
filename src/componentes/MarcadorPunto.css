@@ -60,6 +60,12 @@
   }
 }
 
+/* Punto elegido: el contorno pasa de blanco a `ink`, sin depender solo del color de relleno. */
+.marcador--seleccionado .marcador__disco {
+  outline-color: var(--ink);
+  outline-width: var(--border-focus);
+}
+
 /* Muestra de la leyenda: disco del tamaño de un icono, sin posición. */
 .marcador--muestra {
   position: static;

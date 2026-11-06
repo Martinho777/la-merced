@@ -78,9 +78,38 @@
       "desconocido": "No pudimos abrir la cámara."
     }
   },
-  "enConstruccion": {
-    "titulo": "En construcción",
-    "texto": "Esta pantalla llega pronto."
+  "punto": {
+    "identificador": "Detalle {{numero}}",
+    "identificadorConZona": "{{identificador}} · {{zona}}",
+    "error": "No se pudo cargar este punto. Revisa tu conexión.",
+    "confirmacion": {
+      "intro": "¡Lo viste en el mapa!",
+      "titulo": "¡Ese es!",
+      "frase": "Elegiste {{nombre}}. ¿Lo exploramos?",
+      "verDetalle": "Sí, ver detalle"
+    },
+    "audio": {
+      "titulo": "Escuchar historia",
+      "proximamente": "Audio próximamente",
+      "error": "No se pudo cargar el audio",
+      "reproducir": "Reproducir la historia",
+      "pausar": "Pausar la historia",
+      "transcripcion": "Transcripción"
+    },
+    "queVes": "Qué estás viendo",
+    "historia": "Historia",
+    "contenidoPendiente": "Contenido pendiente de investigación.",
+    "archivo": {
+      "titulo": "En el archivo",
+      "desliza": "Desliza para ver más",
+      "sinFecha": "Fecha pendiente",
+      "sinCredito": "Crédito pendiente"
+    },
+    "marcarCompletado": "Marcar como completado",
+    "completado": "Completado",
+    "navegacion": "Navegación del recorrido",
+    "anterior": "Anterior",
+    "siguiente": "Siguiente"
   },
   "zonas": {
     "fachada-principal": "Fachada principal",
@@ -88,9 +117,14 @@
     "interior": "Interior"
   },
   "mapa": {
-    "progreso_one": "{{visitados}} / {{count}} punto",
-    "progreso_other": "{{visitados}} / {{count}} puntos",
+    "progreso": "{{visitados}}/{{total}}",
+    "progresoValor_one": "{{visitados}} de {{count}} punto",
+    "progresoValor_other": "{{visitados}} de {{count}} puntos",
     "progresoAccesible": "Progreso del recorrido",
+    "ayuda": {
+      "texto": "Toca un punto para descubrirlo. Usa dos dedos para acercar el mapa.",
+      "entendido": "Entendido"
+    },
     "leyenda": {
       "titulo": "Tipos de punto",
       "esencial": "Esencial",
@@ -110,6 +144,12 @@
     "santi": {
       "siguiente": "Toca el punto {{numero}}.",
       "libre": "Elige un punto para empezar."
+    },
+    "controles": {
+      "titulo": "Controles del mapa",
+      "acercar": "Acercar el mapa",
+      "alejar": "Alejar el mapa",
+      "restablecer": "Restablecer la vista del mapa"
     },
     "error": "No se pudo cargar el mapa. Revisa tu conexión."
   }

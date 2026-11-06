@@ -1,0 +1,82 @@
+/* Barra de narración (docs/diseno/componentes.md → Audio bar). */
+
+.barra-audio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.barra-audio__fila {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Disco de 48px. Deshabilitado no lleva el relleno de acento: se ve que no responde. */
+.barra-audio__reproducir {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.barra-audio__reproducir:disabled {
+  border: var(--border-control) solid var(--border-strong);
+  background: var(--surface-sunken);
+  color: var(--ink-subtle);
+  cursor: not-allowed;
+}
+
+.barra-audio__icono {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  fill: currentColor;
+}
+
+.barra-audio__centro {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.barra-audio__textos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 var(--space-2);
+  color: var(--ink);
+}
+
+.barra-audio__tiempo {
+  color: var(--ink-muted);
+}
+
+.barra-audio__pista {
+  height: var(--space-1);
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--border);
+}
+
+.barra-audio__avance {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--sky-700);
+}
+
+.barra-audio__transcripcion {
+  margin: 0;
+  color: var(--ink);
+}

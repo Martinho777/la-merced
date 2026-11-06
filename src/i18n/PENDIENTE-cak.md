@@ -61,14 +61,40 @@ Cómo agregarlas:
 | `alineacion.errores.reproduccion` | No pudimos mostrar la imagen de la cámara.                          | We couldn't show the camera image.                                               |
 | `alineacion.errores.interrumpida` | La cámara se detuvo.                                                | The camera stopped.                                                              |
 | `alineacion.errores.desconocido`  | No pudimos abrir la cámara.                                         | We couldn't open the camera.                                                     |
-| `enConstruccion.titulo`           | En construcción                                                     | Under construction                                                               |
-| `enConstruccion.texto`            | Esta pantalla llega pronto.                                         | This screen is coming soon.                                                      |
+| `punto.identificador`             | Detalle {{numero}}                                                  | Detail {{numero}}                                                                |
+| `punto.identificadorConZona`      | {{identificador}} · {{zona}}                                        | {{identificador}} · {{zona}}                                                     |
+| `punto.error`                     | No se pudo cargar este punto. Revisa tu conexión.                   | This point couldn't be loaded. Check your connection.                            |
+| `punto.confirmacion.intro`        | ¡Lo viste en el mapa!                                               | You saw it on the map!                                                           |
+| `punto.confirmacion.titulo`       | ¡Ese es!                                                            | That's the one!                                                                  |
+| `punto.confirmacion.frase`        | Elegiste {{nombre}}. ¿Lo exploramos?                                | You chose {{nombre}}. Shall we explore it?                                       |
+| `punto.confirmacion.verDetalle`   | Sí, ver detalle                                                     | Yes, see details                                                                 |
+| `punto.audio.titulo`              | Escuchar historia                                                   | Listen to the story                                                              |
+| `punto.audio.proximamente`        | Audio próximamente                                                  | Audio coming soon                                                                |
+| `punto.audio.error`               | No se pudo cargar el audio                                          | The audio couldn't be loaded                                                     |
+| `punto.audio.reproducir`          | Reproducir la historia                                              | Play the story                                                                   |
+| `punto.audio.pausar`              | Pausar la historia                                                  | Pause the story                                                                  |
+| `punto.audio.transcripcion`       | Transcripción                                                       | Transcript                                                                       |
+| `punto.queVes`                    | Qué estás viendo                                                    | What you're seeing                                                               |
+| `punto.historia`                  | Historia                                                            | History                                                                          |
+| `punto.contenidoPendiente`        | Contenido pendiente de investigación.                               | Content pending research.                                                        |
+| `punto.archivo.titulo`            | En el archivo                                                       | In the archive                                                                   |
+| `punto.archivo.desliza`           | Desliza para ver más                                                | Swipe to see more                                                                |
+| `punto.archivo.sinFecha`          | Fecha pendiente                                                     | Date pending                                                                     |
+| `punto.archivo.sinCredito`        | Crédito pendiente                                                   | Credit pending                                                                   |
+| `punto.marcarCompletado`          | Marcar como completado                                              | Mark as completed                                                                |
+| `punto.completado`                | Completado                                                          | Completed                                                                        |
+| `punto.navegacion`                | Navegación del recorrido                                            | Route navigation                                                                 |
+| `punto.anterior`                  | Anterior                                                            | Previous                                                                         |
+| `punto.siguiente`                 | Siguiente                                                           | Next                                                                             |
 | `zonas.fachada-principal`         | Fachada principal                                                   | Main façade                                                                      |
 | `zonas.fachada-secundaria`        | Fachada secundaria                                                  | Side façade                                                                      |
 | `zonas.interior`                  | Interior                                                            | Interior                                                                         |
-| `mapa.progreso_one`               | {{visitados}} / {{count}} punto                                     | {{visitados}} / {{count}} point                                                  |
-| `mapa.progreso_other`             | {{visitados}} / {{count}} puntos                                    | {{visitados}} / {{count}} points                                                 |
+| `mapa.progreso`                   | {{visitados}}/{{total}}                                             | {{visitados}}/{{total}}                                                          |
+| `mapa.progresoValor_one`          | {{visitados}} de {{count}} punto                                    | {{visitados}} of {{count}} point                                                 |
+| `mapa.progresoValor_other`        | {{visitados}} de {{count}} puntos                                   | {{visitados}} of {{count}} points                                                |
 | `mapa.progresoAccesible`          | Progreso del recorrido                                              | Route progress                                                                   |
+| `mapa.ayuda.texto`                | Toca un punto para descubrirlo. Usa dos dedos para acercar el mapa. | Tap a point to discover it. Use two fingers to zoom in on the map.               |
+| `mapa.ayuda.entendido`            | Entendido                                                           | Got it                                                                           |
 | `mapa.leyenda.titulo`             | Tipos de punto                                                      | Point types                                                                      |
 | `mapa.leyenda.esencial`           | Esencial                                                            | Essential                                                                        |
 | `mapa.leyenda.opcional`           | Opcional                                                            | Optional                                                                         |
@@ -81,4 +107,8 @@ Cómo agregarlas:
 | `mapa.estado.noVisitado`          | no visitado                                                         | not visited                                                                      |
 | `mapa.santi.siguiente`            | Toca el punto {{numero}}.                                           | Tap point {{numero}}.                                                            |
 | `mapa.santi.libre`                | Elige un punto para empezar.                                        | Choose a point to start.                                                         |
+| `mapa.controles.titulo`           | Controles del mapa                                                  | Map controls                                                                     |
+| `mapa.controles.acercar`          | Acercar el mapa                                                     | Zoom in on the map                                                               |
+| `mapa.controles.alejar`           | Alejar el mapa                                                      | Zoom out of the map                                                              |
+| `mapa.controles.restablecer`      | Restablecer la vista del mapa                                       | Reset the map view                                                               |
 | `mapa.error`                      | No se pudo cargar el mapa. Revisa tu conexión.                      | The map couldn't be loaded. Check your connection.                               |
