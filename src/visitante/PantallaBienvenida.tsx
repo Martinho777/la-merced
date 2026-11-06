@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { UserCog } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { Santi } from '@/componentes/Santi/Santi'
 import { BarraVisitante } from '@/visitante/BarraVisitante'
@@ -12,8 +13,17 @@ export function PantallaBienvenida() {
   const navegar = useNavigate()
 
   return (
-    <div className="pantalla">
+    <div className="pantalla bienvenida">
       <BarraVisitante />
+      {/* Entrada discreta al gestor para el equipo (editores y revisores). */}
+      <Link
+        to="/gestor"
+        className="bienvenida__acceso"
+        aria-label={t('bienvenida.accesoEquipo')}
+        title={t('bienvenida.accesoEquipo')}
+      >
+        <UserCog className="bienvenida__acceso-icono" aria-hidden="true" />
+      </Link>
       <div className="pantalla__cuerpo pantalla__cuerpo--centrado">
         <Santi
           pose="wave-large"

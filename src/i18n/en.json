@@ -28,7 +28,8 @@
   "bienvenida": {
     "titulo": "Hi! I'm Santi",
     "subtitulo": "I'll help you discover La Merced.",
-    "empezar": "Start"
+    "empezar": "Start",
+    "accesoEquipo": "Team access"
   },
   "idioma": {
     "titulo": "Choose your language"

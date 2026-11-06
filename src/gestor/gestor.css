@@ -1,0 +1,47 @@
+/* Estructura de las pantallas del gestor. Usa los tokens del Design System; no define valores. */
+
+.gestor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.gestor__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block-end: var(--space-4);
+  border-block-end: var(--border-hairline) solid var(--border);
+}
+
+.gestor__titulos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gestor__titulo,
+.gestor__texto,
+.gestor__marca,
+.gestor__error {
+  margin: 0;
+}
+
+.gestor__marca {
+  color: var(--ink);
+}
+
+.gestor__texto {
+  color: var(--ink-muted);
+}
+
+.gestor__error {
+  color: var(--error);
+}
+
+.gestor__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}

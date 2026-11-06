@@ -31,6 +31,7 @@ Cómo agregarlas:
 | `bienvenida.titulo`               | ¡Hola! Soy Santi                                                    | Hi! I'm Santi                                                                    |
 | `bienvenida.subtitulo`            | Te acompaño a descubrir La Merced.                                  | I'll help you discover La Merced.                                                |
 | `bienvenida.empezar`              | Empezar                                                             | Start                                                                            |
+| `bienvenida.accesoEquipo`         | Acceso del equipo                                                   | Team access                                                                      |
 | `idioma.titulo`                   | Elige tu idioma                                                     | Choose your language                                                             |
 | `ruta.titulo`                     | Elige tu ruta                                                       | Choose your route                                                                |
 | `ruta.intro`                      | ¿Cómo quieres recorrer la fachada?                                  | How do you want to explore the façade?                                           |

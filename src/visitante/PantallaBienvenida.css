@@ -34,3 +34,31 @@
     transform: translateY(var(--space-4)) scale(0.9);
   }
 }
+
+/* Acceso del equipo al gestor: círculo discreto a la izquierda de la barra superior, a la altura del
+   botón de idioma (mismo alto de barra y área táctil de 48px). */
+.bienvenida {
+  position: relative;
+}
+
+.bienvenida__acceso {
+  position: absolute;
+  inset-block-start: calc((var(--header-h) - var(--touch-min)) / 2);
+  inset-inline-start: var(--pad-screen-x);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  /* Mismo amarillo que el botón primario: relleno brand, borde brand-edge e icono ink
+     (contraste.md: ink sobre yellow-400 y yellow-600 sobre surface). */
+  border: var(--border-control) solid var(--brand-edge);
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  background: var(--brand);
+}
+
+.bienvenida__acceso-icono {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}

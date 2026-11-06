@@ -1,0 +1,35 @@
+{
+  "titulo": "Gestor de fichas",
+  "comun": {
+    "cargando": "Cargando…",
+    "reintentar": "Reintentar"
+  },
+  "roles": {
+    "editor": "Editor",
+    "revisor": "Revisor",
+    "admin": "Administrador"
+  },
+  "entrar": {
+    "titulo": "Gestor de fichas",
+    "texto": "Entra con la cuenta que te asignó el equipo.",
+    "correo": "Correo",
+    "contrasena": "Contraseña",
+    "boton": "Entrar",
+    "errorCredenciales": "El correo o la contraseña no son correctos.",
+    "errorConexion": "No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.",
+    "faltanDatos": "Escribe tu correo y tu contraseña.",
+    "volver": "Guía",
+    "volverAccesible": "Guía, volver a la guía del visitante"
+  },
+  "sesion": {
+    "salir": "Salir",
+    "usuario": "{{nombre}} · {{rol}}",
+    "errorCarga": "No se pudo cargar tu sesión.",
+    "sinRolTitulo": "Tu cuenta todavía no tiene un rol",
+    "sinRolTexto": "Pide a un administrador que te asigne el rol de editor o revisor para poder trabajar en las fichas."
+  },
+  "inicio": {
+    "bienvenida": "Hola, {{nombre}}",
+    "proximamente": "Aquí verás los puntos de cada zona y el estado de sus fichas."
+  }
+}
