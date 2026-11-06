@@ -1,0 +1,114 @@
+/* Cámara con Santi: el video ocupa toda la pantalla (no solo el ancho de contenido) y encima van el
+   aviso arriba, Santi con su burbuja abajo y el botón al pie. */
+
+.alineacion {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-areas:
+    'aviso'
+    'santi'
+    'acciones';
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-4);
+  padding: calc(var(--space-4) + env(safe-area-inset-top))
+    calc(var(--pad-screen-x) + env(safe-area-inset-right))
+    calc(var(--space-8) + env(safe-area-inset-bottom))
+    calc(var(--pad-screen-x) + env(safe-area-inset-left));
+  overflow: hidden;
+  /* Fondo mientras la cámara arranca o si no hay imagen; el aviso usa el par `surface` sobre `ink`. */
+  background: var(--ink);
+  color: var(--text-on-dark);
+}
+
+/* El video llena la pantalla y recorta lo que sobre; el resto de la capa va encima (orden del DOM). */
+.alineacion__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--ink);
+}
+
+.alineacion__aviso,
+.alineacion__santi,
+.alineacion__acciones {
+  position: relative;
+}
+
+.alineacion__aviso {
+  grid-area: aviso;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: var(--content-max);
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--text-on-dark);
+  text-align: center;
+  box-shadow: var(--shadow-raised);
+}
+
+.alineacion__icono {
+  flex-shrink: 0;
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+/* Santi abajo, sobre la cámara, con su burbuja encima. Entra subiendo cuando ya hay imagen. */
+.alineacion__santi {
+  grid-area: santi;
+  align-self: end;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--content-max);
+  min-height: 0;
+  animation: alineacion-santi var(--duration-slow) var(--ease-standard) both;
+}
+
+@keyframes alineacion-santi {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-8));
+  }
+}
+
+/* En teléfonos bajos se achica para que quepan la burbuja y el botón. */
+.alineacion__santi .santi {
+  width: min(var(--santi-lg), 38dvh);
+}
+
+.alineacion__acciones {
+  grid-area: acciones;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--content-max);
+  justify-self: center;
+}
+
+/* Paso de la cámara al mapa: fundido de pantalla con la duración y curva de los cambios de
+   pantalla (docs/diseno/sistema-de-diseno.md → Motion). Solo navegaciones con viewTransition. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-standard);
+}
+
+/* base.css no alcanza a estos pseudoelementos: con movimiento reducido, corte directo. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}

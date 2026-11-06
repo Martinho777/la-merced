@@ -1,0 +1,24 @@
+/* Santi: cuadrícula de poses y filas de secuencias, sobre estuco para ver el contorno. */
+.pagina-estilos__santi-grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--santi-md), 1fr));
+  gap: var(--space-3);
+}
+
+.pagina-estilos__santi-fila {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+}
+
+.pagina-estilos__santi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+  color: var(--ink-muted);
+}

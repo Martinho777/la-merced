@@ -16,6 +16,7 @@ function constructorDeConsulta() {
   return consulta
 }
 
+vi.mock('@/lib/storage', () => ({ urlPublica: (ruta: string) => `https://medios/${ruta}` }))
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: (tabla: string) => {
@@ -25,7 +26,7 @@ vi.mock('@/lib/supabase', () => ({
   },
 }))
 
-const { obtenerPuntosDeZona } = await import('@/datos/puntos')
+const { mediosDePunto, obtenerPuntosDeZona } = await import('@/datos/puntos')
 
 function ficha(idioma: 'es' | 'cak' | 'en', titulo: string) {
   return {
@@ -50,8 +51,51 @@ function punto(orden: number, fichas: ReturnType<typeof ficha>[]) {
     tiene_3d: false,
     zonas: { slug: 'fachada-principal' },
     fichas,
+    medios: [],
   }
 }
+
+function medio(id: string, tipo: 'foto' | 'foto_historica' | 'audio', orden = 1) {
+  return {
+    id,
+    tipo,
+    ruta: `${tipo}/${id}`,
+    orden,
+    credito: null,
+    fecha_original: null,
+    duracion_s: null,
+    texto_alternativo: { es: `Texto de ${id}` },
+  }
+}
+
+describe('mediosDePunto', () => {
+  const aUrl = (ruta: string) => `/${ruta}`
+
+  it('sin medios deja todo vacío', () => {
+    expect(mediosDePunto([], null, 'es', aUrl)).toEqual({ foto: null, audio: null, archivo: [] })
+  })
+
+  it('reparte foto y archivo en orden, con texto alternativo por idioma', () => {
+    const medios = mediosDePunto(
+      [medio('h2', 'foto_historica', 2), medio('h1', 'foto_historica', 1), medio('f', 'foto')],
+      null,
+      'en',
+      aUrl,
+    )
+    expect(medios.foto).toEqual({ url: '/foto/f', textoAlternativo: 'Texto de f' })
+    expect(medios.archivo.map((r) => r.id)).toEqual(['h1', 'h2'])
+  })
+
+  it('el audio es solo el que indica la ficha', () => {
+    const conAudio = { ...ficha('es', 'Con audio'), audio_id: 'a1' }
+    const medios = [medio('a2', 'audio'), { ...medio('a1', 'audio'), duracion_s: 90 }]
+    expect(mediosDePunto(medios, conAudio, 'es', aUrl).audio).toEqual({
+      url: '/audio/a1',
+      duracionS: 90,
+    })
+    expect(mediosDePunto(medios, ficha('es', 'Sin audio'), 'es', aUrl).audio).toBeNull()
+  })
+})
 
 describe('obtenerPuntosDeZona', () => {
   beforeEach(() => {

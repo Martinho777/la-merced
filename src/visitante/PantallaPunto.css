@@ -1,0 +1,259 @@
+/* Confirmación y ficha de un punto. */
+
+/* Espacio de una fotografía: sin imagen conserva dimensiones, borde y fondo, y queda vacío. */
+.foto-reservada {
+  overflow: hidden;
+  background: var(--surface-sunken);
+}
+
+.foto-reservada__imagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Confirmación --- */
+
+.confirmacion__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--pad-screen-x);
+}
+
+.confirmacion__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.confirmacion__intro {
+  margin: 0;
+  color: var(--yellow-800);
+}
+
+/* Santi a la izquierda, al pie, junto a la tarjeta: no se monta sobre la foto. */
+.confirmacion__escena {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  min-height: 0;
+}
+
+.confirmacion__santi {
+  flex: 0 0 32%;
+  min-width: 0;
+}
+
+/* Tarjeta de foto, un poco girada como una foto impresa. */
+.confirmacion__foto {
+  flex: 1;
+  align-self: stretch;
+  min-height: 40dvh;
+  border: var(--space-2) solid var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised);
+  rotate: 1.5deg;
+}
+
+[data-theme='contrast'] .confirmacion__foto {
+  outline: var(--border-hairline) solid var(--ink);
+}
+
+.confirmacion__texto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  text-align: center;
+}
+
+.confirmacion__titulo {
+  margin: 0;
+  color: var(--green-700);
+}
+
+/* --- Ficha --- */
+
+.ficha__encabezado {
+  padding-bottom: var(--space-6);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  background: var(--green-700);
+  color: var(--text-on-dark);
+}
+
+/* La barra superior es la de siempre, sobre el verde: texto blanco y foco visible. */
+.ficha__encabezado .barra-superior {
+  background: transparent;
+}
+
+.ficha__encabezado .barra-superior__volver,
+.ficha__encabezado .barra-superior__idioma,
+.ficha__encabezado .barra-superior__icono-idioma {
+  color: var(--text-on-dark);
+}
+
+.ficha__encabezado :focus-visible {
+  outline-color: var(--text-on-dark);
+}
+
+.ficha__titulos {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0 var(--pad-screen-x);
+}
+
+.ficha__titulos-texto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.ficha__eyebrow,
+.ficha__titulo {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ficha__santi {
+  flex-shrink: 0;
+}
+
+.ficha__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--pad-screen-x) var(--space-6);
+}
+
+.ficha__seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ficha__subtitulo,
+.ficha__texto {
+  margin: 0;
+}
+
+.ficha__archivo-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.ficha__archivo-titulo {
+  margin: 0;
+  color: var(--red-600);
+}
+
+.ficha__archivo-pista {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.ficha__archivo-flecha {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+/* Tira horizontal: el scroll queda dentro de la tira y llega hasta el borde de la pantalla. */
+.ficha__archivo {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0 calc(-1 * var(--pad-screen-x));
+  padding: var(--space-1) var(--pad-screen-x) var(--space-3);
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--pad-screen-x);
+}
+
+.ficha__registro {
+  flex: 0 0 80%;
+  overflow: hidden;
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  scroll-snap-align: start;
+}
+
+/* Con una sola tarjeta, ocupa todo el ancho y no hay nada que deslizar. */
+.ficha__registro:only-child {
+  flex-basis: 100%;
+}
+
+.ficha__registro-foto {
+  aspect-ratio: 4 / 3;
+}
+
+.ficha__registro-datos {
+  padding: var(--space-3);
+}
+
+.ficha__registro-fecha {
+  margin: 0;
+  color: var(--ink);
+}
+
+.ficha__registro-credito {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.ficha__completar {
+  display: flex;
+  justify-content: center;
+}
+
+.ficha__completado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-min);
+  margin: 0;
+  color: var(--success);
+}
+
+.ficha__completado-icono {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+/* Pie fijo con las tres acciones de la ruta. */
+.ficha__navegacion {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--pad-screen-x) calc(var(--space-4) + env(safe-area-inset-bottom));
+  background: var(--bg);
+}
+
+.ficha__navegacion .boton {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: var(--space-2);
+}
+
+.ficha__navegacion .ficha__volver {
+  flex-grow: 1.5;
+}

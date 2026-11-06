@@ -1,0 +1,53 @@
+# Mapa técnico para agentes de IA
+
+> Resumen de orientación, no una fuente de verdad. Si difiere del código o de `docs/diseno/`, gana la fuente.
+> Complementa a `README.md` (instalación, base de datos, despliegue) sin repetirlo. Verificado contra `main` @ `d154575` (2026-10-21).
+
+## Rutas (`src/app/router.tsx`)
+
+| Ruta                         | Componente                            | Datos                                       |
+| ---------------------------- | ------------------------------------- | ------------------------------------------- |
+| `/`                          | `visitante/PantallaBienvenida`        | —                                           |
+| `/idioma`                    | `visitante/PantallaIdioma`            | `lib/preferencias` (idioma)                 |
+| `/ruta`                      | `visitante/PantallaRuta`              | `lib/preferencias` (ruta)                   |
+| `/zona`                      | `visitante/PantallaZona`              | `datos/zonas.obtenerZonas`                  |
+| `/camara?zona=`              | `visitante/PantallaCamara`            | `datos/zonas.obtenerZona` (no pide permiso) |
+| `/alineacion?zona=`          | `visitante/PantallaAlineacion`        | `datos/zonas.obtenerZona`, `getUserMedia`   |
+| `/mapa?zona=`                | `visitante/PantallaMapa`              | `datos/recorrido.obtenerRecorrido`          |
+| `/confirmacion?zona=&punto=` | `visitante/PantallaConfirmacion`      | `datos/recorrido.obtenerRecorrido`          |
+| `/punto?zona=&punto=`        | `visitante/PantallaPunto`             | `datos/recorrido.obtenerRecorrido`          |
+| `/gestor/*`                  | `gestor/Gestor` (diferida)            | — (stub)                                    |
+| `/estilos`                   | `desarrollo/PaginaEstilos` (solo DEV) | —                                           |
+
+## Flujo de datos
+
+`pantalla → src/datos/* → src/lib/supabase → Supabase`. Las URLs de Storage salen de `src/lib/storage.ts`.
+`obtenerZona` la usan `/camara`, `/alineacion` y `obtenerRecorrido`, que junta la zona y sus puntos para el mapa, la
+confirmación y la ficha, los guarda durante la sesión y completa con `datos/puntos-demo.ts` mientras falten puntos reales.
+La ilustración del mapa de la fachada principal es local (`src/assets/zonas/`, generada por
+`scripts/preparar-fachada.mjs` desde `ilustraciones-originales/`); si la zona tiene `ilustracion_id` en la base, gana esa.
+La zona elegida en `/zona` viaja como `?zona=<slug>` (helpers en `visitante/camara.ts`, junto con la solicitud de cámara).
+
+## Pipelines de archivos generados
+
+```
+docs/diseno/tokens.json ──npm run tokens──▶ src/estilos/tokens.css ──▶ main.tsx
+santi-originales/*.png ──npm run santi──▶ src/assets/santi/*.webp ──▶ assets/santi/index.ts ──▶ <Santi />
+supabase/migrations/*.sql ──(db push)──▶ proyecto Supabase ──npm run db:types──▶ src/lib/tipos-db.ts
+```
+
+## Qué vigila cada mecanismo automático
+
+| Mecanismo                                                                      | Cubre                                                                                                                           | No cubre                                                                                |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `src/estilos/tokens.test.ts`                                                   | `tokens.css` al día; tokens y clases de texto declarados; sin hex/px/ms en CSS de `componentes`, `desarrollo`, `app`, `estilos` | CSS de `src/visitante/`; uso de variables inexistentes; pares de contraste              |
+| `eslint.config.js`                                                             | Import de `@supabase/supabase-js` fuera de `src/lib` y `src/datos`; hooks de React                                              | Import de `@/lib/supabase` / `@/lib/storage`; cadenas literales en JSX; `scripts/*.mjs` |
+| `src/i18n/traducciones.test.ts`                                                | Mismas claves en `en` y `es`; `cak` ⊆ `es`; faltantes listados en `PENDIENTE-cak.md`                                            | Marcadores `{{…}}` consistentes; calidad de traducciones                                |
+| `src/assets/santi/santi.test.ts`                                               | Poses ↔ originales ↔ WebP; tamaños de `Santi` = tokens                                                                          | —                                                                                       |
+| `datos/puntos.test.ts`, `lib/preferencias.test.ts`, `visitante/zonas.test.tsx` | Lógica pura (cliente Supabase simulado)                                                                                         | Pantallas completas, navegación, base real, E2E                                         |
+| CI (`.github/workflows/ci.yml`)                                                | lint, typecheck, test, build                                                                                                    | Migraciones, RLS, `tipos-db.ts` al día                                                  |
+
+## Esquema (resumen; fuente: `supabase/migrations/`)
+
+`zonas` → `puntos` → `fichas` (una por punto e idioma; estados `borrador/revision/aprobado`); `medios` (Storage);
+`fuentes` + `punto_fuentes` (nivel de confianza); `perfiles` (rol `editor/revisor/admin`). RLS activo en todas.

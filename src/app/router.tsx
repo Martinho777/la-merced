@@ -1,12 +1,44 @@
-import { createBrowserRouter } from 'react-router'
+import { createBrowserRouter, type RouteObject } from 'react-router'
 import { LayoutRaiz } from '@/app/LayoutRaiz'
-import { PantallaPrueba } from '@/visitante/PantallaPrueba'
+import { PantallaAlineacion } from '@/visitante/PantallaAlineacion'
+import { PantallaBienvenida } from '@/visitante/PantallaBienvenida'
+import { PantallaCamara } from '@/visitante/PantallaCamara'
+import { PantallaConfirmacion } from '@/visitante/PantallaConfirmacion'
+import { PantallaIdioma } from '@/visitante/PantallaIdioma'
+import { PantallaMapa } from '@/visitante/PantallaMapa'
+import { PantallaPunto } from '@/visitante/PantallaPunto'
+import { PantallaRuta } from '@/visitante/PantallaRuta'
+import { PantallaZona } from '@/visitante/PantallaZona'
+
+// Rutas solo de desarrollo. En el build de producción import.meta.env.DEV es false y Vite
+// elimina el import(), así que la página ni siquiera se compila.
+const rutasDeDesarrollo: RouteObject[] = import.meta.env.DEV
+  ? [
+      {
+        path: '/estilos',
+        lazy: async () => {
+          const { PaginaEstilos } = await import('@/desarrollo/PaginaEstilos')
+          return { Component: PaginaEstilos }
+        },
+      },
+    ]
+  : []
 
 export const router = createBrowserRouter([
   {
     element: <LayoutRaiz />,
     children: [
-      { path: '/', element: <PantallaPrueba /> },
+      // Entrada del visitante (bloque 4); explicación y alineación de la cámara (bloque 3).
+      { path: '/', element: <PantallaBienvenida /> },
+      { path: '/idioma', element: <PantallaIdioma /> },
+      { path: '/ruta', element: <PantallaRuta /> },
+      { path: '/zona', element: <PantallaZona /> },
+      { path: '/camara', element: <PantallaCamara /> },
+      { path: '/alineacion', element: <PantallaAlineacion /> },
+      { path: '/mapa', element: <PantallaMapa /> },
+      // Experiencia por punto: ambas reciben ?zona=<slug>&punto=<slug>.
+      { path: '/confirmacion', element: <PantallaConfirmacion /> },
+      { path: '/punto', element: <PantallaPunto /> },
       {
         // El gestor va en su propio chunk: el visitante nunca lo descarga.
         path: '/gestor/*',
@@ -15,6 +47,7 @@ export const router = createBrowserRouter([
           return { Component: Gestor }
         },
       },
+      ...rutasDeDesarrollo,
     ],
   },
 ])

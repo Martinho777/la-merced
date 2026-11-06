@@ -1,7 +1,156 @@
 {
+  "comun": {
+    "continuar": "Continuar",
+    "cargando": "Cargando…",
+    "reintentar": "Reintentar",
+    "proximamente": "Próximamente",
+    "cambiarIdioma": "Cambiar idioma. Idioma actual: {{idioma}}"
+  },
+  "idiomas": {
+    "es": "Español",
+    "cak": "Kaqchikel",
+    "en": "English"
+  },
+  "navegacion": {
+    "atras": "Atrás",
+    "volverAlInicio": "Atrás, volver al inicio",
+    "idioma": "Idioma",
+    "volverAIdioma": "Volver a elegir idioma",
+    "ruta": "Ruta",
+    "volverARuta": "Volver a elegir ruta",
+    "zonas": "Zonas",
+    "volverAZonas": "Volver a la elección de zonas",
+    "camara": "Cámara",
+    "volverACamara": "Volver a la explicación de la cámara",
+    "mapa": "Mapa",
+    "volverAlMapa": "Volver al mapa"
+  },
+  "bienvenida": {
+    "titulo": "¡Hola! Soy Santi",
+    "subtitulo": "Te acompaño a descubrir La Merced.",
+    "empezar": "Empezar"
+  },
+  "idioma": {
+    "titulo": "Elige tu idioma"
+  },
+  "ruta": {
+    "titulo": "Elige tu ruta",
+    "intro": "¿Cómo quieres recorrer la fachada?",
+    "duracionPendiente": "[X] min",
+    "recomendada": {
+      "nombre": "Recomendada",
+      "detalle": "Todos los puntos · {{duracion}}"
+    },
+    "esencial": {
+      "nombre": "Esencial",
+      "detalle": "Lo más importante · {{duracion}}"
+    },
+    "libre": {
+      "nombre": "Libre",
+      "detalle": "Tú eliges el orden"
+    }
+  },
+  "zona": {
+    "titulo": "Elige tu zona",
+    "puntos_one": "{{count}} punto",
+    "puntos_other": "{{count}} puntos",
+    "sinImagen": "Imagen de la zona pendiente",
+    "error": "No se pudieron cargar las zonas. Revisa tu conexión."
+  },
+  "camara": {
+    "explicacion": "Apunta la cámara a la fachada para ubicarnos. Solo es una vez.",
+    "activar": "Activar cámara",
+    "saltar": "Saltar",
+    "errorZona": "No se pudo cargar la zona. Revisa tu conexión."
+  },
+  "alineacion": {
+    "santi": "¡Ahí está La Merced! Vamos al mapa para recorrer la fachada juntos.",
+    "verMapa": "Ver el mapa",
+    "abriendo": "Abriendo la cámara…",
+    "continuarSinCamara": "Continuar sin cámara",
+    "errores": {
+      "sinCamara": "No encontramos una cámara en este dispositivo.",
+      "ocupada": "La cámara está en uso por otra app. Ciérrala o continúa sin cámara.",
+      "noCompatible": "Este navegador no permite usar la cámara.",
+      "inseguro": "La cámara solo funciona con una conexión segura (HTTPS).",
+      "reproduccion": "No pudimos mostrar la imagen de la cámara.",
+      "interrumpida": "La cámara se detuvo.",
+      "desconocido": "No pudimos abrir la cámara."
+    }
+  },
+  "punto": {
+    "identificador": "Detalle {{numero}}",
+    "identificadorConZona": "{{identificador}} · {{zona}}",
+    "error": "No se pudo cargar este punto. Revisa tu conexión.",
+    "confirmacion": {
+      "intro": "¡Lo viste en el mapa!",
+      "titulo": "¡Ese es!",
+      "frase": "Elegiste {{nombre}}. ¿Lo exploramos?",
+      "verDetalle": "Sí, ver detalle"
+    },
+    "audio": {
+      "titulo": "Escuchar historia",
+      "proximamente": "Audio próximamente",
+      "error": "No se pudo cargar el audio",
+      "reproducir": "Reproducir la historia",
+      "pausar": "Pausar la historia",
+      "transcripcion": "Transcripción"
+    },
+    "queVes": "Qué estás viendo",
+    "historia": "Historia",
+    "contenidoPendiente": "Contenido pendiente de investigación.",
+    "archivo": {
+      "titulo": "En el archivo",
+      "desliza": "Desliza para ver más",
+      "sinFecha": "Fecha pendiente",
+      "sinCredito": "Crédito pendiente"
+    },
+    "marcarCompletado": "Marcar como completado",
+    "completado": "Completado",
+    "navegacion": "Navegación del recorrido",
+    "anterior": "Anterior",
+    "siguiente": "Siguiente"
+  },
   "zonas": {
     "fachada-principal": "Fachada principal",
     "fachada-secundaria": "Fachada secundaria",
     "interior": "Interior"
+  },
+  "mapa": {
+    "progreso": "{{visitados}}/{{total}}",
+    "progresoValor_one": "{{visitados}} de {{count}} punto",
+    "progresoValor_other": "{{visitados}} de {{count}} puntos",
+    "progresoAccesible": "Progreso del recorrido",
+    "ayuda": {
+      "texto": "Toca un punto para descubrirlo. Usa dos dedos para acercar el mapa.",
+      "entendido": "Entendido"
+    },
+    "leyenda": {
+      "titulo": "Tipos de punto",
+      "esencial": "Esencial",
+      "opcional": "Opcional",
+      "visitado": "Visitado"
+    },
+    "marcador": "Punto {{numero}}, {{nombre}}, {{tipo}}, {{estado}}",
+    "marcadorSinNombre": "Punto {{numero}}, {{tipo}}, {{estado}}",
+    "tipo": {
+      "esencial": "esencial",
+      "opcional": "opcional"
+    },
+    "estado": {
+      "visitado": "visitado",
+      "noVisitado": "no visitado"
+    },
+    "santi": {
+      "siguiente": "Toca el punto {{numero}}.",
+      "libre": "Elige un punto para empezar."
+    },
+    "controles": {
+      "titulo": "Controles del mapa",
+      "acercar": "Acercar el mapa",
+      "alejar": "Alejar el mapa",
+      "restablecer": "Restablecer la vista del mapa"
+    },
+    "error": "No se pudo cargar el mapa. Revisa tu conexión."
   }
 }

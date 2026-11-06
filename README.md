@@ -7,6 +7,9 @@ Proyecto UVG × FUNPANCHOY.
 - **Gestor de contenido** (`/gestor`): en el mismo proyecto, cargado aparte para que el visitante nunca lo descargue.
 - **Datos, usuarios y archivos**: Supabase (PostgreSQL, Auth y Storage).
 
+Los documentos formales del proyecto (entregas, cronograma, material de la URL) están en
+[`documentos/`](documentos/README.md), con un índice de dónde está cada uno.
+
 ## Requisitos
 
 - Node.js 24 (LTS). Con nvm: `nvm use` (lee `.nvmrc`).
@@ -39,7 +42,9 @@ La app queda en http://localhost:5173. El gestor está en http://localhost:5173/
 ### Probar la cámara en el teléfono
 
 `getUserMedia` exige HTTPS fuera de `localhost`. Usa la vista previa de Vercel de tu PR, o en local
-agrega `@vitejs/plugin-basic-ssl` y corre `npm run dev -- --host`.
+corre `npm run dev:https` (certificado autofirmado de `@vitejs/plugin-basic-ssl`, solo en desarrollo) y
+abre en el teléfono la dirección `Network: https://…` que imprime Vite, con el teléfono en la misma red.
+El navegador avisará que el certificado no es de confianza: acéptalo para esa dirección.
 
 ## Scripts
 

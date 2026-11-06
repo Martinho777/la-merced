@@ -1,0 +1,31 @@
+/* Barra de progreso (docs/diseno/componentes.md → Progress bar). */
+
+.barra-progreso {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.barra-progreso__pista {
+  flex: 1;
+  height: var(--progress-h);
+  border-radius: var(--radius-pill);
+  background: var(--yellow-100);
+  overflow: hidden;
+}
+
+[data-theme='contrast'] .barra-progreso__pista {
+  border: var(--border-hairline) solid var(--ink);
+}
+
+.barra-progreso__relleno {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--brand);
+  transition: width var(--duration-slow) var(--ease-standard);
+}
+
+.barra-progreso__contador {
+  flex-shrink: 0;
+  color: var(--ink);
+}

@@ -1,7 +1,156 @@
 {
+  "comun": {
+    "continuar": "Continue",
+    "cargando": "Loading…",
+    "reintentar": "Try again",
+    "proximamente": "Coming soon",
+    "cambiarIdioma": "Change language. Current language: {{idioma}}"
+  },
+  "idiomas": {
+    "es": "Español",
+    "cak": "Kaqchikel",
+    "en": "English"
+  },
+  "navegacion": {
+    "atras": "Back",
+    "volverAlInicio": "Back to start",
+    "idioma": "Language",
+    "volverAIdioma": "Back to choose language",
+    "ruta": "Route",
+    "volverARuta": "Back to choose route",
+    "zonas": "Zones",
+    "volverAZonas": "Back to zones",
+    "camara": "Camera",
+    "volverACamara": "Back to the camera explanation",
+    "mapa": "Map",
+    "volverAlMapa": "Back to the map"
+  },
+  "bienvenida": {
+    "titulo": "Hi! I'm Santi",
+    "subtitulo": "I'll help you discover La Merced.",
+    "empezar": "Start"
+  },
+  "idioma": {
+    "titulo": "Choose your language"
+  },
+  "ruta": {
+    "titulo": "Choose your route",
+    "intro": "How do you want to explore the façade?",
+    "duracionPendiente": "[X] min",
+    "recomendada": {
+      "nombre": "Recommended",
+      "detalle": "Every point · {{duracion}}"
+    },
+    "esencial": {
+      "nombre": "Essential",
+      "detalle": "The highlights · {{duracion}}"
+    },
+    "libre": {
+      "nombre": "Free",
+      "detalle": "You choose the order"
+    }
+  },
+  "zona": {
+    "titulo": "Choose your zone",
+    "puntos_one": "{{count}} point",
+    "puntos_other": "{{count}} points",
+    "sinImagen": "Zone image coming soon",
+    "error": "The zones couldn't be loaded. Check your connection."
+  },
+  "camara": {
+    "explicacion": "Point your camera at the façade so we can find our place. You only do this once.",
+    "activar": "Turn on camera",
+    "saltar": "Skip",
+    "errorZona": "The zone couldn't be loaded. Check your connection."
+  },
+  "alineacion": {
+    "santi": "There's La Merced! Let's go to the map and explore the façade together.",
+    "verMapa": "See the map",
+    "abriendo": "Opening the camera…",
+    "continuarSinCamara": "Continue without camera",
+    "errores": {
+      "sinCamara": "We couldn't find a camera on this device.",
+      "ocupada": "Another app is using the camera. Close it or continue without the camera.",
+      "noCompatible": "This browser can't use the camera.",
+      "inseguro": "The camera only works over a secure connection (HTTPS).",
+      "reproduccion": "We couldn't show the camera image.",
+      "interrumpida": "The camera stopped.",
+      "desconocido": "We couldn't open the camera."
+    }
+  },
+  "punto": {
+    "identificador": "Detail {{numero}}",
+    "identificadorConZona": "{{identificador}} · {{zona}}",
+    "error": "This point couldn't be loaded. Check your connection.",
+    "confirmacion": {
+      "intro": "You saw it on the map!",
+      "titulo": "That's the one!",
+      "frase": "You chose {{nombre}}. Shall we explore it?",
+      "verDetalle": "Yes, see details"
+    },
+    "audio": {
+      "titulo": "Listen to the story",
+      "proximamente": "Audio coming soon",
+      "error": "The audio couldn't be loaded",
+      "reproducir": "Play the story",
+      "pausar": "Pause the story",
+      "transcripcion": "Transcript"
+    },
+    "queVes": "What you're seeing",
+    "historia": "History",
+    "contenidoPendiente": "Content pending research.",
+    "archivo": {
+      "titulo": "In the archive",
+      "desliza": "Swipe to see more",
+      "sinFecha": "Date pending",
+      "sinCredito": "Credit pending"
+    },
+    "marcarCompletado": "Mark as completed",
+    "completado": "Completed",
+    "navegacion": "Route navigation",
+    "anterior": "Previous",
+    "siguiente": "Next"
+  },
   "zonas": {
     "fachada-principal": "Main façade",
     "fachada-secundaria": "Side façade",
     "interior": "Interior"
+  },
+  "mapa": {
+    "progreso": "{{visitados}}/{{total}}",
+    "progresoValor_one": "{{visitados}} of {{count}} point",
+    "progresoValor_other": "{{visitados}} of {{count}} points",
+    "progresoAccesible": "Route progress",
+    "ayuda": {
+      "texto": "Tap a point to discover it. Use two fingers to zoom in on the map.",
+      "entendido": "Got it"
+    },
+    "leyenda": {
+      "titulo": "Point types",
+      "esencial": "Essential",
+      "opcional": "Optional",
+      "visitado": "Visited"
+    },
+    "marcador": "Point {{numero}}, {{nombre}}, {{tipo}}, {{estado}}",
+    "marcadorSinNombre": "Point {{numero}}, {{tipo}}, {{estado}}",
+    "tipo": {
+      "esencial": "essential",
+      "opcional": "optional"
+    },
+    "estado": {
+      "visitado": "visited",
+      "noVisitado": "not visited"
+    },
+    "santi": {
+      "siguiente": "Tap point {{numero}}.",
+      "libre": "Choose a point to start."
+    },
+    "controles": {
+      "titulo": "Map controls",
+      "acercar": "Zoom in on the map",
+      "alejar": "Zoom out of the map",
+      "restablecer": "Reset the map view"
+    },
+    "error": "The map couldn't be loaded. Check your connection."
   }
 }

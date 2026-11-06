@@ -1,0 +1,50 @@
+/* Grupo de opciones con forma de Tarjeta. Reutiliza las clases .tarjeta* de Tarjeta.css. */
+
+.grupo-opciones {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.grupo-opciones--cuadricula {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grupo-opciones__opcion--destacada {
+  grid-column: 1 / -1;
+}
+
+/* El radio está oculto; el anillo de foco se dibuja en la tarjeta entera. */
+.grupo-opciones__opcion:has(input:focus-visible) {
+  outline: var(--border-focus) solid var(--focus);
+  outline-offset: var(--border-control);
+}
+
+.grupo-opciones__opcion {
+  position: relative;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.grupo-opciones__contenido {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.grupo-opciones__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.grupo-opciones__insignia {
+  align-self: flex-start;
+}
+
+/* No disponible: no reacciona al toque. */
+.grupo-opciones__opcion.tarjeta--no-disponible {
+  cursor: not-allowed;
+}

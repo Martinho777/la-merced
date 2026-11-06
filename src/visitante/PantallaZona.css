@@ -1,0 +1,39 @@
+/* Imagen de la zona dentro de su tarjeta. Esquinas anidadas: el radio más cercano al de la tarjeta
+   menos su padding (radius-sm). */
+
+.zona-imagen {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--ink-subtle);
+}
+
+/* Las zonas no disponibles van en media columna: imagen más baja. */
+.tarjeta--no-disponible .zona-imagen {
+  aspect-ratio: 4 / 3;
+}
+
+.zona-imagen picture {
+  display: contents;
+}
+
+.zona-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Las fotos locales vienen con mucha plaza y cielo: se acercan un poco, centradas en la iglesia. */
+.zona-imagen__foto {
+  transform: scale(1.25);
+  transform-origin: 47% 55%;
+}
+
+.zona-imagen__icono {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}

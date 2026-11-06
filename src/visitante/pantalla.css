@@ -1,0 +1,93 @@
+/* Estructura común de las pantallas del visitante: barra arriba, contenido y la acción principal
+   fija al pie, dentro del margen de la pantalla (docs/diseno/sistema-de-diseno.md → Spacing). */
+
+.pantalla {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.pantalla__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-2) var(--pad-screen-x) var(--space-6);
+}
+
+.pantalla__cuerpo--centrado {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.pantalla__titulo,
+.pantalla__texto {
+  margin: 0;
+}
+
+.pantalla__texto {
+  color: var(--ink-muted);
+}
+
+/* Título con Santi al lado (idioma: Santi a la izquierda; ruta: a la derecha). */
+.pantalla__encabezado {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* La imagen de la cabeza ya trae margen transparente a la derecha: con un gap chico basta. */
+.pantalla__encabezado--compacto {
+  gap: var(--space-1);
+}
+
+.pantalla__encabezado--santi-derecha {
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.pantalla__titulos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pantalla__encabezado .santi {
+  flex-shrink: 0;
+}
+
+.pantalla__titulos {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Cerca de un 20% del ancho de la imagen de Santi es margen transparente a la izquierda: el título
+   puede ocupar ese espacio sin tocar el dibujo. */
+.pantalla__encabezado--santi-derecha .santi {
+  margin-inline-start: calc(var(--santi-md) * -0.2);
+}
+
+/* Acción principal al pie: queda fija mientras el contenido pasa por debajo. */
+.pantalla__acciones {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--pad-screen-x) calc(var(--space-8) + env(safe-area-inset-bottom));
+  background: var(--bg);
+}
+
+.pantalla__estado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.pantalla__error {
+  margin: 0;
+  color: var(--error);
+}

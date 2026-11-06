@@ -1,0 +1,176 @@
+/* Mapa de la zona (pantalla 7, vertical): barra, progreso, la ilustración llenando el espacio
+   libre, la leyenda y Santi al pie. En pantallas muy bajas el lienzo conserva su alto mínimo y la
+   página hace scroll. */
+
+/* Registrada para que el contraescalado de los marcadores se anime junto con la escena. */
+@property --escala-inversa {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+.mapa__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+  padding: var(--space-2) var(--pad-screen-x) calc(var(--space-4) + env(safe-area-inset-bottom));
+}
+
+/* Lienzo de gestos: el navegador no hace scroll ni zoom aquí (`touch-action: none`), los hace la
+   pantalla con los dedos. */
+.mapa__lienzo {
+  position: relative;
+  flex: 1;
+  min-height: 50dvh;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--surface-sunken);
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+
+/* Si la página hace scroll y la fachada no tiene recorrido vertical, un dedo en vertical mueve la
+   página en lugar de quedar bloqueado. */
+.mapa__lienzo--deja-scroll {
+  touch-action: pan-y;
+}
+
+.mapa__lienzo:active {
+  cursor: grabbing;
+}
+
+/* Escena: a escala 1 mide el ancho del lienzo (ilustración 2:1); la vista la mueve y escala con
+   `transform` desde la esquina superior izquierda. */
+.mapa__escena {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  transform-origin: 0 0;
+}
+
+/* Cambios automáticos (tocar un punto, botones, doble toque). Los gestos siguen al dedo sin
+   transición. El zoom a un punto pide 450ms en sistema-de-diseno.md, pero no hay token de esa
+   duración: se usa el más cercano. base.css la quita con movimiento reducido. */
+.mapa__escena--animada {
+  transition:
+    transform var(--duration-slow) var(--ease-standard),
+    --escala-inversa var(--duration-slow) var(--ease-standard);
+}
+
+/* Botones de acercar, alejar y restablecer, sobre el lienzo y fuera de la escena. */
+.mapa__controles {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mapa__control {
+  display: grid;
+  place-items: center;
+  width: var(--touch-min);
+  height: var(--touch-min);
+  padding: 0;
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  box-shadow: var(--shadow-raised);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.mapa__control:disabled {
+  color: var(--ink-subtle);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.mapa__control-icono {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+
+/* Los marcadores conservan su tamaño y su área táctil de 48px con cualquier zoom. */
+.mapa__escena .marcador {
+  scale: var(--escala-inversa);
+}
+
+.mapa__ilustracion {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mapa__sin-ilustracion {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--ink-subtle);
+}
+
+.mapa__icono {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+.mapa__estado {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-4);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.mapa__leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mapa__leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-muted);
+}
+
+.mapa__santi {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.mapa__santi .santi {
+  flex-shrink: 0;
+}
+
+.mapa__santi-mensaje {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.mapa__santi .santi-burbuja {
+  align-self: stretch;
+}
