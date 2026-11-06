@@ -28,8 +28,50 @@
     "sinRolTitulo": "Tu cuenta todavía no tiene un rol",
     "sinRolTexto": "Pide a un administrador que te asigne el rol de editor o revisor para poder trabajar en las fichas."
   },
-  "inicio": {
-    "bienvenida": "Hola, {{nombre}}",
-    "proximamente": "Aquí verás los puntos de cada zona y el estado de sus fichas."
+  "estados": {
+    "borrador": "Borrador",
+    "revision": "En revisión",
+    "aprobado": "Aprobada",
+    "falta": "Sin ficha"
+  },
+  "lista": {
+    "titulo": "Puntos y fichas",
+    "texto": "Elige un punto para escribir o revisar su ficha en cada idioma.",
+    "error": "No se pudieron cargar los puntos.",
+    "vacio": "Todavía no hay puntos cargados. El equipo los agrega cuando llega la información de la URL.",
+    "punto": "Punto {{numero}}",
+    "sinTitulo": "Sin título ({{slug}})",
+    "estadoIdioma": "{{codigo}} · {{estado}}"
+  },
+  "idiomas": {
+    "es": "Español",
+    "en": "Inglés"
+  },
+  "editor": {
+    "volver": "Puntos",
+    "volverAccesible": "Puntos, volver a la lista de puntos",
+    "titulo": "Punto {{numero}}",
+    "zona": "Zona: {{zona}}",
+    "error": "No se pudo cargar el punto.",
+    "noExiste": "Este punto no existe o fue borrado.",
+    "idioma": "Idioma de la ficha",
+    "estado": "Estado: {{estado}}",
+    "sinFicha": "Todavía no hay ficha en {{idioma}}. Escríbela y guárdala para crearla en borrador.",
+    "publicada": "Esta ficha está publicada. Si guardas cambios, vuelve a revisión hasta que un revisor la apruebe.",
+    "campos": {
+      "titulo": "Nombre",
+      "tituloAyuda": "Nombre oficial del elemento.",
+      "queVes": "Qué ves",
+      "queVesAyuda": "Lo que el visitante tiene enfrente, para que lo reconozca. De 2 a 4 oraciones.",
+      "historia": "Historia",
+      "historiaAyuda": "La sección principal de la ficha. Puede ser un párrafo largo.",
+      "datoSanti": "Dato de Santi",
+      "datoSantiAyuda": "Un dato curioso que dirá Santi. 1 o 2 oraciones."
+    },
+    "faltaTitulo": "Escribe el nombre de la ficha.",
+    "guardar": "Guardar",
+    "guardado": "Cambios guardados.",
+    "errorGuardar": "No se pudieron guardar los cambios. Inténtalo de nuevo.",
+    "sinCambios": "No hay cambios por guardar."
   }
 }

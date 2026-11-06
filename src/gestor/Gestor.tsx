@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Route, Routes, useNavigate } from 'react-router'
 import { LogOut } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { alCambiarSesion, cerrarSesion, obtenerSesion, type SesionGestor } from '@/datos/sesion'
+import { EditorPunto } from '@/gestor/EditorPunto'
+import { ListaPuntos } from '@/gestor/ListaPuntos'
 import { PantallaEntrar } from '@/gestor/PantallaEntrar'
 import '@/gestor/i18n'
 import './gestor.css'
@@ -50,6 +53,7 @@ function EncabezadoGestor({ sesion, alSalir }: { sesion: SesionGestor; alSalir: 
 
 export function Gestor() {
   const { t } = useTranslation('gestor')
+  const navegar = useNavigate()
   const [estado, setEstado] = useState<Estado>({ tipo: 'cargando' })
   const [intento, setIntento] = useState(0)
 
@@ -113,12 +117,17 @@ export function Gestor() {
     <div className="gestor">
       <EncabezadoGestor sesion={sesion} alSalir={() => void salir()} />
       {sesion.rol ? (
-        <section className="gestor__titulos">
-          <h1 className="gestor__titulo texto-title-1">
-            {t('inicio.bienvenida', { nombre: sesion.nombre ?? sesion.correo })}
-          </h1>
-          <p className="gestor__texto texto-body">{t('inicio.proximamente')}</p>
-        </section>
+        <Routes>
+          <Route
+            index
+            element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
+          />
+          <Route path="punto/:idPunto" element={<EditorPunto />} />
+          <Route
+            path="*"
+            element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
+          />
+        </Routes>
       ) : (
         <section className="gestor__titulos">
           <h1 className="gestor__titulo texto-title-1">{t('sesion.sinRolTitulo')}</h1>
