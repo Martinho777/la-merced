@@ -16,6 +16,17 @@
 
 > D y E se registran como aprobadas por el equipo; el PR que las incorpora sigue sujeto a su revisión.
 
+### Gestor de fichas (Sprint 3 · bloque 3), aprobadas por Martin Villatoro el 2026-11-06
+
+| Decisión                                      | Resumen                                                                                                                                                                           | Dónde se aplica                           |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| Textos del gestor solo en español             | La interfaz del gestor usa i18n en su propio namespace (`gestor`), cargado solo en `/gestor`, por ahora solo en español. Kaqchikel e inglés se agregan con un archivo por idioma. | `src/gestor/i18n/`                        |
+| Fichas en español e inglés por ahora          | El gestor edita fichas en `es` y `en`; `cak` se activa cuando llegue el material de la URL. La base ya admite los tres idiomas.                                                   | `IDIOMAS_GESTOR` en `src/datos/gestor.ts` |
+| Componentes de formulario solo del gestor     | El Design System no especifica formularios: `Campo`, `CampoArea` y `Selector` viven en `src/gestor/componentes/` y usan los tokens existentes, sin valores nuevos.                | `src/gestor/componentes/`                 |
+| Fotos reducidas y convertidas en el navegador | Antes de subir, el navegador reduce la foto a 2000 px y la convierte a WebP (JPEG si no puede), sin bibliotecas. Los originales se guardan fuera de la app.                       | `src/gestor/imagen.ts`                    |
+| El gestor no crea ni ubica puntos             | Los puntos los carga el equipo cuando la URL envíe la información. Ubicarlos sobre la ilustración es del Sprint 4.                                                                | `src/gestor/`                             |
+| Aprobación de PR opcional en `main`           | `main` exige PR, CI en verde y rama al día, pero no la aprobación de otra persona (decidido por el equipo, nov. 2026). Responde a la pregunta abierta 11.                         | Protección de rama en GitHub              |
+
 ## Abiertas (requieren decisión humana)
 
 1. ¿Qué mecanismo de navegación y de estado se usa de forma general entre pantallas (parámetros de URL, estado de navegación o contexto global)? **Situación actual, sin decisión aprobada:** el código transporta la zona con `?zona=<slug>` (`src/visitante/camara.ts`) y lee la ruta desde `localStorage`; eso describe lo implementado, no fija el mecanismo general. Sigue abierta.

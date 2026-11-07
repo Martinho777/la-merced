@@ -1,0 +1,48 @@
+/* Campo de formulario del gestor (regla de inputs de docs/diseno/sistema-de-diseno.md → Shape). */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.campo__etiqueta {
+  color: var(--ink);
+}
+
+.campo__ayuda,
+.campo__error {
+  margin: 0;
+}
+
+.campo__ayuda {
+  color: var(--ink-muted);
+}
+
+.campo__error {
+  color: var(--error);
+}
+
+.campo__control {
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-control) solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  background: var(--surface-sunken);
+  font-family: var(--font-sans);
+}
+
+.campo__control--area {
+  min-height: calc(var(--touch-min) * 3);
+  resize: vertical;
+}
+
+.campo__control[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+select.campo__control {
+  cursor: pointer;
+}

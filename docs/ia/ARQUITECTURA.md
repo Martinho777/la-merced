@@ -5,19 +5,20 @@
 
 ## Rutas (`src/app/router.tsx`)
 
-| Ruta                         | Componente                            | Datos                                       |
-| ---------------------------- | ------------------------------------- | ------------------------------------------- |
-| `/`                          | `visitante/PantallaBienvenida`        | —                                           |
-| `/idioma`                    | `visitante/PantallaIdioma`            | `lib/preferencias` (idioma)                 |
-| `/ruta`                      | `visitante/PantallaRuta`              | `lib/preferencias` (ruta)                   |
-| `/zona`                      | `visitante/PantallaZona`              | `datos/zonas.obtenerZonas`                  |
-| `/camara?zona=`              | `visitante/PantallaCamara`            | `datos/zonas.obtenerZona` (no pide permiso) |
-| `/alineacion?zona=`          | `visitante/PantallaAlineacion`        | `datos/zonas.obtenerZona`, `getUserMedia`   |
-| `/mapa?zona=`                | `visitante/PantallaMapa`              | `datos/recorrido.obtenerRecorrido`          |
-| `/confirmacion?zona=&punto=` | `visitante/PantallaConfirmacion`      | `datos/recorrido.obtenerRecorrido`          |
-| `/punto?zona=&punto=`        | `visitante/PantallaPunto`             | `datos/recorrido.obtenerRecorrido`          |
-| `/gestor/*`                  | `gestor/Gestor` (diferida)            | — (stub)                                    |
-| `/estilos`                   | `desarrollo/PaginaEstilos` (solo DEV) | —                                           |
+| Ruta                         | Componente                            | Datos                                          |
+| ---------------------------- | ------------------------------------- | ---------------------------------------------- |
+| `/`                          | `visitante/PantallaBienvenida`        | —                                              |
+| `/idioma`                    | `visitante/PantallaIdioma`            | `lib/preferencias` (idioma)                    |
+| `/ruta`                      | `visitante/PantallaRuta`              | `lib/preferencias` (ruta)                      |
+| `/zona`                      | `visitante/PantallaZona`              | `datos/zonas.obtenerZonas`                     |
+| `/camara?zona=`              | `visitante/PantallaCamara`            | `datos/zonas.obtenerZona` (no pide permiso)    |
+| `/alineacion?zona=`          | `visitante/PantallaAlineacion`        | `datos/zonas.obtenerZona`, `getUserMedia`      |
+| `/mapa?zona=`                | `visitante/PantallaMapa`              | `datos/recorrido.obtenerRecorrido`             |
+| `/confirmacion?zona=&punto=` | `visitante/PantallaConfirmacion`      | `datos/recorrido.obtenerRecorrido`             |
+| `/punto?zona=&punto=`        | `visitante/PantallaPunto`             | `datos/recorrido.obtenerRecorrido`             |
+| `/gestor/*`                  | `gestor/Gestor` (diferida)            | `datos/sesion`, `datos/gestor`                 |
+| `/gestor/punto/:idPunto`     | `gestor/EditorPunto`                  | `datos/gestor`, `datos/fotos`, `datos/fuentes` |
+| `/estilos`                   | `desarrollo/PaginaEstilos` (solo DEV) | —                                              |
 
 ## Flujo de datos
 
@@ -27,6 +28,10 @@ confirmación y la ficha, los guarda durante la sesión y completa con `datos/pu
 La ilustración del mapa de la fachada principal es local (`src/assets/zonas/`, generada por
 `scripts/preparar-fachada.mjs` desde `ilustraciones-originales/`); si la zona tiene `ilustracion_id` en la base, gana esa.
 La zona elegida en `/zona` viaja como `?zona=<slug>` (helpers en `visitante/camara.ts`, junto con la solicitud de cámara).
+
+El gestor (`src/gestor/`) usa la misma sesión de Supabase Auth (`datos/sesion.ts`) y las mismas tablas; las
+reglas de acceso (RLS) deciden qué puede hacer cada rol. Sus textos van en el namespace `gestor` de i18next
+(`gestor/i18n/`), que se registra al cargar el chunk del gestor.
 
 ## Pipelines de archivos generados
 

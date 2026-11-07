@@ -1,0 +1,172 @@
+{
+  "titulo": "Gestor de fichas",
+  "comun": {
+    "cargando": "Cargando…",
+    "reintentar": "Reintentar"
+  },
+  "roles": {
+    "editor": "Editor",
+    "revisor": "Revisor",
+    "admin": "Administrador"
+  },
+  "entrar": {
+    "titulo": "Gestor de fichas",
+    "texto": "Entra con la cuenta que te asignó el equipo.",
+    "correo": "Correo",
+    "contrasena": "Contraseña",
+    "boton": "Entrar",
+    "errorCredenciales": "El correo o la contraseña no son correctos.",
+    "errorConexion": "No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.",
+    "faltanDatos": "Escribe tu correo y tu contraseña.",
+    "volver": "Guía",
+    "volverAccesible": "Guía, volver a la guía del visitante"
+  },
+  "sesion": {
+    "salir": "Salir",
+    "usuario": "{{nombre}} · {{rol}}",
+    "errorCarga": "No se pudo cargar tu sesión.",
+    "sinRolTitulo": "Tu cuenta todavía no tiene un rol",
+    "sinRolTexto": "Pide a un administrador que te asigne el rol de editor o revisor para poder trabajar en las fichas."
+  },
+  "estados": {
+    "borrador": "Borrador",
+    "revision": "En revisión",
+    "aprobado": "Aprobada",
+    "falta": "Sin ficha"
+  },
+  "lista": {
+    "titulo": "Puntos y fichas",
+    "texto": "Elige un punto para escribir o revisar su ficha en cada idioma.",
+    "error": "No se pudieron cargar los puntos.",
+    "vacio": "Todavía no hay puntos cargados. El equipo los agrega cuando llega la información de la URL.",
+    "punto": "Punto {{numero}}",
+    "sinTitulo": "Sin título ({{slug}})",
+    "estadoIdioma": "{{codigo}} · {{estado}}"
+  },
+  "idiomas": {
+    "es": "Español",
+    "en": "Inglés"
+  },
+  "editor": {
+    "volver": "Puntos",
+    "volverAccesible": "Puntos, volver a la lista de puntos",
+    "titulo": "Punto {{numero}}",
+    "zona": "Zona: {{zona}}",
+    "error": "No se pudo cargar el punto.",
+    "noExiste": "Este punto no existe o fue borrado.",
+    "idioma": "Idioma de la ficha",
+    "estado": "Estado: {{estado}}",
+    "sinFicha": "Todavía no hay ficha en {{idioma}}. Escríbela y guárdala para crearla en borrador.",
+    "publicada": "Esta ficha está publicada. Si guardas cambios, vuelve a revisión hasta que un revisor la apruebe.",
+    "campos": {
+      "titulo": "Nombre",
+      "tituloAyuda": "Nombre oficial del elemento.",
+      "queVes": "Qué ves",
+      "queVesAyuda": "Lo que el visitante tiene enfrente, para que lo reconozca. De 2 a 4 oraciones.",
+      "historia": "Historia",
+      "historiaAyuda": "La sección principal de la ficha. Puede ser un párrafo largo.",
+      "datoSanti": "Dato de Santi",
+      "datoSantiAyuda": "Un dato curioso que dirá Santi. 1 o 2 oraciones."
+    },
+    "faltaTitulo": "Escribe el nombre de la ficha.",
+    "guardar": "Guardar",
+    "guardado": "Cambios guardados.",
+    "errorGuardar": "No se pudieron guardar los cambios. Inténtalo de nuevo.",
+    "sinCambios": "No hay cambios por guardar.",
+    "esperandoRevision": "Esperando a que un revisor la apruebe.",
+    "guardaPrimero": "Guarda los cambios antes de cambiar el estado.",
+    "revisadaPor": "Última revisión: {{nombre}}, {{fecha}}.",
+    "revisorDesconocido": "un revisor",
+    "estadoCambiado": "Estado actualizado: {{estado}}.",
+    "errorEstado": "No se pudo cambiar el estado. Inténtalo de nuevo."
+  },
+  "acciones": {
+    "enviarARevision": "Enviar a revisión",
+    "aprobar": "Aprobar y publicar",
+    "devolverABorrador": "Devolver a borrador"
+  },
+  "fotos": {
+    "titulo": "Fotos del punto",
+    "texto": "Las fotos son del punto, no de un idioma. El texto alternativo describe la foto para lectores de pantalla.",
+    "detalleTitulo": "Foto del detalle",
+    "detalleTexto": "La foto que el visitante compara con el edificio en la pantalla de confirmación. Una por punto.",
+    "historicasTitulo": "Fotos históricas",
+    "historicasTexto": "La galería de la ficha. Solo si existen, con su crédito y el permiso para publicarlas.",
+    "sinDetalle": "Este punto todavía no tiene foto del detalle.",
+    "sinHistoricas": "Este punto todavía no tiene fotos históricas.",
+    "archivo": "Imagen",
+    "archivoAyuda": "JPEG, PNG o WebP. Se reduce a 2000 px y se convierte antes de subirla; guarda el original aparte. Las fotos HEIC o TIFF pásalas antes a JPEG.",
+    "reemplazar": "Reemplazar la foto del detalle",
+    "nuevaHistorica": "Agregar una foto histórica",
+    "preparando": "Preparando la imagen…",
+    "vistaPrevia": "Vista previa de la imagen elegida",
+    "campos": {
+      "altEs": "Texto alternativo (español)",
+      "altEsAyuda": "Qué se ve en la foto, en una oración. Obligatorio.",
+      "altEn": "Texto alternativo (inglés)",
+      "credito": "Crédito",
+      "creditoAyuda": "Autor o fotógrafo, y archivo o colección de origen.",
+      "fecha": "Fecha o época",
+      "fechaAyuda": "Por ejemplo: 1920, ca. 1890 o siglo XVIII.",
+      "derechos": "Permiso de publicación",
+      "derechosAyuda": "Por ejemplo: autorizado por el archivo, dominio público o pendiente."
+    },
+    "subir": "Subir foto",
+    "guardarDatos": "Guardar datos",
+    "borrar": "Borrar foto",
+    "confirmarBorrar": "Sí, borrar la foto",
+    "cancelar": "Cancelar",
+    "faltaArchivo": "Elige una imagen.",
+    "faltaAlt": "Escribe el texto alternativo en español.",
+    "errorFormato": "Este formato no se puede abrir aquí. Usa JPEG, PNG o WebP.",
+    "errorConversion": "No se pudo preparar la imagen. Prueba con otra.",
+    "errorSubir": "No se pudo subir la foto. Inténtalo de nuevo.",
+    "errorGuardar": "No se pudieron guardar los datos. Inténtalo de nuevo.",
+    "errorBorrar": "No se pudo borrar la foto. Inténtalo de nuevo.",
+    "errorCarga": "No se pudieron cargar las fotos.",
+    "subida": "Foto subida.",
+    "guardada": "Datos guardados."
+  },
+  "fuentes": {
+    "titulo": "Fuentes",
+    "texto": "De dónde sale la información del punto y qué tan sólida es. La app la muestra en la ficha.",
+    "vacio": "Este punto todavía no tiene fuentes.",
+    "tipos": {
+      "archivo": "Archivo",
+      "libro": "Libro",
+      "entrevista": "Entrevista",
+      "sitio_web": "Sitio web"
+    },
+    "niveles": {
+      "documentado": "Documentado",
+      "probable": "Probable",
+      "especulativo": "Especulativo"
+    },
+    "nivelesAyuda": "Documentado: hay una fuente directa. Probable: hay indicios, pero no una fuente directa. Especulativo: es una hipótesis.",
+    "campos": {
+      "fuente": "Fuente",
+      "nueva": "Nueva fuente…",
+      "cita": "Cita",
+      "citaAyuda": "Referencia completa: autor, título, año, archivo o entrevistado.",
+      "tipo": "Tipo de fuente",
+      "url": "Enlace (opcional)",
+      "nivel": "Nivel de confianza",
+      "nota": "Nota (opcional)",
+      "notaAyuda": "Qué dato de la ficha respalda esta fuente."
+    },
+    "agregarTitulo": "Agregar una fuente",
+    "agregar": "Agregar fuente",
+    "guardar": "Guardar",
+    "editarFuente": "Editar la fuente",
+    "editarFuenteAviso": "Esta fuente puede estar en otros puntos: el cambio se verá en todos.",
+    "cancelar": "Cancelar",
+    "quitar": "Quitar del punto",
+    "confirmarQuitar": "Sí, quitar la fuente",
+    "faltaCita": "Escribe la cita de la fuente.",
+    "agregada": "Fuente agregada.",
+    "guardada": "Cambios guardados.",
+    "error": "No se pudo completar la acción. Inténtalo de nuevo.",
+    "errorCarga": "No se pudieron cargar las fuentes.",
+    "enlace": "Abrir enlace"
+  }
+}

@@ -23,20 +23,24 @@
 - Selector de zonas leído de Supabase, con estados de carga/error/reintento y zonas "Próximamente".
 - Componentes base, sistema de tokens generado y tema de alto contraste **en CSS**; imágenes de Santi (35 poses).
 - Esquema, RLS y bucket `medios` en `supabase/migrations/`; tipos generados; CI.
+- Gestor de fichas (`/gestor`, Sprint 3 · bloque 3, rama `feat/gestor-fichas`): inicio de sesión con roles, lista
+  de puntos por zona, ficha por idioma (es y en), estados borrador / revisión / aprobado según el rol, foto del
+  detalle y fotos históricas con créditos, fuentes con nivel de confianza. Acceso desde la bienvenida.
 
 ## Verificación: implementado frente a comprobado
 
 Las pruebas de la tabla existen en el repositorio; **no se ejecutaron al escribir este archivo** (falta `node_modules`).
 La última columna es lo que ninguna prueba automática puede dar por cumplido.
 
-| Funcionalidad                                    | Pruebas automáticas que existen                                                                         | Comprobación manual o en dispositivo                                                           |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Entrada (bienvenida, idioma, ruta, zona)         | `preferencias.test.ts`, `traducciones.test.ts`, `zonas.test.tsx`                                        | No consta ninguna                                                                              |
-| Explicación de cámara (`/camara`)                | `camara-pantallas.test.tsx`, `camara.test.ts`                                                           | No consta ninguna                                                                              |
-| Alineación (`/alineacion`, `getUserMedia`)       | `camara.test.ts`, `camara-pantallas.test.tsx`                                                           | **No**: sin probar en Chrome Android, Samsung Internet ni iOS                                  |
-| Mapa (`/mapa`, gestos, progreso, ayuda)          | `mapa.test.ts`, `gestos.test.ts`, `mapa-pantallas.test.tsx`, `progreso.test.ts`, `preferencias.test.ts` | **No**: los gestos táctiles no se han probado en un teléfono                                   |
-| Confirmación y ficha (`/confirmacion`, `/punto`) | `punto-pantallas.test.tsx`, `puntos.test.ts`, `recorrido.test.ts`                                       | Solo en navegador de escritorio con datos simulados; no contra Supabase real ni en un teléfono |
-| Santi hablando sobre la cámara                   | `habla.test.ts`                                                                                         | No consta ninguna                                                                              |
+| Funcionalidad                                    | Pruebas automáticas que existen                                                                         | Comprobación manual o en dispositivo                                                                             |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Entrada (bienvenida, idioma, ruta, zona)         | `preferencias.test.ts`, `traducciones.test.ts`, `zonas.test.tsx`                                        | No consta ninguna                                                                                                |
+| Explicación de cámara (`/camara`)                | `camara-pantallas.test.tsx`, `camara.test.ts`                                                           | No consta ninguna                                                                                                |
+| Alineación (`/alineacion`, `getUserMedia`)       | `camara.test.ts`, `camara-pantallas.test.tsx`                                                           | **No**: sin probar en Chrome Android, Samsung Internet ni iOS                                                    |
+| Mapa (`/mapa`, gestos, progreso, ayuda)          | `mapa.test.ts`, `gestos.test.ts`, `mapa-pantallas.test.tsx`, `progreso.test.ts`, `preferencias.test.ts` | **No**: los gestos táctiles no se han probado en un teléfono                                                     |
+| Confirmación y ficha (`/confirmacion`, `/punto`) | `punto-pantallas.test.tsx`, `puntos.test.ts`, `recorrido.test.ts`                                       | Solo en navegador de escritorio con datos simulados; no contra Supabase real ni en un teléfono                   |
+| Santi hablando sobre la cámara                   | `habla.test.ts`                                                                                         | No consta ninguna                                                                                                |
+| Gestor de fichas (`/gestor`)                     | `sesion.test.ts`, `gestor*.test.ts`, `fotos.test.ts`, `fuentes.test.ts`, `gestor/*.test.ts`             | Probado en navegador de escritorio contra `la-merced-dev` con los usuarios de prueba (nov. 2026); no en teléfono |
 
 Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo no da ninguno por cumplido;** lo decide el equipo:
 
@@ -58,12 +62,11 @@ Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo
 
 ## Solo estructura o marcador
 
-- `/gestor` (stub, "Sprint 3").
 - Componentes especificados y no implementados: hoja inferior/diálogo, banners.
 
 ## No existe (según búsqueda en `src/` y `package.json`)
 
-Modelos 3D, login/CRUD del gestor, PWA / uso sin conexión, GSAP, interruptor de tema `contrast`
+Modelos 3D, ubicación de puntos y publicación desde el gestor (Sprint 4), PWA / uso sin conexión, GSAP, interruptor de tema `contrast`
 en producción (solo en `/estilos`), ajuste de texto grande, modo respeto, estampa animada al completar un punto.
 
 ## Discrepancias especificación ↔ código (informativas)
@@ -82,6 +85,6 @@ en producción (solo en `/estilos`), ajuste de texto grande, modo respeto, estam
 | `docs/producto/SPRINTS.md` (Sprint 2): alineación con contorno provisional, botones "Listo" y "Saltar" | Sin contorno (decisión del equipo según el estado previo); botones "Ver el mapa", "Saltar" y "Continuar sin cámara" |
 | `docs/producto/SPRINTS.md` (Sprint 2): "el mapa no es del Sprint 2"                                    | Existe un mapa inicial (PR #8)                                                                                      |
 
-## Rama sin fusionar
+## Prueba de reglas de acceso
 
-`origin/docs/prueba-rls`: contiene `supabase/probar-rls.mjs` y el script `db:probar-rls`; está desfasada respecto a `main`.
+`supabase/probar-rls.mjs` (`npm run db:probar-rls`) se fusionó en `main` con el PR #2 (6 nov 2026).

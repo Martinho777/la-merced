@@ -1,0 +1,120 @@
+/* Estructura de las pantallas del gestor. Usa los tokens del Design System; no define valores. */
+
+.gestor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.gestor__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block-end: var(--space-4);
+  border-block-end: var(--border-hairline) solid var(--border);
+}
+
+.gestor__titulos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gestor__titulo,
+.gestor__texto,
+.gestor__marca,
+.gestor__error {
+  margin: 0;
+}
+
+.gestor__marca {
+  color: var(--ink);
+}
+
+.gestor__texto {
+  color: var(--ink-muted);
+}
+
+.gestor__error {
+  color: var(--error);
+}
+
+.gestor__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.gestor__seccion,
+.gestor__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.gestor__seccion {
+  gap: var(--space-6);
+}
+
+.gestor__subtitulo {
+  margin: 0;
+  color: var(--ink);
+}
+
+.gestor__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gestor__insignias {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.gestor__pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.gestor__estado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+/* Cada foto: miniatura, datos y acciones, como una tarjeta de fondo estuco. */
+.gestor__foto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--pad-card);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.gestor__foto--nueva {
+  border-style: dashed;
+}
+
+/* Marco de foto (docs/diseno/sistema-de-diseno.md → Shape: radius-md). */
+.gestor__miniatura {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  background: var(--surface-sunken);
+}
+
+.gestor__enlace {
+  color: var(--link);
+}
