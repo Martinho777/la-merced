@@ -68,7 +68,7 @@ La CI (GitHub Actions) corre `lint`, `typecheck`, `test` y `build` en cada PR y 
 src/
 ├─ app/          router, providers, layout raíz
 ├─ visitante/    pantallas del visitante (bienvenida, cámara, mapa, ficha)
-├─ gestor/       panel del gestor; se carga solo en /gestor
+├─ gestor/       gestor de fichas; se carga solo en /gestor
 ├─ componentes/  componentes compartidos (bloque de diseño)
 ├─ assets/santi/ SVG por capas de Santi
 ├─ datos/        todas las consultas a Supabase pasan por aquí
@@ -165,6 +165,29 @@ a contenido publicado vuelve a pasar por un revisor.
    Después, el admin asigna los demás roles (cada usuario invitado empieza sin rol, es decir, sin permisos).
 
 El plan gratuito pausa el proyecto tras una semana sin actividad: si pasa, se reactiva desde el panel.
+
+## Gestor de fichas
+
+Panel para que el equipo cargue y apruebe el contenido sin tocar código. Se abre desde el círculo amarillo
+"Acceso del equipo" de la bienvenida, o en `/gestor`. Se descarga aparte: el visitante nunca lo carga.
+
+- **Entrar:** correo y contraseña de una cuenta invitada (ver "Usuarios de prueba"). Una cuenta sin rol entra,
+  pero no puede trabajar hasta que un admin le asigne uno.
+- **Puntos:** lista por zona con el estado de la ficha en cada idioma. El gestor no crea ni ubica puntos: los
+  carga el equipo cuando llega la información de la URL.
+- **Ficha por idioma:** nombre, qué ves, historia y dato de Santi, en español e inglés. Kaqchikel se activa
+  (`IDIOMAS_GESTOR` en `src/datos/gestor.ts`) cuando llegue el material.
+- **Estados:** el editor envía un borrador a revisión; el revisor (o admin) lo aprueba o lo devuelve a
+  borrador. Editar una ficha aprobada la regresa a revisión. La base registra quién aprobó y cuándo.
+- **Fotos:** foto del detalle (pantalla de confirmación, una por punto) y fotos históricas, con texto
+  alternativo, crédito, fecha y permiso. El navegador las reduce a 2000 px y las convierte a WebP antes de
+  subirlas a `medios/fotos/`; guarden los originales en máxima resolución aparte. HEIC y TIFF se pasan
+  antes a JPEG.
+- **Fuentes:** cita, tipo y enlace, con nivel de confianza (documentado, probable o especulativo) y una nota
+  por punto. Una fuente se comparte entre puntos.
+
+Los textos del gestor están en `src/gestor/i18n/es.json` (solo español por ahora). Su acceso a datos está en
+`src/datos/sesion.ts`, `gestor.ts`, `fotos.ts` y `fuentes.ts`.
 
 ## Usuarios de prueba y prueba de RLS
 
