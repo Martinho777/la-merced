@@ -72,6 +72,17 @@
     "guardar": "Guardar",
     "guardado": "Cambios guardados.",
     "errorGuardar": "No se pudieron guardar los cambios. Inténtalo de nuevo.",
-    "sinCambios": "No hay cambios por guardar."
+    "sinCambios": "No hay cambios por guardar.",
+    "esperandoRevision": "Esperando a que un revisor la apruebe.",
+    "guardaPrimero": "Guarda los cambios antes de cambiar el estado.",
+    "revisadaPor": "Última revisión: {{nombre}}, {{fecha}}.",
+    "revisorDesconocido": "un revisor",
+    "estadoCambiado": "Estado actualizado: {{estado}}.",
+    "errorEstado": "No se pudo cambiar el estado. Inténtalo de nuevo."
+  },
+  "acciones": {
+    "enviarARevision": "Enviar a revisión",
+    "aprobar": "Aprobar y publicar",
+    "devolverABorrador": "Devolver a borrador"
   }
 }

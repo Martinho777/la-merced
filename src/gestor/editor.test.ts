@@ -9,6 +9,7 @@ const ficha: FichaGestor = {
   que_ves: 'La portada.',
   historia: '',
   dato_santi: '',
+  revision: null,
 }
 
 describe('editor de fichas', () => {

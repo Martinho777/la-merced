@@ -122,7 +122,7 @@ export function Gestor() {
             index
             element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
           />
-          <Route path="punto/:idPunto" element={<EditorPunto />} />
+          <Route path="punto/:idPunto" element={<EditorPunto rol={sesion.rol} />} />
           <Route
             path="*"
             element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}

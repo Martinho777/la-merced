@@ -61,7 +61,12 @@ export type CamposFicha = {
   dato_santi: string
 }
 
-export type FichaGestor = CamposFicha & { id: string; estado: EstadoFicha }
+export type FichaGestor = CamposFicha & {
+  id: string
+  estado: EstadoFicha
+  /** Quién aprobó o devolvió la ficha por última vez, y cuándo (lo registra la base). */
+  revision: { nombre: string | null; fecha: string } | null
+}
 
 export type DetallePunto = {
   id: string
@@ -79,6 +84,8 @@ type FilaFichaCompleta = {
   que_ves: string | null
   historia: string | null
   dato_santi: string | null
+  revisado_en: string | null
+  revisor: { nombre: string | null } | null
 }
 
 function fichaGestor(fila: FilaFichaCompleta): FichaGestor {
@@ -89,10 +96,14 @@ function fichaGestor(fila: FilaFichaCompleta): FichaGestor {
     que_ves: fila.que_ves ?? '',
     historia: fila.historia ?? '',
     dato_santi: fila.dato_santi ?? '',
+    revision: fila.revisado_en
+      ? { nombre: fila.revisor?.nombre ?? null, fecha: fila.revisado_en }
+      : null,
   }
 }
 
-const COLUMNAS_FICHA = 'id, idioma, estado, titulo, que_ves, historia, dato_santi'
+const COLUMNAS_FICHA =
+  'id, idioma, estado, titulo, que_ves, historia, dato_santi, revisado_en, revisor:perfiles!fichas_revisado_por_fkey(nombre)'
 
 /** Un punto con sus fichas completas en los idiomas del gestor. Null si no existe. */
 export async function obtenerPuntoGestor(idPunto: string): Promise<DetallePunto | null> {
@@ -157,5 +168,24 @@ export async function guardarFicha(
 
   const { data, error } = await consulta.select(COLUMNAS_FICHA).single()
   if (error) throw new Error(`No se pudo guardar la ficha: ${error.message}`)
+  return fichaGestor(data)
+}
+
+/**
+ * Cambia el estado de una ficha (enviar a revisión, aprobar o devolver a borrador). Las reglas de
+ * acceso impiden que un editor apruebe; la base anota quién aprobó o devolvió y cuándo.
+ */
+export async function cambiarEstadoFicha(
+  idFicha: string,
+  estado: EstadoFicha,
+): Promise<FichaGestor> {
+  const { data, error } = await supabase
+    .from('fichas')
+    .update({ estado })
+    .eq('id', idFicha)
+    .select(COLUMNAS_FICHA)
+    .single()
+
+  if (error) throw new Error(`No se pudo cambiar el estado de la ficha: ${error.message}`)
   return fichaGestor(data)
 }

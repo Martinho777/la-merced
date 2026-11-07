@@ -6,6 +6,7 @@ import { BarraSuperior } from '@/componentes/BarraSuperior'
 import { Boton } from '@/componentes/Boton'
 import { Insignia } from '@/componentes/Insignia'
 import {
+  cambiarEstadoFicha,
   guardarFicha,
   IDIOMAS_GESTOR,
   obtenerPuntoGestor,
@@ -13,7 +14,9 @@ import {
   type DetallePunto,
 } from '@/datos/gestor'
 import { Campo, CampoArea } from '@/gestor/componentes/Campo'
+import type { Rol } from '@/datos/sesion'
 import { camposDe, hayCambios, type IdiomaGestor } from '@/gestor/editor'
+import { accionesDisponibles, DESTINO, type AccionEstado } from '@/gestor/estados'
 import { TONO_ESTADO } from '@/gestor/lista'
 import type es from '@/i18n/es.json'
 
@@ -23,12 +26,22 @@ type Estado =
   | { tipo: 'noExiste' }
   | { tipo: 'listo'; punto: DetallePunto }
 
-type Aviso = 'guardado' | 'errorGuardar' | 'faltaTitulo' | 'sinCambios' | null
+type Aviso =
+  | 'guardado'
+  | 'errorGuardar'
+  | 'faltaTitulo'
+  | 'sinCambios'
+  | 'estadoCambiado'
+  | 'errorEstado'
+  | 'guardaPrimero'
+  | null
+
+const FORMATO_FECHA = new Intl.DateTimeFormat('es-GT', { dateStyle: 'medium', timeStyle: 'short' })
 
 type ClaveZona = `zonas.${keyof typeof es.zonas}`
 
 /** Ficha de un punto: se elige el idioma y se editan sus campos. */
-export function EditorPunto() {
+export function EditorPunto({ rol }: { rol: Rol }) {
   const { t } = useTranslation('gestor')
   const { t: tGuia } = useTranslation()
   const navegar = useNavigate()
@@ -38,6 +51,7 @@ export function EditorPunto() {
   // Un borrador por idioma: cambiar de pestaña no pierde lo escrito.
   const [borradores, setBorradores] = useState<Record<IdiomaGestor, CamposFicha> | null>(null)
   const [guardando, setGuardando] = useState(false)
+  const [cambiandoEstado, setCambiandoEstado] = useState<AccionEstado | null>(null)
   const [aviso, setAviso] = useState<Aviso>(null)
 
   useEffect(() => {
@@ -125,6 +139,30 @@ export function EditorPunto() {
     }
   }
 
+  async function aplicar(accion: AccionEstado) {
+    if (!ficha) return
+    if (hayCambios(campos, ficha)) {
+      setAviso('guardaPrimero')
+      return
+    }
+    setCambiandoEstado(accion)
+    try {
+      const actualizada = await cambiarEstadoFicha(ficha.id, DESTINO[accion])
+      setEstado({
+        tipo: 'listo',
+        punto: { ...punto, fichas: { ...punto.fichas, [idioma]: actualizada } },
+      })
+      setAviso('estadoCambiado')
+    } catch {
+      setAviso('errorEstado')
+    } finally {
+      setCambiandoEstado(null)
+    }
+  }
+
+  const acciones = ficha ? accionesDisponibles(rol, ficha.estado) : []
+  const esError = aviso === 'errorGuardar' || aviso === 'errorEstado'
+
   return (
     <section className="gestor__seccion">
       {barra}
@@ -168,6 +206,33 @@ export function EditorPunto() {
         {ficha?.estado === 'aprobado' && (
           <p className="gestor__texto texto-small">{t('editor.publicada')}</p>
         )}
+        {ficha?.estado === 'revision' && acciones.length === 0 && (
+          <p className="gestor__texto texto-small">{t('editor.esperandoRevision')}</p>
+        )}
+        {ficha?.revision && (
+          <p className="gestor__texto texto-small">
+            {t('editor.revisadaPor', {
+              nombre: ficha.revision.nombre ?? t('editor.revisorDesconocido'),
+              fecha: FORMATO_FECHA.format(new Date(ficha.revision.fecha)),
+            })}
+          </p>
+        )}
+        {acciones.length > 0 && (
+          <div className="gestor__pestanas">
+            {acciones.map((accion) => (
+              <Boton
+                key={accion}
+                tamano="sm"
+                variante={accion === 'devolverABorrador' ? 'secundario' : 'primario'}
+                cargando={cambiandoEstado === accion}
+                disabled={cambiandoEstado !== null && cambiandoEstado !== accion}
+                onClick={() => void aplicar(accion)}
+              >
+                {t(`acciones.${accion}`)}
+              </Boton>
+            ))}
+          </div>
+        )}
       </div>
 
       <form className="gestor__formulario" onSubmit={guardar} noValidate lang={idioma}>
@@ -200,12 +265,10 @@ export function EditorPunto() {
 
         {aviso && aviso !== 'faltaTitulo' && (
           <p
-            className={
-              aviso === 'errorGuardar' ? 'gestor__error texto-body' : 'gestor__texto texto-body'
-            }
-            role={aviso === 'errorGuardar' ? 'alert' : 'status'}
+            className={esError ? 'gestor__error texto-body' : 'gestor__texto texto-body'}
+            role={esError ? 'alert' : 'status'}
           >
-            {t(`editor.${aviso}`)}
+            {t(`editor.${aviso}`, { estado: t(`estados.${ficha?.estado ?? 'falta'}`) })}
           </p>
         )}
 
