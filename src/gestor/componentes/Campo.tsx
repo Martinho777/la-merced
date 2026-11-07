@@ -1,4 +1,10 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
+import {
+  useId,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from 'react'
 import './Campo.css'
 
 // Campos de formulario del gestor. El Design System no especifica formularios; estos siguen su regla
@@ -91,6 +97,36 @@ export function CampoArea({
       error={error}
       multilinea
       control={(props) => <textarea {...area} {...props} />}
+    />
+  )
+}
+
+/** Lista desplegable de opciones (nivel de confianza, tipo de fuente). */
+export function Selector({
+  etiqueta,
+  ayuda,
+  error,
+  opciones,
+  ...select
+}: Comunes &
+  Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id' | 'className'> & {
+    opciones: readonly { valor: string; texto: string }[]
+  }) {
+  return (
+    <Contenedor
+      etiqueta={etiqueta}
+      ayuda={ayuda}
+      error={error}
+      multilinea={false}
+      control={(props) => (
+        <select {...select} {...props}>
+          {opciones.map((opcion) => (
+            <option key={opcion.valor} value={opcion.valor}>
+              {opcion.texto}
+            </option>
+          ))}
+        </select>
+      )}
     />
   )
 }

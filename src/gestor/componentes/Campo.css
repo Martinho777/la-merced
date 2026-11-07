@@ -42,3 +42,7 @@
 .campo__control[aria-invalid='true'] {
   border-color: var(--error);
 }
+
+select.campo__control {
+  cursor: pointer;
+}

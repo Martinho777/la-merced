@@ -126,5 +126,47 @@
     "errorCarga": "No se pudieron cargar las fotos.",
     "subida": "Foto subida.",
     "guardada": "Datos guardados."
+  },
+  "fuentes": {
+    "titulo": "Fuentes",
+    "texto": "De dónde sale la información del punto y qué tan sólida es. La app la muestra en la ficha.",
+    "vacio": "Este punto todavía no tiene fuentes.",
+    "tipos": {
+      "archivo": "Archivo",
+      "libro": "Libro",
+      "entrevista": "Entrevista",
+      "sitio_web": "Sitio web"
+    },
+    "niveles": {
+      "documentado": "Documentado",
+      "probable": "Probable",
+      "especulativo": "Especulativo"
+    },
+    "nivelesAyuda": "Documentado: hay una fuente directa. Probable: hay indicios, pero no una fuente directa. Especulativo: es una hipótesis.",
+    "campos": {
+      "fuente": "Fuente",
+      "nueva": "Nueva fuente…",
+      "cita": "Cita",
+      "citaAyuda": "Referencia completa: autor, título, año, archivo o entrevistado.",
+      "tipo": "Tipo de fuente",
+      "url": "Enlace (opcional)",
+      "nivel": "Nivel de confianza",
+      "nota": "Nota (opcional)",
+      "notaAyuda": "Qué dato de la ficha respalda esta fuente."
+    },
+    "agregarTitulo": "Agregar una fuente",
+    "agregar": "Agregar fuente",
+    "guardar": "Guardar",
+    "editarFuente": "Editar la fuente",
+    "editarFuenteAviso": "Esta fuente puede estar en otros puntos: el cambio se verá en todos.",
+    "cancelar": "Cancelar",
+    "quitar": "Quitar del punto",
+    "confirmarQuitar": "Sí, quitar la fuente",
+    "faltaCita": "Escribe la cita de la fuente.",
+    "agregada": "Fuente agregada.",
+    "guardada": "Cambios guardados.",
+    "error": "No se pudo completar la acción. Inténtalo de nuevo.",
+    "errorCarga": "No se pudieron cargar las fuentes.",
+    "enlace": "Abrir enlace"
   }
 }

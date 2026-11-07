@@ -17,6 +17,7 @@ import { Campo, CampoArea } from '@/gestor/componentes/Campo'
 import type { Rol } from '@/datos/sesion'
 import { camposDe, hayCambios, type IdiomaGestor } from '@/gestor/editor'
 import { FotosPunto } from '@/gestor/FotosPunto'
+import { FuentesPunto } from '@/gestor/FuentesPunto'
 import { accionesDisponibles, DESTINO, type AccionEstado } from '@/gestor/estados'
 import { TONO_ESTADO } from '@/gestor/lista'
 import type es from '@/i18n/es.json'
@@ -279,6 +280,8 @@ export function EditorPunto({ rol }: { rol: Rol }) {
       </form>
 
       <FotosPunto punto={punto} />
+
+      <FuentesPunto idPunto={punto.id} />
     </section>
   )
 }

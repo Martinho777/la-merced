@@ -114,3 +114,7 @@
   border-radius: var(--radius-md);
   background: var(--surface-sunken);
 }
+
+.gestor__enlace {
+  color: var(--link);
+}
