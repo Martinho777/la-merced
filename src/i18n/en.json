@@ -152,6 +152,14 @@
       "alejar": "Zoom out of the map",
       "restablecer": "Reset the map view"
     },
-    "error": "The map couldn't be loaded. Check your connection."
+    "error": "The map couldn't be loaded. Check your connection.",
+    "verComoEra": "See how it was"
+  },
+  "modelo3d": {
+    "titulo": "How it was",
+    "descripcion": "Provisional 3D model: a test sphere.",
+    "pista": "Rotate with one finger. Pinch to zoom.",
+    "provisional": "Test model: it doesn't show the church yet.",
+    "error": "The model couldn't be loaded. Check your connection."
   }
 }

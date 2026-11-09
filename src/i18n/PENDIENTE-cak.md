@@ -113,3 +113,9 @@ Cómo agregarlas:
 | `mapa.controles.alejar`           | Alejar el mapa                                                      | Zoom out of the map                                                              |
 | `mapa.controles.restablecer`      | Restablecer la vista del mapa                                       | Reset the map view                                                               |
 | `mapa.error`                      | No se pudo cargar el mapa. Revisa tu conexión.                      | The map couldn't be loaded. Check your connection.                               |
+| `mapa.verComoEra`                 | Ver cómo era                                                        | See how it was                                                                   |
+| `modelo3d.titulo`                 | Cómo era                                                            | How it was                                                                       |
+| `modelo3d.descripcion`            | Modelo 3D provisional: una esfera de prueba.                        | Provisional 3D model: a test sphere.                                             |
+| `modelo3d.pista`                  | Gira con un dedo. Pellizca para acercar.                            | Rotate with one finger. Pinch to zoom.                                           |
+| `modelo3d.provisional`            | Modelo de prueba: todavía no representa la iglesia.                 | Test model: it doesn't show the church yet.                                      |
+| `modelo3d.error`                  | No se pudo cargar el modelo. Revisa tu conexión.                    | The model couldn't be loaded. Check your connection.                             |

@@ -6,6 +6,7 @@ import { PantallaCamara } from '@/visitante/PantallaCamara'
 import { PantallaConfirmacion } from '@/visitante/PantallaConfirmacion'
 import { PantallaIdioma } from '@/visitante/PantallaIdioma'
 import { PantallaMapa } from '@/visitante/PantallaMapa'
+import { PantallaModelo3d } from '@/visitante/PantallaModelo3d'
 import { PantallaPunto } from '@/visitante/PantallaPunto'
 import { PantallaRuta } from '@/visitante/PantallaRuta'
 import { PantallaZona } from '@/visitante/PantallaZona'
@@ -39,6 +40,9 @@ export const router = createBrowserRouter([
       // Experiencia por punto: ambas reciben ?zona=<slug>&punto=<slug>.
       { path: '/confirmacion', element: <PantallaConfirmacion /> },
       { path: '/punto', element: <PantallaPunto /> },
+      // La pantalla va en el bundle (pesa muy poco) para poder mostrar el error si falla la red; la
+      // biblioteca 3D y el modelo se descargan solo al abrirla.
+      { path: '/ver-como-era', element: <PantallaModelo3d /> },
       {
         // El gestor va en su propio chunk: el visitante nunca lo descarga.
         path: '/gestor/*',

@@ -16,6 +16,7 @@
 | `/mapa?zona=`                | `visitante/PantallaMapa`              | `datos/recorrido.obtenerRecorrido`             |
 | `/confirmacion?zona=&punto=` | `visitante/PantallaConfirmacion`      | `datos/recorrido.obtenerRecorrido`             |
 | `/punto?zona=&punto=`        | `visitante/PantallaPunto`             | `datos/recorrido.obtenerRecorrido`             |
+| `/ver-como-era?zona=`        | `visitante/PantallaModelo3d`          | — (modelo local en `assets/modelos/`)          |
 | `/gestor/*`                  | `gestor/Gestor` (diferida)            | `datos/sesion`, `datos/gestor`                 |
 | `/gestor/punto/:idPunto`     | `gestor/EditorPunto`                  | `datos/gestor`, `datos/fotos`, `datos/fuentes` |
 | `/estilos`                   | `desarrollo/PaginaEstilos` (solo DEV) | —                                              |

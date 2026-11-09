@@ -152,6 +152,14 @@
       "alejar": "Alejar el mapa",
       "restablecer": "Restablecer la vista del mapa"
     },
-    "error": "No se pudo cargar el mapa. Revisa tu conexión."
+    "error": "No se pudo cargar el mapa. Revisa tu conexión.",
+    "verComoEra": "Ver cómo era"
+  },
+  "modelo3d": {
+    "titulo": "Cómo era",
+    "descripcion": "Modelo 3D provisional: una esfera de prueba.",
+    "pista": "Gira con un dedo. Pellizca para acercar.",
+    "provisional": "Modelo de prueba: todavía no representa la iglesia.",
+    "error": "No se pudo cargar el modelo. Revisa tu conexión."
   }
 }

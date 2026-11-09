@@ -58,6 +58,7 @@ Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo
 - **Preferencias**: la duración de las rutas sigue siendo un marcador ("[X] min").
 - **Kaqchikel**: 3 de 74 claves traducidas; el resto cae a español (`src/i18n/PENDIENTE-cak.md`).
 - **Datos de contenido**: el seed tiene un único punto de prueba (con ficha solo en español), que se muestra junto a los de demostración.
+- **"Ver cómo era"**: botón en el mapa y pantalla `/ver-como-era` con `<model-viewer>` (girar y pellizcar, sin cámara). El modelo es una esfera provisional de prueba; faltan los volúmenes en Blender, las partes con nivel de confianza y "Ver en 3D" en la ficha.
 - **Ficha**: no incluye dato de Santi, fuentes, nivel de confianza ni "Ver en 3D".
 
 ## Solo estructura o marcador
@@ -66,7 +67,7 @@ Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo
 
 ## No existe (según búsqueda en `src/` y `package.json`)
 
-Modelos 3D, ubicación de puntos y publicación desde el gestor (Sprint 4), PWA / uso sin conexión, GSAP, interruptor de tema `contrast`
+Modelo 3D real (solo hay una esfera provisional, ver Parcial), ubicación de puntos y publicación desde el gestor (Sprint 4), PWA / uso sin conexión, GSAP, interruptor de tema `contrast`
 en producción (solo en `/estilos`), ajuste de texto grande, modo respeto, estampa animada al completar un punto.
 
 ## Discrepancias especificación ↔ código (informativas)
