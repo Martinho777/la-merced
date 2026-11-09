@@ -121,6 +121,10 @@ describe('pantalla del mapa', () => {
     expect(html).toContain('class="mapa__lienzo"')
   })
 
+  it('ofrece "Ver cómo era"', () => {
+    expect(html).toContain('Ver cómo era')
+  })
+
   it('mientras carga lo anuncia y muestra la leyenda y el botón de volver a zonas', () => {
     expect(html).toContain('Cargando…')
     expect(html).toContain('Esencial')

@@ -6,7 +6,7 @@ import type { ZonaConContorno } from '@/datos/zonas'
 /** Parámetro de búsqueda con el slug de la zona elegida (`/camara?zona=fachada-principal`). */
 export const PARAM_ZONA = 'zona'
 
-type RutaDeZona = '/camara' | '/alineacion' | '/mapa'
+type RutaDeZona = '/camara' | '/alineacion' | '/mapa' | '/ver-como-era'
 
 /** Ruta de una pantalla del recorrido con la zona elegida. */
 export function rutaConZona(ruta: RutaDeZona, slug: string): string {

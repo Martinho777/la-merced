@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useNavigate, useSearchParams } from 'react-router'
-import { Image } from 'lucide-react'
+import { Box, Image } from 'lucide-react'
 import { ilustracionLocalDeZona } from '@/assets/zonas'
 import { BarraProgreso } from '@/componentes/BarraProgreso'
 import { Boton } from '@/componentes/Boton'
@@ -13,7 +13,7 @@ import { idiomaActual } from '@/i18n'
 import type es from '@/i18n/es.json'
 import { leerRuta, RUTA_POR_DEFECTO } from '@/lib/preferencias'
 import { BarraVisitante } from '@/visitante/BarraVisitante'
-import { zonaDeBusqueda } from '@/visitante/camara'
+import { rutaConZona, zonaDeBusqueda } from '@/visitante/camara'
 import { ControlesMapa } from '@/visitante/ControlesMapa'
 import {
   alternarZoom,
@@ -496,6 +496,15 @@ export function PantallaMapa() {
             </div>
           </div>
         )}
+
+        <Boton
+          variante="acento"
+          icono={Box}
+          anchoCompleto
+          onClick={() => navegar(rutaConZona('/ver-como-era', slug))}
+        >
+          {t('mapa.verComoEra')}
+        </Boton>
       </div>
     </div>
   )
