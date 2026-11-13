@@ -77,6 +77,7 @@ Cómo agregarlas:
 | `punto.audio.transcripcion`       | Transcripción                                                       | Transcript                                                                       |
 | `punto.queVes`                    | Qué estás viendo                                                    | What you're seeing                                                               |
 | `punto.historia`                  | Historia                                                            | History                                                                          |
+| `punto.datoSanti`                 | Dato de Santi                                                       | Santi's fun fact                                                                 |
 | `punto.contenidoPendiente`        | Contenido pendiente de investigación.                               | Content pending research.                                                        |
 | `punto.archivo.titulo`            | En el archivo                                                       | In the archive                                                                   |
 | `punto.archivo.desliza`           | Desliza para ver más                                                | Swipe to see more                                                                |

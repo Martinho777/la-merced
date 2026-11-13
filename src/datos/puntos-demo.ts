@@ -45,14 +45,14 @@ export const PUNTOS_DEMO: Readonly<Record<string, readonly PuntoConFicha[]>> = {
   'fachada-principal': [
     puntoDemo(1, 0.5, 0.76),
     puntoDemo(2, 0.37, 0.82),
-    // Transcripción sin audio: se puede leer aunque la narración no esté.
+    // Transcripción sin audio (se puede leer aunque la narración no esté) y dato de Santi.
     puntoDemo(3, 0.63, 0.82, {
       ficha: {
         idioma: 'es',
         titulo: 'Punto de demostración 3',
         que_ves: null,
         historia: null,
-        dato_santi: null,
+        dato_santi: 'Texto de demostración: aquí irá el dato de Santi.',
         transcripcion: 'Texto de demostración: aquí irá la transcripción de la narración.',
         audio_id: null,
       },

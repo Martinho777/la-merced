@@ -5,6 +5,7 @@ import { formatearTiempo, porcentajeAvance } from '@/visitante/audio'
 import { BarraAudio } from '@/visitante/BarraAudio'
 import { FotoReservada } from '@/visitante/FotoReservada'
 import { esperaTrasEnfocar } from '@/visitante/movimiento'
+import { DatoSanti } from '@/visitante/SeccionesFicha'
 
 describe('espera tras acercar el mapa a un punto', () => {
   it('con movimiento reducido no incluye la transición, pero deja ver el resultado', () => {
@@ -86,5 +87,19 @@ describe('espacio de fotografía', () => {
     )
     expect(html).toContain('src="/f.webp"')
     expect(html).toContain('alt="Foto"')
+  })
+})
+
+describe('dato de Santi en la ficha', () => {
+  it('con dato muestra la sección con su título y el texto en la burbuja de Santi', () => {
+    const html = renderToStaticMarkup(<DatoSanti dato="Las columnas tienen ataurique." />)
+    expect(html).toContain('Dato de Santi')
+    expect(html).toContain('santi-burbuja')
+    expect(html).toContain('Las columnas tienen ataurique.')
+  })
+
+  it('sin dato, o con solo espacios, no muestra la sección', () => {
+    expect(renderToStaticMarkup(<DatoSanti dato={null} />)).toBe('')
+    expect(renderToStaticMarkup(<DatoSanti dato="   " />)).toBe('')
   })
 })

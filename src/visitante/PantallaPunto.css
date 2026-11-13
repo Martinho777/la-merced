@@ -148,6 +148,23 @@
   margin: 0;
 }
 
+.ficha__dato {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ficha__dato-santi {
+  flex-shrink: 0;
+}
+
+/* El dato puede ser más largo que una frase: se lee alineado a la izquierda. */
+.ficha__dato-burbuja {
+  flex: 1;
+  min-width: 0;
+  text-align: start;
+}
+
 .ficha__archivo-encabezado {
   display: flex;
   flex-wrap: wrap;
