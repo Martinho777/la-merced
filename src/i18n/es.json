@@ -107,6 +107,17 @@
       "sinFecha": "Fecha pendiente",
       "sinCredito": "Crédito pendiente"
     },
+    "fuentes": {
+      "titulo": "Fuentes",
+      "ayuda": "Documentado: hay una fuente directa. Probable: hay indicios, pero no una fuente directa. Especulativo: es una hipótesis.",
+      "enlace": "Ver la fuente",
+      "otraPestana": "(se abre en otra pestaña)",
+      "niveles": {
+        "documentado": "Documentado",
+        "probable": "Probable",
+        "especulativo": "Especulativo"
+      }
+    },
     "marcarCompletado": "Marcar como completado",
     "completado": "Completado",
     "navegacion": "Navegación del recorrido",

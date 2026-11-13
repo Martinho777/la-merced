@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Plus, Save, Trash2 } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { Insignia } from '@/componentes/Insignia'
+import { TONO_NIVEL } from '@/componentes/nivelConfianza'
 import {
   actualizarFuente,
   actualizarVinculo,
@@ -20,7 +21,7 @@ import {
   type TipoFuente,
 } from '@/datos/fuentes'
 import { Campo, Selector } from '@/gestor/componentes/Campo'
-import { FUENTE_VACIA, fuentesDisponibles, TONO_NIVEL } from '@/gestor/fuentes'
+import { FUENTE_VACIA, fuentesDisponibles } from '@/gestor/fuentes'
 
 type Aviso = 'agregada' | 'guardada' | 'faltaCita' | 'error' | null
 

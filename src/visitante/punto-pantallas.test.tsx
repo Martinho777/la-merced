@@ -5,7 +5,7 @@ import { formatearTiempo, porcentajeAvance } from '@/visitante/audio'
 import { BarraAudio } from '@/visitante/BarraAudio'
 import { FotoReservada } from '@/visitante/FotoReservada'
 import { esperaTrasEnfocar } from '@/visitante/movimiento'
-import { DatoSanti } from '@/visitante/SeccionesFicha'
+import { DatoSanti, FuentesFicha } from '@/visitante/SeccionesFicha'
 
 describe('espera tras acercar el mapa a un punto', () => {
   it('con movimiento reducido no incluye la transición, pero deja ver el resultado', () => {
@@ -101,5 +101,42 @@ describe('dato de Santi en la ficha', () => {
   it('sin dato, o con solo espacios, no muestra la sección', () => {
     expect(renderToStaticMarkup(<DatoSanti dato={null} />)).toBe('')
     expect(renderToStaticMarkup(<DatoSanti dato="   " />)).toBe('')
+  })
+})
+
+describe('fuentes en la ficha', () => {
+  it('sin fuentes no muestra la sección', () => {
+    expect(renderToStaticMarkup(<FuentesFicha fuentes={[]} />)).toBe('')
+  })
+
+  it('muestra cada fuente con su cita y la insignia de su nivel', () => {
+    const html = renderToStaticMarkup(
+      <FuentesFicha
+        fuentes={[
+          { cita: 'Libro A', url: null, nivel: 'documentado', nota: null },
+          { cita: 'Entrevista B', url: null, nivel: 'especulativo', nota: 'Sobre la fecha' },
+        ]}
+      />,
+    )
+    expect(html).toContain('Fuentes')
+    expect(html).toContain('Libro A')
+    expect(html).toContain('insignia--exito')
+    expect(html).toContain('Documentado')
+    expect(html).toContain('insignia--advertencia')
+    expect(html).toContain('Especulativo')
+    expect(html).toContain('Sobre la fecha')
+    expect(html).not.toContain('<a')
+  })
+
+  it('el enlace se abre en otra pestaña y lo avisa a los lectores de pantalla', () => {
+    const html = renderToStaticMarkup(
+      <FuentesFicha
+        fuentes={[{ cita: 'Sitio', url: 'https://ejemplo.org', nivel: 'probable', nota: null }]}
+      />,
+    )
+    expect(html).toContain('href="https://ejemplo.org"')
+    expect(html).toContain('target="_blank"')
+    expect(html).toContain('rel="noreferrer"')
+    expect(html).toContain('(se abre en otra pestaña)')
   })
 })

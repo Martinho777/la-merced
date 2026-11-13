@@ -14,7 +14,7 @@ import { FotoReservada } from '@/visitante/FotoReservada'
 import { numeroDeDetalle, rutaDePunto, vecinosEnRuta } from '@/visitante/mapa'
 import { completarPunto, useCompletados } from '@/visitante/progreso'
 import { PuntoDeRecorrido } from '@/visitante/PuntoDeRecorrido'
-import { DatoSanti } from '@/visitante/SeccionesFicha'
+import { DatoSanti, FuentesFicha } from '@/visitante/SeccionesFicha'
 import { recordarPuntoAbierto } from '@/visitante/sesionMapa'
 import '@/visitante/pantalla.css'
 import './PantallaPunto.css'
@@ -122,6 +122,8 @@ function Ficha({
             </ul>
           </section>
         )}
+
+        <FuentesFicha fuentes={punto.fuentes} />
 
         <div className="ficha__completar">
           {completado ? (

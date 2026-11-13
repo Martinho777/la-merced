@@ -107,6 +107,17 @@
       "sinFecha": "Date pending",
       "sinCredito": "Credit pending"
     },
+    "fuentes": {
+      "titulo": "Sources",
+      "ayuda": "Documented: there is a direct source. Probable: there is evidence, but no direct source. Speculative: it is a hypothesis.",
+      "enlace": "See the source",
+      "otraPestana": "(opens in a new tab)",
+      "niveles": {
+        "documentado": "Documented",
+        "probable": "Probable",
+        "especulativo": "Speculative"
+      }
+    },
     "marcarCompletado": "Mark as completed",
     "completado": "Completed",
     "navegacion": "Route navigation",

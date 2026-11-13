@@ -26,7 +26,7 @@ vi.mock('@/lib/supabase', () => ({
   },
 }))
 
-const { mediosDePunto, obtenerPuntosDeZona } = await import('@/datos/puntos')
+const { fuentesDePunto, mediosDePunto, obtenerPuntosDeZona } = await import('@/datos/puntos')
 
 function ficha(idioma: 'es' | 'cak' | 'en', titulo: string) {
   return {
@@ -52,7 +52,17 @@ function punto(orden: number, fichas: ReturnType<typeof ficha>[]) {
     zonas: { slug: 'fachada-principal' },
     fichas,
     medios: [],
+    punto_fuentes: [] as ReturnType<typeof vinculo>[],
   }
+}
+
+function vinculo(
+  cita: string,
+  nivel: 'documentado' | 'probable' | 'especulativo',
+  url: string | null = null,
+  nota: string | null = null,
+) {
+  return { nivel_confianza: nivel, nota, fuentes: { cita, url } }
 }
 
 function medio(id: string, tipo: 'foto' | 'foto_historica' | 'audio', orden = 1) {
@@ -97,6 +107,32 @@ describe('mediosDePunto', () => {
   })
 })
 
+describe('fuentesDePunto', () => {
+  it('sin fuentes devuelve una lista vacía', () => {
+    expect(fuentesDePunto([])).toEqual([])
+  })
+
+  it('ordena de más a menos confianza y, dentro de cada nivel, por cita', () => {
+    const fuentes = fuentesDePunto([
+      vinculo('C', 'especulativo'),
+      vinculo('B', 'documentado'),
+      vinculo('D', 'probable'),
+      vinculo('A', 'documentado'),
+    ])
+    expect(fuentes.map((f) => `${f.nivel}:${f.cita}`)).toEqual([
+      'documentado:A',
+      'documentado:B',
+      'probable:D',
+      'especulativo:C',
+    ])
+  })
+
+  it('un enlace o una nota vacíos quedan en null', () => {
+    const [fuente] = fuentesDePunto([vinculo('A', 'probable', '  ', ' ')])
+    expect(fuente).toEqual({ cita: 'A', url: null, nivel: 'probable', nota: null })
+  })
+})
+
 describe('obtenerPuntosDeZona', () => {
   beforeEach(() => {
     llamadas.length = 0
@@ -113,6 +149,8 @@ describe('obtenerPuntosDeZona', () => {
     expect(puntos.map((p) => p.orden)).toEqual([1, 2])
     expect(puntos[0]).not.toHaveProperty('zonas')
     expect(puntos[0]).not.toHaveProperty('fichas')
+    expect(puntos[0]).not.toHaveProperty('punto_fuentes')
+    expect(puntos[0]?.fuentes).toEqual([])
     expect(llamadas).toContainEqual({ metodo: 'from', args: ['puntos'] })
     expect(llamadas).toContainEqual({ metodo: 'order', args: ['orden', { ascending: true }] })
     expect(llamadas).toContainEqual({ metodo: 'eq', args: ['zonas.slug', 'fachada-principal'] })
@@ -138,6 +176,20 @@ describe('obtenerPuntosDeZona', () => {
 
     expect(primero?.ficha?.idioma).toBe('es')
     expect(primero?.ficha?.titulo).toBe('Portada')
+  })
+
+  it('incluye las fuentes del punto con su nivel de confianza', async () => {
+    const conFuentes = {
+      ...punto(1, [ficha('es', 'Uno')]),
+      punto_fuentes: [vinculo('Libro', 'documentado', 'https://ejemplo.org', 'Fecha')],
+    }
+    respuesta = { data: [conFuentes], error: null }
+
+    const [primero] = await obtenerPuntosDeZona('fachada-principal', 'es')
+
+    expect(primero?.fuentes).toEqual([
+      { cita: 'Libro', url: 'https://ejemplo.org', nivel: 'documentado', nota: 'Fecha' },
+    ])
   })
 
   it('deja la ficha en null si el punto no tiene ninguna aprobada', async () => {
