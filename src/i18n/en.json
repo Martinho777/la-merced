@@ -99,12 +99,24 @@
     },
     "queVes": "What you're seeing",
     "historia": "History",
+    "datoSanti": "Santi's fun fact",
     "contenidoPendiente": "Content pending research.",
     "archivo": {
       "titulo": "In the archive",
       "desliza": "Swipe to see more",
       "sinFecha": "Date pending",
       "sinCredito": "Credit pending"
+    },
+    "fuentes": {
+      "titulo": "Sources",
+      "ayuda": "Documented: there is a direct source. Probable: there is evidence, but no direct source. Speculative: it is a hypothesis.",
+      "enlace": "See the source",
+      "otraPestana": "(opens in a new tab)",
+      "niveles": {
+        "documentado": "Documented",
+        "probable": "Probable",
+        "especulativo": "Speculative"
+      }
     },
     "marcarCompletado": "Mark as completed",
     "completado": "Completed",

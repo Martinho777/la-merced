@@ -28,6 +28,7 @@ function puntoDemo(
     foto: null,
     audio: null,
     archivo: [],
+    fuentes: [],
     ...extra,
   }
 }
@@ -45,17 +46,28 @@ export const PUNTOS_DEMO: Readonly<Record<string, readonly PuntoConFicha[]>> = {
   'fachada-principal': [
     puntoDemo(1, 0.5, 0.76),
     puntoDemo(2, 0.37, 0.82),
-    // Transcripción sin audio: se puede leer aunque la narración no esté.
+    // Transcripción sin audio (se puede leer aunque la narración no esté) y dato de Santi.
     puntoDemo(3, 0.63, 0.82, {
       ficha: {
         idioma: 'es',
         titulo: 'Punto de demostración 3',
         que_ves: null,
         historia: null,
-        dato_santi: null,
+        dato_santi: 'Texto de demostración: aquí irá el dato de Santi.',
         transcripcion: 'Texto de demostración: aquí irá la transcripción de la narración.',
         audio_id: null,
       },
+      // Una fuente de cada nivel de confianza; solo la primera tiene enlace y nota.
+      fuentes: [
+        {
+          cita: 'Fuente de demostración 1',
+          url: 'https://example.com',
+          nivel: 'documentado',
+          nota: 'Nota de demostración.',
+        },
+        { cita: 'Fuente de demostración 2', url: null, nivel: 'probable', nota: null },
+        { cita: 'Fuente de demostración 3', url: null, nivel: 'especulativo', nota: null },
+      ],
     }),
     puntoDemo(4, 0.5, 0.6),
     // Varios registros de archivo, todavía sin imagen.

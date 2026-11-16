@@ -30,6 +30,10 @@ La ilustración del mapa de la fachada principal es local (`src/assets/zonas/`, 
 `scripts/preparar-fachada.mjs` desde `ilustraciones-originales/`); si la zona tiene `ilustracion_id` en la base, gana esa.
 La zona elegida en `/zona` viaja como `?zona=<slug>` (helpers en `visitante/camara.ts`, junto con la solicitud de cámara).
 
+Textos de la interfaz: `main.tsx` llama a `cargarTextosDeLaBase` (`i18n/textosBase.ts`) sin esperar. Aplica la copia
+guardada en el teléfono, pide `textos_interfaz` (`datos/textos.ts`) y los pone encima de los JSON con
+`addResourceBundle`; react-i18next vuelve a pintar (`bindI18nStore: 'added'`). Si la base falla, quedan los JSON.
+
 El gestor (`src/gestor/`) usa la misma sesión de Supabase Auth (`datos/sesion.ts`) y las mismas tablas; las
 reglas de acceso (RLS) deciden qué puede hacer cada rol. Sus textos van en el namespace `gestor` de i18next
 (`gestor/i18n/`), que se registra al cargar el chunk del gestor.

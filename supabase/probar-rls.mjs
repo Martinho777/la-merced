@@ -25,6 +25,8 @@ const CORREOS = {
   admin: process.env.CORREO_ADMIN ?? 'martinguille17+admin@gmail.com',
 }
 const PUNTO = '00000000-0000-4000-b000-000000000001'
+// Clave que no usa la app: la prueba la crea y la borra.
+const CLAVE_TEXTO = 'pruebaRls.texto'
 const RUTA_ARCHIVO = 'ilustraciones/prueba-rls.svg'
 const SVG = new Blob(['<svg xmlns="http://www.w3.org/2000/svg"/>'], { type: 'image/svg+xml' })
 
@@ -174,6 +176,37 @@ try {
     revisar('Editor NO puede borrar fichas', borrado?.length === 0)
   }
 
+  // Textos de la interfaz: todos leen, solo el admin escribe
+  {
+    const { error: leer } = await anon.from('textos_interfaz').select('clave').limit(1)
+    revisar('Visitante lee los textos de la interfaz', !leer, leer?.message)
+
+    for (const [rol, cliente] of [
+      ['Visitante', anon],
+      ['Editor', editor.cliente],
+      ['Revisor', revisor.cliente],
+    ]) {
+      const { error } = await cliente
+        .from('textos_interfaz')
+        .insert({ clave: CLAVE_TEXTO, idioma: 'es', texto: 'x' })
+      revisar(`${rol} NO puede crear textos`, !!error)
+    }
+
+    const { data: creado, error: crea } = await admin.cliente
+      .from('textos_interfaz')
+      .insert({ clave: CLAVE_TEXTO, idioma: 'es', texto: 'Prueba RLS' })
+      .select('actualizado_por')
+    revisar('Admin crea un texto', !crea, crea?.message)
+    revisar('Se registra quién cambió el texto', creado?.[0]?.actualizado_por === admin.id)
+
+    const { data: editado } = await editor.cliente
+      .from('textos_interfaz')
+      .update({ texto: 'cambiado' })
+      .eq('clave', CLAVE_TEXTO)
+      .select()
+    revisar('Editor NO puede cambiar textos', editado?.length === 0)
+  }
+
   // Almacenamiento
   {
     const { error: anonSube } = await anon.storage.from('medios').upload(RUTA_ARCHIVO, SVG)
@@ -197,11 +230,15 @@ try {
     .eq('punto_id', PUNTO)
     .in('idioma', ['en', 'cak'])
   const { error: e2 } = await admin.cliente.storage.from('medios').remove([RUTA_ARCHIVO])
+  const { error: e3 } = await admin.cliente
+    .from('textos_interfaz')
+    .delete()
+    .eq('clave', CLAVE_TEXTO)
   const { data: quedan } = await fichasDePrueba(admin.cliente)
   revisar(
     'Admin borra lo creado por la prueba',
-    !e1 && !e2 && quedan?.length === 0,
-    e1?.message ?? e2?.message,
+    !e1 && !e2 && !e3 && quedan?.length === 0,
+    e1?.message ?? e2?.message ?? e3?.message,
   )
 }
 

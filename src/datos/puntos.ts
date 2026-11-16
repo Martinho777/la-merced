@@ -1,3 +1,4 @@
+import { ORDEN_NIVEL, type NivelConfianza } from '@/componentes/nivelConfianza'
 import { urlPublica } from '@/lib/storage'
 import { supabase } from '@/lib/supabase'
 import type { Enums, Json, Tables } from '@/lib/tipos-db'
@@ -22,6 +23,14 @@ export type RegistroArchivo = ImagenPunto & {
   credito: string | null
 }
 
+/** Fuente que respalda la ficha, con el nivel de confianza que le dio la investigación a este punto. */
+export type FuenteFicha = {
+  cita: string
+  url: string | null
+  nivel: NivelConfianza
+  nota: string | null
+}
+
 export type PuntoConFicha = Pick<
   Tables<'puntos'>,
   'id' | 'slug' | 'orden' | 'es_esencial' | 'pos_x' | 'pos_y' | 'tiene_3d'
@@ -33,6 +42,30 @@ export type PuntoConFicha = Pick<
   /** Narración de la ficha, o null si todavía no hay. La duración puede no conocerse de antemano. */
   audio: { url: string; duracionS: number | null } | null
   archivo: RegistroArchivo[]
+  /** Fuentes del punto, de más a menos confianza y por cita. */
+  fuentes: FuenteFicha[]
+}
+
+type VinculoFuente = {
+  nivel_confianza: NivelConfianza
+  nota: string | null
+  fuentes: { cita: string; url: string | null }
+}
+
+/** Fuentes de un punto ordenadas de más a menos confianza y, dentro de cada nivel, por cita. */
+export function fuentesDePunto(vinculos: readonly VinculoFuente[]): FuenteFicha[] {
+  return vinculos
+    .map((v) => ({
+      cita: v.fuentes.cita,
+      url: v.fuentes.url?.trim() || null,
+      nivel: v.nivel_confianza,
+      nota: v.nota?.trim() || null,
+    }))
+    .sort(
+      (a, b) =>
+        ORDEN_NIVEL.indexOf(a.nivel) - ORDEN_NIVEL.indexOf(b.nivel) ||
+        a.cita.localeCompare(b.cita, 'es'),
+    )
 }
 
 type MedioDePunto = Pick<
@@ -107,7 +140,8 @@ export async function obtenerPuntosDeZona(
       `id, slug, orden, es_esencial, pos_x, pos_y, tiene_3d,
        zonas!inner(slug),
        fichas(idioma, titulo, que_ves, historia, dato_santi, transcripcion, audio_id),
-       medios!medios_punto_id_fkey(id, tipo, ruta, orden, credito, fecha_original, duracion_s, texto_alternativo)`,
+       medios!medios_punto_id_fkey(id, tipo, ruta, orden, credito, fecha_original, duracion_s, texto_alternativo),
+       punto_fuentes(nivel_confianza, nota, fuentes!inner(cita, url))`,
     )
     .eq('zonas.slug', slugZona)
     .eq('fichas.estado', 'aprobado')
@@ -128,6 +162,7 @@ export async function obtenerPuntosDeZona(
       tiene_3d: punto.tiene_3d,
       ficha,
       ...mediosDePunto(punto.medios, ficha, idioma, urlPublica),
+      fuentes: fuentesDePunto(punto.punto_fuentes),
     }
   })
 }

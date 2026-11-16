@@ -14,6 +14,7 @@ import { FotoReservada } from '@/visitante/FotoReservada'
 import { numeroDeDetalle, rutaDePunto, vecinosEnRuta } from '@/visitante/mapa'
 import { completarPunto, useCompletados } from '@/visitante/progreso'
 import { PuntoDeRecorrido } from '@/visitante/PuntoDeRecorrido'
+import { DatoSanti, FuentesFicha } from '@/visitante/SeccionesFicha'
 import { recordarPuntoAbierto } from '@/visitante/sesionMapa'
 import '@/visitante/pantalla.css'
 import './PantallaPunto.css'
@@ -90,6 +91,8 @@ function Ficha({
           <TextoOPendiente texto={punto.ficha?.historia} />
         </section>
 
+        <DatoSanti dato={punto.ficha?.dato_santi} />
+
         {punto.archivo.length > 0 && (
           <section className="ficha__seccion">
             <div className="ficha__archivo-encabezado">
@@ -119,6 +122,8 @@ function Ficha({
             </ul>
           </section>
         )}
+
+        <FuentesFicha fuentes={punto.fuentes} />
 
         <div className="ficha__completar">
           {completado ? (

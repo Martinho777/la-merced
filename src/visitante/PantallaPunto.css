@@ -148,6 +148,23 @@
   margin: 0;
 }
 
+.ficha__dato {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ficha__dato-santi {
+  flex-shrink: 0;
+}
+
+/* El dato puede ser más largo que una frase: se lee alineado a la izquierda. */
+.ficha__dato-burbuja {
+  flex: 1;
+  min-width: 0;
+  text-align: start;
+}
+
 .ficha__archivo-encabezado {
   display: flex;
   flex-wrap: wrap;
@@ -217,6 +234,55 @@
 .ficha__registro-credito {
   margin: 0;
   color: var(--ink-muted);
+}
+
+.ficha__fuentes-ayuda {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+.ficha__fuentes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ficha__fuente {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.ficha__fuente-cita,
+.ficha__fuente-nota {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ficha__fuente-nota {
+  color: var(--ink-muted);
+}
+
+/* Área táctil mínima aunque el texto sea pequeño. */
+.ficha__fuente-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--touch-min);
+  color: var(--link);
+}
+
+.ficha__fuente-icono {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
 }
 
 .ficha__completar {

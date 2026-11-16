@@ -48,17 +48,18 @@ El navegador avisará que el certificado no es de confianza: acéptalo para esa 
 
 ## Scripts
 
-| Script                  | Qué hace                                                |
-| ----------------------- | ------------------------------------------------------- |
-| `npm run dev`           | Servidor de desarrollo.                                 |
-| `npm run lint`          | ESLint + revisión de formato con Prettier.              |
-| `npm run format`        | Formatea todo con Prettier.                             |
-| `npm run typecheck`     | Revisa tipos con `tsc`.                                 |
-| `npm run test`          | Pruebas con Vitest.                                     |
-| `npm run build`         | Compila a `dist/`.                                      |
-| `npm run db:push`       | Aplica las migraciones pendientes al proyecto enlazado. |
-| `npm run db:types`      | Regenera `src/lib/tipos-db.ts` desde el esquema.        |
-| `npm run db:probar-rls` | Prueba las reglas de acceso con los usuarios de prueba. |
+| Script                      | Qué hace                                                            |
+| --------------------------- | ------------------------------------------------------------------- |
+| `npm run dev`               | Servidor de desarrollo.                                             |
+| `npm run lint`              | ESLint + revisión de formato con Prettier.                          |
+| `npm run format`            | Formatea todo con Prettier.                                         |
+| `npm run typecheck`         | Revisa tipos con `tsc`.                                             |
+| `npm run test`              | Pruebas con Vitest.                                                 |
+| `npm run build`             | Compila a `dist/`.                                                  |
+| `npm run db:push`           | Aplica las migraciones pendientes al proyecto enlazado.             |
+| `npm run db:types`          | Regenera `src/lib/tipos-db.ts` desde el esquema.                    |
+| `npm run db:probar-rls`     | Prueba las reglas de acceso con los usuarios de prueba.             |
+| `npm run db:semilla-textos` | Genera `supabase/semilla-textos.sql` desde los JSON de `src/i18n/`. |
 
 La CI (GitHub Actions) corre `lint`, `typecheck`, `test` y `build` en cada PR y en cada push a `main`.
 
@@ -77,6 +78,7 @@ src/
 supabase/
 ├─ migrations/              una migración por cambio de esquema
 ├─ seed.sql                 zonas, punto de prueba y contorno provisional
+├─ semilla-textos.sql       textos de la interfaz (generado por scripts/semilla-textos.mjs)
 ├─ probar-rls.mjs           prueba de las reglas de acceso con los usuarios de prueba
 └─ contorno-provisional.svg se sube a Storage al poner en marcha el proyecto
 ```
@@ -97,15 +99,16 @@ supabase/
 
 ### Esquema
 
-| Tabla           | Para qué                                                                   |
-| --------------- | -------------------------------------------------------------------------- |
-| `zonas`         | Fachada principal, fachada secundaria e interior.                          |
-| `puntos`        | Puntos de cada zona; `pos_x`/`pos_y` van de 0 a 1 sobre la ilustración.    |
-| `fichas`        | Una por punto y por idioma; estado `borrador` → `revision` → `aprobado`.   |
-| `medios`        | Fotos, audios, ilustraciones y modelos 3D guardados en el bucket `medios`. |
-| `fuentes`       | Referencias reutilizables entre puntos.                                    |
-| `punto_fuentes` | Relación punto–fuente con su nivel de confianza.                           |
-| `perfiles`      | Un usuario del gestor y su rol (`editor`, `revisor`, `admin`).             |
+| Tabla             | Para qué                                                                   |
+| ----------------- | -------------------------------------------------------------------------- |
+| `zonas`           | Fachada principal, fachada secundaria e interior.                          |
+| `puntos`          | Puntos de cada zona; `pos_x`/`pos_y` van de 0 a 1 sobre la ilustración.    |
+| `fichas`          | Una por punto y por idioma; estado `borrador` → `revision` → `aprobado`.   |
+| `medios`          | Fotos, audios, ilustraciones y modelos 3D guardados en el bucket `medios`. |
+| `fuentes`         | Referencias reutilizables entre puntos.                                    |
+| `punto_fuentes`   | Relación punto–fuente con su nivel de confianza.                           |
+| `perfiles`        | Un usuario del gestor y su rol (`editor`, `revisor`, `admin`).             |
+| `textos_interfaz` | Textos de las pantallas por clave de i18next e idioma (ver abajo).         |
 
 ### Reglas de acceso (RLS)
 
@@ -116,7 +119,7 @@ RLS está activo en todas las tablas. `rol_actual()` lee el rol del usuario desd
 | Visitante (`anon`) | Leer zonas, puntos, medios, fuentes y punto_fuentes; fichas solo `aprobado`. No escribe.                                                 |
 | `editor`           | Lo anterior, leer fichas en cualquier estado y crear/editar puntos, fichas, medios y fuentes. Pasa fichas a `revision`, no a `aprobado`. |
 | `revisor`          | Lo mismo que el editor, y aprueba fichas o las devuelve a `borrador`.                                                                    |
-| `admin`            | Todo, incluido asignar roles en `perfiles`.                                                                                              |
+| `admin`            | Todo, incluido asignar roles en `perfiles` y editar `textos_interfaz` (que cualquiera puede leer).                                       |
 
 Si un editor guarda cambios en una ficha aprobada, debe pasarla a `borrador` o `revision`: todo cambio
 a contenido publicado vuelve a pasar por un revisor.
@@ -135,6 +138,22 @@ a contenido publicado vuelve a pasar por un revisor.
    ```
 4. Abre un PR con la migración y los tipos. Lo revisa el responsable del bloque 1, que anota en el PR
    que la aplicó. (En este sprint las migraciones no se aplican desde la CI.)
+
+### Textos de la interfaz desde la base
+
+La tabla `textos_interfaz` guarda los textos de las pantallas del visitante (una fila por clave de
+i18next e idioma, p. ej. `bienvenida.titulo` en `es`). Al abrir, la app muestra los textos de los JSON
+de `src/i18n/` y los reemplaza por los de la base en cuanto llegan (`src/i18n/textosBase.ts`). Guarda una
+copia en el teléfono para la próxima visita. Si la base no responde, sigue con los JSON (o con la copia).
+
+- Un texto de la base solo se usa si su clave existe en `es.json` y tiene los mismos marcadores (`{{count}}`,
+  `{{zona}}`…) que en español; si no, se ignora y se muestra el del JSON.
+- Para llenarla: `npm run db:semilla-textos` genera `supabase/semilla-textos.sql` desde los tres JSON
+  (el kaqchikel solo con lo que ya está en `cak.json`). Se aplica con `npx supabase db push --include-seed`
+  o pegándolo en el SQL Editor. No pisa los textos que ya existan.
+- **Una vez cargado un texto en la base, la base manda:** cambiar ese texto en `es.json` ya no cambia la app.
+  Se cambia desde el gestor (Sprint 4, bloque 3). Las claves nuevas que se agreguen a los JSON se ven de
+  inmediato; para que el admin pueda editarlas, se vuelve a generar y aplicar la semilla.
 
 ## Puesta en marcha del proyecto de Supabase (una sola vez)
 

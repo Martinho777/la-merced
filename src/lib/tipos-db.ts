@@ -286,6 +286,38 @@ export type Database = {
           },
         ]
       }
+      textos_interfaz: {
+        Row: {
+          actualizado_en: string
+          actualizado_por: string | null
+          clave: string
+          idioma: Database['public']['Enums']['idioma']
+          texto: string
+        }
+        Insert: {
+          actualizado_en?: string
+          actualizado_por?: string | null
+          clave: string
+          idioma: Database['public']['Enums']['idioma']
+          texto: string
+        }
+        Update: {
+          actualizado_en?: string
+          actualizado_por?: string | null
+          clave?: string
+          idioma?: Database['public']['Enums']['idioma']
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'textos_interfaz_actualizado_por_fkey'
+            columns: ['actualizado_por']
+            isOneToOne: false
+            referencedRelation: 'perfiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       zonas: {
         Row: {
           actualizado_en: string
