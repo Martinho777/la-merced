@@ -1,5 +1,6 @@
 // Configuración de i18next. Todo texto de la interfaz sale de es.json, cak.json o en.json.
 // Lo que falta en kaqchikel cae a español (fallbackLng) y se lista en PENDIENTE-cak.md.
+// Los textos editados en la base (tabla textos_interfaz) se ponen encima al abrir: src/main.tsx.
 
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
@@ -47,6 +48,8 @@ void i18n.use(initReactI18next).init({
   fallbackLng: IDIOMA_POR_DEFECTO,
   supportedLngs: IDIOMAS,
   interpolation: { escapeValue: false }, // React ya escapa el texto.
+  // Vuelve a pintar cuando llegan los textos de la base (src/i18n/textosBase.ts).
+  react: { bindI18nStore: 'added' },
   initAsync: false,
 })
 
