@@ -18,12 +18,15 @@
 - Entrada del visitante: bienvenida, idioma (es/cak/en), ruta (recomendada/esencial/libre), zona y explicación de cámara.
 - Cámara (bloque 3): la explicación no pide permiso; `/alineacion` pide la cámara trasera solo tras "Activar cámara" y muestra a Santi encima de la imagen con un mensaje y "Ver el mapa" (sin contorno de alineación: el equipo decidió quitarlo). Mientras abre, "Saltar"; si se niega el permiso, va al mapa. Las zonas con `usa_camara` falso van directo al mapa. La zona viaja como `?zona=<slug>`.
 - Mapa (`/mapa`, vertical): ilustración con marcadores (`MarcadorPunto`); un dedo mueve, dos dedos pellizcan para el zoom y el doble toque alterna entre la fachada entera y la vista inicial, con botones de acercar, alejar y restablecer como alternativa (lógica en `visitante/gestos.ts`). Tocar un punto lo selecciona y lo acerca antes de abrir su confirmación; con movimiento reducido el cambio es inmediato (`visitante/movimiento.ts`). Progreso "3/12" calculado de los puntos completados, guardados por zona en el teléfono (`visitante/progreso.ts`). Leyenda y Santi con el siguiente punto según la ruta guardada; en la primera visita, Santi da la instrucción inicial.
-- Experiencia por punto: confirmación (`/confirmacion`) y ficha (`/punto`) con barra de audio, secciones, archivo, Anterior/Siguiente y la acción explícita de completar. Las fotos, el audio y el archivo se muestran si los datos los traen; si faltan, los espacios quedan vacíos y el contenido se indica como pendiente.
+- Experiencia por punto: confirmación (`/confirmacion`) y ficha (`/punto`) con barra de audio, secciones (qué ves, historia, dato de Santi), archivo, fuentes con insignia de nivel de confianza, Anterior/Siguiente y la acción explícita de completar. El dato de Santi y las fuentes solo aparecen si el punto los tiene. Las fotos, el audio y el archivo se muestran si los datos los traen; si faltan, los espacios quedan vacíos y el contenido se indica como pendiente.
 - Datos de demostración (`datos/puntos-demo.ts`): completan hasta 12 puntos mientras la base tenga menos de `MINIMO_PUNTOS_REALES` (`datos/recorrido.ts`). No son contenido patrimonial.
 - Selector de zonas leído de Supabase, con estados de carga/error/reintento y zonas "Próximamente".
 - Componentes base, sistema de tokens generado y tema de alto contraste **en CSS**; imágenes de Santi (35 poses).
 - Esquema, RLS y bucket `medios` en `supabase/migrations/`; tipos generados; CI.
-- Gestor de fichas (`/gestor`, Sprint 3 · bloque 3, rama `feat/gestor-fichas`): inicio de sesión con roles, lista
+- Textos de la interfaz desde la base (Sprint 4 · bloque 1, rama `feat/ficha-textos`): migración de `textos_interfaz`
+  (lectura pública, escritura solo admin), semilla generada desde los JSON y carga al abrir la app con respaldo
+  en los JSON (`i18n/textosBase.ts`). Migraciones y semilla aplicadas en `la-merced-dev` (16 nov 2026).
+- Gestor de fichas (`/gestor`, Sprint 3 · bloque 3): inicio de sesión con roles, lista
   de puntos por zona, ficha por idioma (es y en), estados borrador / revisión / aprobado según el rol, foto del
   detalle y fotos históricas con créditos, fuentes con nivel de confianza. Acceso desde la bienvenida.
 
@@ -32,15 +35,16 @@
 Las pruebas de la tabla existen en el repositorio; **no se ejecutaron al escribir este archivo** (falta `node_modules`).
 La última columna es lo que ninguna prueba automática puede dar por cumplido.
 
-| Funcionalidad                                    | Pruebas automáticas que existen                                                                         | Comprobación manual o en dispositivo                                                                             |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Entrada (bienvenida, idioma, ruta, zona)         | `preferencias.test.ts`, `traducciones.test.ts`, `zonas.test.tsx`                                        | No consta ninguna                                                                                                |
-| Explicación de cámara (`/camara`)                | `camara-pantallas.test.tsx`, `camara.test.ts`                                                           | No consta ninguna                                                                                                |
-| Alineación (`/alineacion`, `getUserMedia`)       | `camara.test.ts`, `camara-pantallas.test.tsx`                                                           | **No**: sin probar en Chrome Android, Samsung Internet ni iOS                                                    |
-| Mapa (`/mapa`, gestos, progreso, ayuda)          | `mapa.test.ts`, `gestos.test.ts`, `mapa-pantallas.test.tsx`, `progreso.test.ts`, `preferencias.test.ts` | **No**: los gestos táctiles no se han probado en un teléfono                                                     |
-| Confirmación y ficha (`/confirmacion`, `/punto`) | `punto-pantallas.test.tsx`, `puntos.test.ts`, `recorrido.test.ts`                                       | Solo en navegador de escritorio con datos simulados; no contra Supabase real ni en un teléfono                   |
-| Santi hablando sobre la cámara                   | `habla.test.ts`                                                                                         | No consta ninguna                                                                                                |
-| Gestor de fichas (`/gestor`)                     | `sesion.test.ts`, `gestor*.test.ts`, `fotos.test.ts`, `fuentes.test.ts`, `gestor/*.test.ts`             | Probado en navegador de escritorio contra `la-merced-dev` con los usuarios de prueba (nov. 2026); no en teléfono |
+| Funcionalidad                                    | Pruebas automáticas que existen                                                                         | Comprobación manual o en dispositivo                                                                                   |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Entrada (bienvenida, idioma, ruta, zona)         | `preferencias.test.ts`, `traducciones.test.ts`, `zonas.test.tsx`                                        | No consta ninguna                                                                                                      |
+| Explicación de cámara (`/camara`)                | `camara-pantallas.test.tsx`, `camara.test.ts`                                                           | No consta ninguna                                                                                                      |
+| Alineación (`/alineacion`, `getUserMedia`)       | `camara.test.ts`, `camara-pantallas.test.tsx`                                                           | **No**: sin probar en Chrome Android, Samsung Internet ni iOS                                                          |
+| Mapa (`/mapa`, gestos, progreso, ayuda)          | `mapa.test.ts`, `gestos.test.ts`, `mapa-pantallas.test.tsx`, `progreso.test.ts`, `preferencias.test.ts` | **No**: los gestos táctiles no se han probado en un teléfono                                                           |
+| Confirmación y ficha (`/confirmacion`, `/punto`) | `punto-pantallas.test.tsx`, `puntos.test.ts`, `recorrido.test.ts`                                       | Solo en navegador de escritorio con datos simulados; no contra Supabase real ni en un teléfono                         |
+| Santi hablando sobre la cámara                   | `habla.test.ts`                                                                                         | No consta ninguna                                                                                                      |
+| Textos de la interfaz desde la base              | `textosBase.test.ts`, `textos.test.ts`, `semilla-textos.test.ts`                                        | Probado en navegador de escritorio: respaldo a los JSON sin la tabla y lectura real de `la-merced-dev`; no en teléfono |
+| Gestor de fichas (`/gestor`)                     | `sesion.test.ts`, `gestor*.test.ts`, `fotos.test.ts`, `fuentes.test.ts`, `gestor/*.test.ts`             | Probado en navegador de escritorio contra `la-merced-dev` con los usuarios de prueba (nov. 2026); no en teléfono       |
 
 Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo no da ninguno por cumplido;** lo decide el equipo:
 
@@ -59,7 +63,7 @@ Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo
 - **Kaqchikel**: 3 de 74 claves traducidas; el resto cae a español (`src/i18n/PENDIENTE-cak.md`).
 - **Datos de contenido**: el seed tiene un único punto de prueba (con ficha solo en español), que se muestra junto a los de demostración.
 - **"Ver cómo era"**: botón en el mapa y pantalla `/ver-como-era` con `<model-viewer>` (girar y pellizcar, sin cámara). El modelo es una esfera provisional de prueba; faltan los volúmenes en Blender, las partes con nivel de confianza y "Ver en 3D" en la ficha.
-- **Ficha**: no incluye dato de Santi, fuentes, nivel de confianza ni "Ver en 3D".
+- **Ficha**: no incluye "Ver en 3D".
 
 ## Solo estructura o marcador
 
