@@ -11,6 +11,12 @@
   padding: 0;
 }
 
+/* El gestor se usa también en computadora: más ancho que la columna del visitante (gestor-max más
+   el margen de la pantalla a cada lado). En el teléfono se ve igual que antes. */
+.layout:has(> .gestor) {
+  max-width: calc(var(--gestor-max) + 2 * var(--pad-screen-x));
+}
+
 .error {
   color: var(--error);
 }

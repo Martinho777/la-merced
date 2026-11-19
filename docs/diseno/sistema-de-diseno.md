@@ -82,7 +82,7 @@ The full type scale (display, title-1, title-2, heading, body-lg, body, body-str
 
 - **4px grid.** Every margin, padding and gap is a `space-*` or `pad-*` token.
 - **Screen gutter** `pad-screen-x` (16px) left and right on every screen.
-- **Content width** max `content-max` (480px), centered on larger screens.
+- **Content width** max `content-max` (480px), centered on larger screens. The staff panel (`/gestor`) is used on computers too: it widens to `gestor-max` (960px) and lays its sections in two columns when there is room.
 - **Rhythm:** `space-2` (8) inside a group, `space-3` (12) between cards, `space-6` (24) between sections, `space-8` (32) before a new major block.
 - **Primary action** sits at the bottom of the screen, full width inside the gutter, with `space-8` above the bottom safe area.
 - Component padding (buttons, cards, sheets, chips, bubble) uses the `pad-*` tokens; see Components.

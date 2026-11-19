@@ -10,6 +10,7 @@ const ficha: FichaGestor = {
   historia: '',
   dato_santi: '',
   revision: null,
+  audio: null,
 }
 
 describe('editor de fichas', () => {

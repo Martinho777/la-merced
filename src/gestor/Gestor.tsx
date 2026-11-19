@@ -6,6 +6,7 @@ import { Route, Routes, useNavigate } from 'react-router'
 import { LogOut } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { alCambiarSesion, cerrarSesion, obtenerSesion, type SesionGestor } from '@/datos/sesion'
+import { FijarEncabezado, type ContextoEncabezado } from '@/gestor/contexto'
 import { EditorPunto } from '@/gestor/EditorPunto'
 import { ListaPuntos } from '@/gestor/ListaPuntos'
 import { PantallaEntrar } from '@/gestor/PantallaEntrar'
@@ -18,21 +19,39 @@ type Estado =
   | { tipo: 'sinSesion' }
   | { tipo: 'conSesion'; sesion: SesionGestor }
 
-function EncabezadoGestor({ sesion, alSalir }: { sesion: SesionGestor; alSalir: () => void }) {
+function EncabezadoGestor({
+  sesion,
+  contexto,
+  alSalir,
+}: {
+  sesion: SesionGestor
+  contexto: ContextoEncabezado | null
+  alSalir: () => void
+}) {
   const { t } = useTranslation('gestor')
   const [saliendo, setSaliendo] = useState(false)
 
   return (
     <header className="gestor__encabezado">
-      <div className="gestor__titulos">
-        <p className="gestor__marca texto-small-strong">{t('titulo')}</p>
-        {sesion.rol && (
-          <p className="gestor__texto texto-small">
-            {t('sesion.usuario', {
-              nombre: sesion.nombre ?? sesion.correo,
-              rol: t(`roles.${sesion.rol}`),
-            })}
-          </p>
+      <div className="gestor__encabezado-izquierda">
+        <div className="gestor__titulos">
+          <p className="gestor__marca texto-small-strong">{t('titulo')}</p>
+          {sesion.rol && (
+            <p className="gestor__texto texto-small">
+              {t('sesion.usuario', {
+                nombre: sesion.nombre ?? sesion.correo,
+                rol: t(`roles.${sesion.rol}`),
+              })}
+            </p>
+          )}
+        </div>
+        {contexto && (
+          <div className="gestor__contexto">
+            <div className="gestor__titulos">
+              <h1 className="gestor__marca texto-heading">{contexto.titulo}</h1>
+              <p className="gestor__texto texto-small">{contexto.detalle}</p>
+            </div>
+          </div>
         )}
       </div>
       <Boton
@@ -56,6 +75,7 @@ export function Gestor() {
   const navegar = useNavigate()
   const [estado, setEstado] = useState<Estado>({ tipo: 'cargando' })
   const [intento, setIntento] = useState(0)
+  const [contexto, setContexto] = useState<ContextoEncabezado | null>(null)
 
   useEffect(() => {
     let vigente = true
@@ -84,9 +104,11 @@ export function Gestor() {
 
   if (estado.tipo === 'cargando') {
     return (
-      <p className="gestor__texto texto-body" role="status">
-        {t('comun.cargando')}
-      </p>
+      <div className="gestor">
+        <p className="gestor__texto texto-body" role="status">
+          {t('comun.cargando')}
+        </p>
+      </div>
     )
   }
 
@@ -114,26 +136,28 @@ export function Gestor() {
 
   const { sesion } = estado
   return (
-    <div className="gestor">
-      <EncabezadoGestor sesion={sesion} alSalir={() => void salir()} />
-      {sesion.rol ? (
-        <Routes>
-          <Route
-            index
-            element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
-          />
-          <Route path="punto/:idPunto" element={<EditorPunto rol={sesion.rol} />} />
-          <Route
-            path="*"
-            element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
-          />
-        </Routes>
-      ) : (
-        <section className="gestor__titulos">
-          <h1 className="gestor__titulo texto-title-1">{t('sesion.sinRolTitulo')}</h1>
-          <p className="gestor__texto texto-body">{t('sesion.sinRolTexto')}</p>
-        </section>
-      )}
-    </div>
+    <FijarEncabezado.Provider value={setContexto}>
+      <div className="gestor">
+        <EncabezadoGestor sesion={sesion} contexto={contexto} alSalir={() => void salir()} />
+        {sesion.rol ? (
+          <Routes>
+            <Route
+              index
+              element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
+            />
+            <Route path="punto/:idPunto" element={<EditorPunto rol={sesion.rol} />} />
+            <Route
+              path="*"
+              element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
+            />
+          </Routes>
+        ) : (
+          <section className="gestor__titulos">
+            <h1 className="gestor__titulo texto-title-1">{t('sesion.sinRolTitulo')}</h1>
+            <p className="gestor__texto texto-body">{t('sesion.sinRolTexto')}</p>
+          </section>
+        )}
+      </div>
+    </FijarEncabezado.Provider>
   )
 }

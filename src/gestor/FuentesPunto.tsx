@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, Save, Trash2 } from 'lucide-react'
+import { ExternalLink, Pencil, Plus, Save, Trash2 } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { Insignia } from '@/componentes/Insignia'
 import { TONO_NIVEL } from '@/componentes/nivelConfianza'
@@ -20,15 +20,15 @@ import {
   type NivelConfianza,
   type TipoFuente,
 } from '@/datos/fuentes'
-import { Campo, Selector } from '@/gestor/componentes/Campo'
+import { Campo, CampoArea, Selector } from '@/gestor/componentes/Campo'
 import { FUENTE_VACIA, fuentesDisponibles } from '@/gestor/fuentes'
 
-type Aviso = 'agregada' | 'guardada' | 'faltaCita' | 'error' | null
+type Aviso = 'agregada' | 'guardada' | 'quitada' | 'faltaCita' | 'faltaFuente' | 'error' | null
 
 function Mensaje({ aviso }: { aviso: Aviso }) {
   const { t } = useTranslation('gestor')
   if (!aviso || aviso === 'faltaCita') return null
-  const bueno = aviso !== 'error'
+  const bueno = aviso === 'agregada' || aviso === 'guardada' || aviso === 'quitada'
   return (
     <p
       className={bueno ? 'gestor__texto texto-body' : 'gestor__error texto-body'}
@@ -52,9 +52,11 @@ function CamposFuente({
   const { t } = useTranslation('gestor')
   return (
     <>
-      <Campo
+      <CampoArea
         etiqueta={t('fuentes.campos.cita')}
         ayuda={t('fuentes.campos.citaAyuda')}
+        requisito="obligatorio"
+        rows={2}
         error={faltaCita ? t('fuentes.faltaCita') : undefined}
         value={datos.cita}
         onChange={(e) => alCambiar({ ...datos, cita: e.target.value })}
@@ -67,6 +69,7 @@ function CamposFuente({
       />
       <Campo
         etiqueta={t('fuentes.campos.url')}
+        requisito="opcional"
         type="url"
         value={datos.url}
         onChange={(e) => alCambiar({ ...datos, url: e.target.value })}
@@ -75,196 +78,264 @@ function CamposFuente({
   )
 }
 
-/** Nivel de confianza y nota del vínculo con el punto. */
-function CamposVinculo({
+/**
+ * Nivel de confianza como tarjetas de opción única: cada una con su insignia (la misma que ve el
+ * visitante) y qué significa, para que la insignia no quede sin explicar.
+ */
+function SelectorNivel({
+  nombre,
   nivel,
-  nota,
   alCambiar,
 }: {
+  nombre: string
   nivel: NivelConfianza
-  nota: string
-  alCambiar: (nivel: NivelConfianza, nota: string) => void
+  alCambiar: (nivel: NivelConfianza) => void
 }) {
   const { t } = useTranslation('gestor')
   return (
-    <>
-      <Selector
-        etiqueta={t('fuentes.campos.nivel')}
-        ayuda={t('fuentes.nivelesAyuda')}
-        value={nivel}
-        opciones={NIVELES_CONFIANZA.map((n) => ({ valor: n, texto: t(`fuentes.niveles.${n}`) }))}
-        onChange={(e) => alCambiar(e.target.value as NivelConfianza, nota)}
-      />
-      <Campo
-        etiqueta={t('fuentes.campos.nota')}
-        ayuda={t('fuentes.campos.notaAyuda')}
-        value={nota}
-        onChange={(e) => alCambiar(nivel, e.target.value)}
-      />
-    </>
+    <fieldset className="gestor__niveles">
+      <legend className="campo__etiqueta texto-heading">{t('fuentes.campos.nivel')}</legend>
+      <p className="campo__ayuda texto-small">{t('fuentes.campos.nivelAyuda')}</p>
+      {NIVELES_CONFIANZA.map((n) => (
+        <label
+          key={n}
+          className={n === nivel ? 'gestor__nivel gestor__nivel--elegido' : 'gestor__nivel'}
+        >
+          <input
+            type="radio"
+            name={nombre}
+            value={n}
+            checked={n === nivel}
+            onChange={() => alCambiar(n)}
+          />
+          <span className="gestor__nivel-textos">
+            <Insignia tono={TONO_NIVEL[n]}>{t(`fuentes.niveles.${n}`)}</Insignia>
+            <span className="gestor__texto texto-small">{t(`fuentes.nivelesTexto.${n}`)}</span>
+          </span>
+        </label>
+      ))}
+    </fieldset>
   )
 }
 
-/** Una fuente del punto: su nivel y nota editables, corregir la fuente y quitarla del punto. */
-function FuenteDelPunto({
-  idPunto,
+function CampoNota({ nota, alCambiar }: { nota: string; alCambiar: (nota: string) => void }) {
+  const { t } = useTranslation('gestor')
+  return (
+    <CampoArea
+      etiqueta={t('fuentes.campos.nota')}
+      ayuda={t('fuentes.campos.notaAyuda')}
+      requisito="opcional"
+      rows={2}
+      value={nota}
+      onChange={(e) => alCambiar(e.target.value)}
+    />
+  )
+}
+
+/** Una fuente del punto, compacta: cita, tipo, enlace, su nivel de confianza y lo que respalda. */
+function TarjetaFuente({
   vinculo,
-  alCambiar,
+  editando,
+  alEditar,
   alQuitar,
 }: {
-  idPunto: string
   vinculo: FuentePunto
-  alCambiar: (vinculo: FuentePunto) => void
-  alQuitar: () => void
+  editando: boolean
+  alEditar: () => void
+  alQuitar: () => Promise<void>
 }) {
   const { t } = useTranslation('gestor')
-  const [nivel, setNivel] = useState(vinculo.nivel)
-  const [nota, setNota] = useState(vinculo.nota)
-  const [editandoFuente, setEditandoFuente] = useState(false)
-  const [datosFuente, setDatosFuente] = useState<DatosFuente>(vinculo.fuente)
-  const [faltaCita, setFaltaCita] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
-  const [ocupado, setOcupado] = useState(false)
-  const [aviso, setAviso] = useState<Aviso>(null)
+  const [quitando, setQuitando] = useState(false)
   const { fuente } = vinculo
 
-  async function guardar(evento: FormEvent<HTMLFormElement>) {
-    evento.preventDefault()
-    if (editandoFuente && !datosFuente.cita.trim()) {
-      setFaltaCita(true)
-      return
-    }
-    setOcupado(true)
-    try {
-      const corregida = editandoFuente ? await actualizarFuente(fuente.id, datosFuente) : fuente
-      await actualizarVinculo(idPunto, fuente.id, nivel, nota)
-      alCambiar({ fuente: corregida, nivel, nota })
-      setEditandoFuente(false)
-      setAviso('guardada')
-    } catch {
-      setAviso('error')
-    } finally {
-      setOcupado(false)
-    }
-  }
-
   async function quitar() {
-    setOcupado(true)
+    setQuitando(true)
     try {
-      await desvincularFuente(idPunto, fuente.id)
-      alQuitar()
+      await alQuitar()
     } catch {
-      setAviso('error')
-      setOcupado(false)
+      setQuitando(false)
       setConfirmando(false)
     }
   }
 
   return (
-    <form className="gestor__foto" onSubmit={guardar} noValidate>
-      <div className="gestor__titulos">
+    <li
+      className={
+        editando
+          ? 'gestor__tarjeta-fuente gestor__tarjeta-fuente--editando'
+          : 'gestor__tarjeta-fuente'
+      }
+    >
+      <div className="gestor__tarjeta-fuente-datos">
         <p className="gestor__marca texto-body-strong">{fuente.cita}</p>
-        <p className="gestor__texto texto-small">{t(`fuentes.tipos.${fuente.tipo}`)}</p>
-        {fuente.url && (
-          <a
-            className="gestor__enlace texto-small"
-            href={fuente.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t('fuentes.enlace')}
-          </a>
+        <p className="gestor__texto texto-small">
+          {t(`fuentes.tipos.${fuente.tipo}`)}
+          {fuente.url && (
+            <>
+              {' · '}
+              <a className="gestor__enlace" href={fuente.url} target="_blank" rel="noreferrer">
+                {t('fuentes.enlace')}
+                <ExternalLink className="gestor__icono-linea" aria-hidden="true" />
+              </a>
+            </>
+          )}
+        </p>
+        <p className="gestor__nivel-linea texto-small">
+          {t('fuentes.nivelDelPunto')}
+          <Insignia tono={TONO_NIVEL[vinculo.nivel]}>
+            {t(`fuentes.niveles.${vinculo.nivel}`)}
+          </Insignia>
+        </p>
+        {vinculo.nota && (
+          <p className="gestor__texto texto-small">
+            {t('fuentes.respalda', { nota: vinculo.nota })}
+          </p>
         )}
-        <Insignia tono={TONO_NIVEL[vinculo.nivel]}>
-          {t(`fuentes.niveles.${vinculo.nivel}`)}
-        </Insignia>
       </div>
+      <div className="gestor__tarjeta-acciones">
+        {confirmando ? (
+          <>
+            <p className="gestor__texto texto-small-strong">{t('fuentes.preguntaQuitar')}</p>
+            <Boton
+              variante="fantasma"
+              destructivo
+              tamano="sm"
+              icono={Trash2}
+              cargando={quitando}
+              onClick={() => void quitar()}
+            >
+              {t('fuentes.confirmarQuitar')}
+            </Boton>
+            <Boton variante="secundario" tamano="sm" onClick={() => setConfirmando(false)}>
+              {t('fuentes.cancelar')}
+            </Boton>
+          </>
+        ) : (
+          <>
+            <Boton
+              variante="secundario"
+              tamano="sm"
+              icono={Pencil}
+              aria-pressed={editando}
+              onClick={alEditar}
+            >
+              {t('fuentes.editar')}
+            </Boton>
+            <Boton
+              variante="fantasma"
+              destructivo
+              tamano="sm"
+              icono={Trash2}
+              onClick={() => setConfirmando(true)}
+            >
+              {t('fuentes.quitar')}
+            </Boton>
+          </>
+        )}
+      </div>
+    </li>
+  )
+}
 
-      <CamposVinculo
-        nivel={nivel}
-        nota={nota}
-        alCambiar={(n, texto) => {
-          setNivel(n)
-          setNota(texto)
-          setAviso(null)
-        }}
-      />
+/** Panel para cambiar el nivel y la nota de una fuente del punto, y, si hace falta, la fuente. */
+function EditarFuente({
+  idPunto,
+  vinculo,
+  alGuardar,
+  alCerrar,
+}: {
+  idPunto: string
+  vinculo: FuentePunto
+  alGuardar: (vinculo: FuentePunto) => void
+  alCerrar: () => void
+}) {
+  const { t } = useTranslation('gestor')
+  const [nivel, setNivel] = useState(vinculo.nivel)
+  const [nota, setNota] = useState(vinculo.nota)
+  const [corrigiendo, setCorrigiendo] = useState(false)
+  const [datos, setDatos] = useState<DatosFuente>(vinculo.fuente)
+  const [faltaCita, setFaltaCita] = useState(false)
+  const [guardando, setGuardando] = useState(false)
+  const [aviso, setAviso] = useState<Aviso>(null)
+  const { fuente } = vinculo
 
-      {editandoFuente ? (
+  async function guardar(evento: FormEvent<HTMLFormElement>) {
+    evento.preventDefault()
+    if (corrigiendo && !datos.cita.trim()) {
+      setFaltaCita(true)
+      return
+    }
+    setGuardando(true)
+    try {
+      const corregida = corrigiendo ? await actualizarFuente(fuente.id, datos) : fuente
+      await actualizarVinculo(idPunto, fuente.id, nivel, nota)
+      alGuardar({ fuente: corregida, nivel, nota: nota.trim() })
+    } catch {
+      setAviso('error')
+      setGuardando(false)
+    }
+  }
+
+  return (
+    <form className="gestor__panel" onSubmit={guardar} noValidate>
+      <div className="gestor__titulos">
+        <h4 className="gestor__subtitulo texto-heading">{t('fuentes.editandoTitulo')}</h4>
+        <p className="gestor__texto texto-small">{fuente.cita}</p>
+      </div>
+      <SelectorNivel nombre={`nivel-${fuente.id}`} nivel={nivel} alCambiar={setNivel} />
+      <CampoNota nota={nota} alCambiar={setNota} />
+      {corrigiendo ? (
         <>
-          <p className="gestor__texto texto-small">{t('fuentes.editarFuenteAviso')}</p>
+          <p className="gestor__aviso texto-small">{t('fuentes.editarFuenteAviso')}</p>
           <CamposFuente
-            datos={datosFuente}
+            datos={datos}
             faltaCita={faltaCita}
-            alCambiar={(datos) => {
-              setDatosFuente(datos)
+            alCambiar={(nuevos) => {
+              setDatos(nuevos)
               setFaltaCita(false)
-              setAviso(null)
             }}
           />
         </>
-      ) : null}
-
+      ) : (
+        <Boton variante="fantasma" tamano="sm" onClick={() => setCorrigiendo(true)}>
+          {t('fuentes.editarFuente')}
+        </Boton>
+      )}
       <Mensaje aviso={aviso} />
-
       <div className="gestor__pestanas">
-        <Boton type="submit" tamano="sm" icono={Save} cargando={ocupado && !confirmando}>
+        <Boton type="submit" tamano="sm" icono={Save} cargando={guardando}>
           {t('fuentes.guardar')}
         </Boton>
-        {editandoFuente ? (
-          <Boton
-            variante="fantasma"
-            tamano="sm"
-            onClick={() => {
-              setEditandoFuente(false)
-              setDatosFuente(fuente)
-            }}
-          >
-            {t('fuentes.cancelar')}
-          </Boton>
-        ) : (
-          <Boton variante="fantasma" tamano="sm" onClick={() => setEditandoFuente(true)}>
-            {t('fuentes.editarFuente')}
-          </Boton>
-        )}
-        {confirmando ? (
-          <Boton
-            variante="fantasma"
-            tamano="sm"
-            destructivo
-            icono={Trash2}
-            cargando={ocupado}
-            onClick={() => void quitar()}
-          >
-            {t('fuentes.confirmarQuitar')}
-          </Boton>
-        ) : (
-          <Boton
-            variante="fantasma"
-            tamano="sm"
-            destructivo
-            icono={Trash2}
-            onClick={() => setConfirmando(true)}
-          >
-            {t('fuentes.quitar')}
-          </Boton>
-        )}
+        <Boton variante="secundario" tamano="sm" onClick={alCerrar}>
+          {t('fuentes.cancelar')}
+        </Boton>
       </div>
     </form>
   )
 }
 
-/** Agregar al punto una fuente existente o una nueva, con su nivel de confianza. */
+type Origen = 'existente' | 'nueva'
+
+/**
+ * Agregar una fuente al punto, en tres preguntas numeradas: qué fuente (una de la biblioteca o una
+ * nueva), qué tan segura es para este punto y qué respalda. El título dice a qué punto se agrega.
+ */
 function AgregarFuente({
   idPunto,
+  nombrePunto,
   disponibles,
   alAgregar,
+  alCerrar,
 }: {
   idPunto: string
+  nombrePunto: string
   disponibles: Fuente[]
   alAgregar: (vinculo: FuentePunto, nueva: boolean) => void
+  alCerrar: () => void
 }) {
   const { t } = useTranslation('gestor')
+  const [origen, setOrigen] = useState<Origen>(disponibles.length > 0 ? 'existente' : 'nueva')
   const [eleccion, setEleccion] = useState('')
   const [datos, setDatos] = useState<DatosFuente>(FUENTE_VACIA)
   const [nivel, setNivel] = useState<NivelConfianza>('documentado')
@@ -272,11 +343,15 @@ function AgregarFuente({
   const [faltaCita, setFaltaCita] = useState(false)
   const [ocupado, setOcupado] = useState(false)
   const [aviso, setAviso] = useState<Aviso>(null)
-  const existente = disponibles.find((f) => f.id === eleccion) ?? null
+  const existente = origen === 'existente' ? disponibles.find((f) => f.id === eleccion) : undefined
 
   async function agregar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault()
-    if (!existente && !datos.cita.trim()) {
+    if (origen === 'existente' && !existente) {
+      setAviso('faltaFuente')
+      return
+    }
+    if (origen === 'nueva' && !datos.cita.trim()) {
       setFaltaCita(true)
       return
     }
@@ -285,68 +360,125 @@ function AgregarFuente({
       const fuente = existente ?? (await crearFuente(datos))
       await vincularFuente(idPunto, fuente.id, nivel, nota)
       alAgregar({ fuente, nivel, nota: nota.trim() }, !existente)
-      setEleccion('')
-      setDatos(FUENTE_VACIA)
-      setNivel('documentado')
-      setNota('')
-      setAviso('agregada')
     } catch {
       setAviso('error')
-    } finally {
       setOcupado(false)
     }
   }
 
   return (
-    <form className="gestor__foto gestor__foto--nueva" onSubmit={agregar} noValidate>
-      <h3 className="gestor__subtitulo texto-heading">{t('fuentes.agregarTitulo')}</h3>
-      {disponibles.length > 0 && (
-        <Selector
-          etiqueta={t('fuentes.campos.fuente')}
-          value={eleccion}
-          opciones={[
-            { valor: '', texto: t('fuentes.campos.nueva') },
-            ...disponibles.map((f) => ({ valor: f.id, texto: f.cita })),
-          ]}
-          onChange={(e) => {
-            setEleccion(e.target.value)
-            setAviso(null)
-          }}
-        />
-      )}
-      {!existente && (
-        <CamposFuente
-          datos={datos}
-          faltaCita={faltaCita}
-          alCambiar={(nuevos) => {
-            setDatos(nuevos)
-            setFaltaCita(false)
-            setAviso(null)
-          }}
-        />
-      )}
-      <CamposVinculo
-        nivel={nivel}
-        nota={nota}
-        alCambiar={(n, texto) => {
-          setNivel(n)
-          setNota(texto)
-        }}
-      />
+    <form className="gestor__panel" onSubmit={agregar} noValidate>
+      <h4 className="gestor__subtitulo texto-heading">
+        {t('fuentes.agregarA', { punto: nombrePunto })}
+      </h4>
+
+      <fieldset className="gestor__pregunta">
+        <legend className="gestor__pregunta-titulo texto-heading">
+          <span className="gestor__pregunta-numero texto-small-strong" aria-hidden="true">
+            1
+          </span>
+          {t('fuentes.preguntaCual')}
+        </legend>
+        {disponibles.length > 0 && (
+          <div className="gestor__pestanas" role="group" aria-label={t('fuentes.preguntaCual')}>
+            {(['existente', 'nueva'] as const).map((o) => (
+              <Boton
+                key={o}
+                tamano="sm"
+                variante={o === origen ? 'primario' : 'secundario'}
+                aria-pressed={o === origen}
+                onClick={() => {
+                  setOrigen(o)
+                  setAviso(null)
+                }}
+              >
+                {t(`fuentes.origen.${o}`)}
+              </Boton>
+            ))}
+          </div>
+        )}
+        {origen === 'existente' ? (
+          <Selector
+            etiqueta={t('fuentes.campos.fuente')}
+            ayuda={t('fuentes.campos.fuenteAyuda')}
+            value={eleccion}
+            opciones={[
+              { valor: '', texto: t('fuentes.campos.elegir') },
+              ...disponibles.map((f) => ({ valor: f.id, texto: f.cita })),
+            ]}
+            onChange={(e) => {
+              setEleccion(e.target.value)
+              setAviso(null)
+            }}
+          />
+        ) : (
+          <CamposFuente
+            datos={datos}
+            faltaCita={faltaCita}
+            alCambiar={(nuevos) => {
+              setDatos(nuevos)
+              setFaltaCita(false)
+              setAviso(null)
+            }}
+          />
+        )}
+      </fieldset>
+
+      <fieldset className="gestor__pregunta">
+        <legend className="gestor__pregunta-titulo texto-heading">
+          <span className="gestor__pregunta-numero texto-small-strong" aria-hidden="true">
+            2
+          </span>
+          {t('fuentes.preguntaNivel')}
+        </legend>
+        <SelectorNivel nombre="nivel-nueva" nivel={nivel} alCambiar={setNivel} />
+      </fieldset>
+
+      <fieldset className="gestor__pregunta">
+        <legend className="gestor__pregunta-titulo texto-heading">
+          <span className="gestor__pregunta-numero texto-small-strong" aria-hidden="true">
+            3
+          </span>
+          {t('fuentes.preguntaNota')}
+        </legend>
+        <CampoNota nota={nota} alCambiar={setNota} />
+      </fieldset>
+
       <Mensaje aviso={aviso} />
-      <Boton type="submit" icono={Plus} cargando={ocupado}>
-        {t('fuentes.agregar')}
-      </Boton>
+      <div className="gestor__pestanas">
+        <Boton type="submit" icono={Plus} cargando={ocupado}>
+          {t('fuentes.agregar')}
+        </Boton>
+        <Boton variante="secundario" onClick={alCerrar}>
+          {t('fuentes.cancelar')}
+        </Boton>
+      </div>
     </form>
   )
 }
 
-/** Sección de fuentes de un punto. */
-export function FuentesPunto({ idPunto }: { idPunto: string }) {
+type Panel = { tipo: 'editar'; id: string } | { tipo: 'agregar' } | null
+
+/**
+ * Fuentes de un punto: las que ya tiene, compactas, y un solo panel para editar una o agregar otra.
+ */
+export function FuentesPunto({
+  idPunto,
+  nombrePunto,
+  alResumir,
+}: {
+  idPunto: string
+  /** Nombre del punto ("Punto 3 · Nicho central"), para decir a qué se agrega la fuente. */
+  nombrePunto: string
+  /** Avisa cuántas fuentes tiene el punto, para el estado del paso. */
+  alResumir?: (cuantas: number) => void
+}) {
   const { t } = useTranslation('gestor')
   const [vinculos, setVinculos] = useState<FuentePunto[] | null>(null)
   const [todas, setTodas] = useState<Fuente[]>([])
   const [error, setError] = useState(false)
+  const [panel, setPanel] = useState<Panel>(null)
+  const [aviso, setAviso] = useState<Aviso>(null)
 
   useEffect(() => {
     let vigente = true
@@ -361,6 +493,12 @@ export function FuentesPunto({ idPunto }: { idPunto: string }) {
       vigente = false
     }
   }, [idPunto])
+
+  useEffect(() => {
+    if (vinculos) alResumir?.(vinculos.length)
+    // alResumir cambia en cada render del editor; solo importa cuando cambian las fuentes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vinculos])
 
   if (error) {
     return (
@@ -377,45 +515,95 @@ export function FuentesPunto({ idPunto }: { idPunto: string }) {
     )
   }
 
+  const cerrar = () => setPanel(null)
+  const enEdicion =
+    panel?.tipo === 'editar' ? vinculos.find((v) => v.fuente.id === panel.id) : undefined
+
+  async function quitar(vinculo: FuentePunto) {
+    try {
+      await desvincularFuente(idPunto, vinculo.fuente.id)
+      setVinculos((actuales) => (actuales ?? []).filter((v) => v.fuente.id !== vinculo.fuente.id))
+      if (enEdicion?.fuente.id === vinculo.fuente.id) cerrar()
+      setAviso('quitada')
+    } catch (e) {
+      setAviso('error')
+      throw e
+    }
+  }
+
   return (
-    <section className="gestor__seccion" aria-labelledby="fuentes-titulo">
-      <div className="gestor__titulos">
-        <h2 id="fuentes-titulo" className="gestor__subtitulo texto-title-2">
-          {t('fuentes.titulo')}
-        </h2>
-        <p className="gestor__texto texto-body">{t('fuentes.texto')}</p>
-      </div>
+    <div className="gestor__seccion">
+      <Mensaje aviso={aviso} />
 
-      {vinculos.length === 0 && <p className="gestor__texto texto-body">{t('fuentes.vacio')}</p>}
-      {vinculos.map((vinculo) => (
-        <FuenteDelPunto
-          key={vinculo.fuente.id}
+      <section className="gestor__grupo" aria-labelledby="fuentes-punto-titulo">
+        <h3 id="fuentes-punto-titulo" className="gestor__subtitulo texto-heading">
+          {t('fuentes.delPunto', { cuantas: vinculos.length })}
+        </h3>
+        {vinculos.length === 0 && <p className="gestor__aviso texto-small">{t('fuentes.vacio')}</p>}
+        <ul className="gestor__fuentes">
+          {vinculos.map((vinculo) => (
+            <TarjetaFuente
+              key={vinculo.fuente.id}
+              vinculo={vinculo}
+              editando={enEdicion?.fuente.id === vinculo.fuente.id}
+              alEditar={() => {
+                setAviso(null)
+                setPanel(
+                  enEdicion?.fuente.id === vinculo.fuente.id
+                    ? null
+                    : { tipo: 'editar', id: vinculo.fuente.id },
+                )
+              }}
+              alQuitar={() => quitar(vinculo)}
+            />
+          ))}
+        </ul>
+        {enEdicion && (
+          <EditarFuente
+            key={enEdicion.fuente.id}
+            idPunto={idPunto}
+            vinculo={enEdicion}
+            alCerrar={cerrar}
+            alGuardar={(nuevo) => {
+              setVinculos((actuales) =>
+                (actuales ?? []).map((v) => (v.fuente.id === nuevo.fuente.id ? nuevo : v)),
+              )
+              setTodas((actuales) =>
+                actuales.map((f) => (f.id === nuevo.fuente.id ? nuevo.fuente : f)),
+              )
+              cerrar()
+              setAviso('guardada')
+            }}
+          />
+        )}
+      </section>
+
+      {panel?.tipo === 'agregar' ? (
+        <AgregarFuente
           idPunto={idPunto}
-          vinculo={vinculo}
-          alCambiar={(nuevo) => {
-            setVinculos((actuales) =>
-              (actuales ?? []).map((v) => (v.fuente.id === nuevo.fuente.id ? nuevo : v)),
-            )
-            setTodas((actuales) =>
-              actuales.map((f) => (f.id === nuevo.fuente.id ? nuevo.fuente : f)),
-            )
+          nombrePunto={nombrePunto}
+          disponibles={fuentesDisponibles(todas, vinculos)}
+          alCerrar={cerrar}
+          alAgregar={(vinculo, nueva) => {
+            setVinculos((actuales) => [...(actuales ?? []), vinculo])
+            if (nueva) setTodas((actuales) => [...actuales, vinculo.fuente])
+            cerrar()
+            setAviso('agregada')
           }}
-          alQuitar={() =>
-            setVinculos((actuales) =>
-              (actuales ?? []).filter((v) => v.fuente.id !== vinculo.fuente.id),
-            )
-          }
         />
-      ))}
-
-      <AgregarFuente
-        idPunto={idPunto}
-        disponibles={fuentesDisponibles(todas, vinculos)}
-        alAgregar={(vinculo, nueva) => {
-          setVinculos((actuales) => [...(actuales ?? []), vinculo])
-          if (nueva) setTodas((actuales) => [...actuales, vinculo.fuente])
-        }}
-      />
-    </section>
+      ) : (
+        <button
+          type="button"
+          className="gestor__agregar-foto gestor__agregar-fuente"
+          onClick={() => {
+            setAviso(null)
+            setPanel({ tipo: 'agregar' })
+          }}
+        >
+          <Plus className="gestor__agregar-icono" aria-hidden="true" />
+          <span className="texto-body-strong">{t('fuentes.agregarA', { punto: nombrePunto })}</span>
+        </button>
+      )}
+    </div>
   )
 }

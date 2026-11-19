@@ -1,6 +1,7 @@
 // Consultas del gestor de fichas. Las reglas de acceso (RLS) dejan al personal leer las fichas en
 // cualquier estado; el visitante solo ve las aprobadas (eso lo maneja src/datos/puntos.ts).
 
+import { urlPublica } from '@/lib/storage'
 import { supabase } from '@/lib/supabase'
 import type { Enums } from '@/lib/tipos-db'
 
@@ -66,7 +67,11 @@ export type FichaGestor = CamposFicha & {
   estado: EstadoFicha
   /** Quién aprobó o devolvió la ficha por última vez, y cuándo (lo registra la base). */
   revision: { nombre: string | null; fecha: string } | null
+  /** Narración de la ficha, o null si todavía no tiene. */
+  audio: AudioFichaGestor | null
 }
+
+export type AudioFichaGestor = { id: string; ruta: string; url: string; duracionS: number | null }
 
 export type DetallePunto = {
   id: string
@@ -86,9 +91,10 @@ type FilaFichaCompleta = {
   dato_santi: string | null
   revisado_en: string | null
   revisor: { nombre: string | null } | null
+  audio: { id: string; ruta: string; duracion_s: number | null } | null
 }
 
-function fichaGestor(fila: FilaFichaCompleta): FichaGestor {
+export function fichaGestor(fila: FilaFichaCompleta): FichaGestor {
   return {
     id: fila.id,
     estado: fila.estado,
@@ -99,11 +105,19 @@ function fichaGestor(fila: FilaFichaCompleta): FichaGestor {
     revision: fila.revisado_en
       ? { nombre: fila.revisor?.nombre ?? null, fecha: fila.revisado_en }
       : null,
+    audio: fila.audio
+      ? {
+          id: fila.audio.id,
+          ruta: fila.audio.ruta,
+          url: urlPublica(fila.audio.ruta),
+          duracionS: fila.audio.duracion_s,
+        }
+      : null,
   }
 }
 
-const COLUMNAS_FICHA =
-  'id, idioma, estado, titulo, que_ves, historia, dato_santi, revisado_en, revisor:perfiles!fichas_revisado_por_fkey(nombre)'
+export const COLUMNAS_FICHA =
+  'id, idioma, estado, titulo, que_ves, historia, dato_santi, revisado_en, revisor:perfiles!fichas_revisado_por_fkey(nombre), audio:medios!fichas_audio_id_fkey(id, ruta, duracion_s)'
 
 /** Un punto con sus fichas completas en los idiomas del gestor. Null si no existe. */
 export async function obtenerPuntoGestor(idPunto: string): Promise<DetallePunto | null> {

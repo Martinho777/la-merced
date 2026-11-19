@@ -61,7 +61,13 @@ describe('guardar fichas', () => {
   })
 
   it('editar una ficha aprobada la actualiza y la pasa a revisión', async () => {
-    const existente = { id: 'f1', estado: 'aprobado' as const, revision: null, ...campos }
+    const existente = {
+      id: 'f1',
+      estado: 'aprobado' as const,
+      revision: null,
+      audio: null,
+      ...campos,
+    }
     const guardada = await guardarFicha('p1', 'es', campos, existente)
     expect(llamadas[0]).toMatchObject({ metodo: 'update', args: [{ estado: 'revision' }] })
     expect(llamadas).toContainEqual({ metodo: 'eq', args: ['id', 'f1'] })

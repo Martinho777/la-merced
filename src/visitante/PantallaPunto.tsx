@@ -1,12 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { Check, MoveRight } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
-import { Santi } from '@/componentes/Santi/Santi'
+import { SantiAnimado, type AnimacionSanti } from '@/componentes/Santi/SantiAnimado'
 import type { PuntoConFicha } from '@/datos/puntos'
 import type es from '@/i18n/es.json'
 import { leerRuta, RUTA_POR_DEFECTO } from '@/lib/preferencias'
+import type { VozNarracion } from '@/visitante/analizadorVoz'
 import { BarraAudio } from '@/visitante/BarraAudio'
 import { BarraVisitante } from '@/visitante/BarraVisitante'
 import { rutaConZona } from '@/visitante/camara'
@@ -20,6 +21,9 @@ import '@/visitante/pantalla.css'
 import './PantallaPunto.css'
 
 type ClaveZona = `zonas.${keyof typeof es.zonas}`
+
+/** Lo que puede hacer Santi en la ficha: sus imágenes se cargan desde el inicio. */
+const PREPARAR: readonly AnimacionSanti[] = ['habla', 'celebracion']
 
 /**
  * Ficha de un punto (/punto?zona=…&punto=…): encabezado, narración, textos, archivo y navegación por
@@ -56,6 +60,12 @@ function Ficha({
 
   useEffect(() => recordarPuntoAbierto(zona, punto), [zona, punto])
 
+  // Santi en el encabezado: habla mientras suena la narración (`voz`: nivel del audio, null si no se
+  // puede leer, false si no suena) y celebra al completar el punto; si no, reposa.
+  const [voz, setVoz] = useState<VozNarracion | null | false>(false)
+  const [celebrando, setCelebrando] = useState(false)
+  const animacion: AnimacionSanti = celebrando ? 'celebracion' : voz !== false ? 'habla' : 'reposo'
+
   // Anterior y Siguiente reemplazan la entrada del historial: "atrás" no recorre punto por punto.
   const irA = (vecino: PuntoConFicha) => navegar(rutaDePunto(zona, vecino.slug), { replace: true })
 
@@ -74,12 +84,24 @@ function Ficha({
             </p>
             <h1 className="ficha__titulo texto-display">{punto.ficha?.titulo ?? identificador}</h1>
           </div>
-          <Santi pose="wave" tamano="head" className="ficha__santi" />
+          <SantiAnimado
+            pose="wave"
+            tamano="md"
+            className="ficha__santi"
+            animacion={animacion}
+            preparar={PREPARAR}
+            nivelVoz={voz ? voz.nivel : undefined}
+            alTerminar={() => setCelebrando(false)}
+          />
         </div>
       </header>
 
       <main className="ficha__cuerpo">
-        <BarraAudio audio={punto.audio} transcripcion={punto.ficha?.transcripcion ?? null} />
+        <BarraAudio
+          audio={punto.audio}
+          transcripcion={punto.ficha?.transcripcion ?? null}
+          alCambiarVoz={setVoz}
+        />
 
         <section className="ficha__seccion">
           <h2 className="ficha__subtitulo texto-title-2">{t('punto.queVes')}</h2>
@@ -136,7 +158,10 @@ function Ficha({
               variante="secundario"
               tamano="sm"
               icono={Check}
-              onClick={() => completarPunto(zona, punto.slug)}
+              onClick={() => {
+                completarPunto(zona, punto.slug)
+                setCelebrando(true)
+              }}
             >
               {t('punto.marcarCompletado')}
             </Boton>

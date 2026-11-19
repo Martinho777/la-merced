@@ -5,7 +5,7 @@ import { LogIn } from 'lucide-react'
 import { BarraSuperior } from '@/componentes/BarraSuperior'
 import { Boton } from '@/componentes/Boton'
 import { ErrorInicioSesion, iniciarSesion, type SesionGestor } from '@/datos/sesion'
-import { Campo } from '@/gestor/componentes/Campo'
+import { Campo, CampoContrasena } from '@/gestor/componentes/Campo'
 
 type Error = 'faltanDatos' | 'errorCredenciales' | 'errorConexion'
 
@@ -36,7 +36,7 @@ export function PantallaEntrar({ alEntrar }: { alEntrar: (sesion: SesionGestor) 
   }
 
   return (
-    <section className="gestor">
+    <section className="gestor gestor--estrecho">
       <BarraSuperior
         etiqueta={t('entrar.volver')}
         etiquetaAccesible={t('entrar.volverAccesible')}
@@ -54,9 +54,10 @@ export function PantallaEntrar({ alEntrar }: { alEntrar: (sesion: SesionGestor) 
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
         />
-        <Campo
+        <CampoContrasena
           etiqueta={t('entrar.contrasena')}
-          type="password"
+          etiquetaMostrar={t('entrar.mostrarContrasena')}
+          etiquetaOcultar={t('entrar.ocultarContrasena')}
           autoComplete="current-password"
           value={contrasena}
           onChange={(e) => setContrasena(e.target.value)}

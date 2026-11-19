@@ -1,7 +1,7 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useContext, useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams } from 'react-router'
-import { Save } from 'lucide-react'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
+import { ArrowLeft, ArrowRight, CircleCheck, CircleDashed, Save } from 'lucide-react'
 import { BarraSuperior } from '@/componentes/BarraSuperior'
 import { Boton } from '@/componentes/Boton'
 import { Insignia } from '@/componentes/Insignia'
@@ -16,9 +16,24 @@ import {
 import { Campo, CampoArea } from '@/gestor/componentes/Campo'
 import type { Rol } from '@/datos/sesion'
 import { camposDe, hayCambios, type IdiomaGestor } from '@/gestor/editor'
+import { AudioFicha } from '@/gestor/AudioFicha'
 import { FotosPunto } from '@/gestor/FotosPunto'
 import { FuentesPunto } from '@/gestor/FuentesPunto'
 import { accionesDisponibles, DESTINO, type AccionEstado } from '@/gestor/estados'
+import { BarraAvance } from '@/gestor/BarraAvance'
+import { FijarEncabezado } from '@/gestor/contexto'
+import { PasosEditor } from '@/gestor/PasosEditor'
+import {
+  avanceDe,
+  conBorradores,
+  estadoDePaso,
+  PASOS,
+  pasoDe,
+  requisitos,
+  type EstadoPaso,
+  type Paso,
+  type ResumenMedios,
+} from '@/gestor/pasos'
 import { TONO_ESTADO } from '@/gestor/lista'
 import type es from '@/i18n/es.json'
 
@@ -55,6 +70,26 @@ export function EditorPunto({ rol }: { rol: Rol }) {
   const [guardando, setGuardando] = useState(false)
   const [cambiandoEstado, setCambiandoEstado] = useState<AccionEstado | null>(null)
   const [aviso, setAviso] = useState<Aviso>(null)
+  const [parametros, setParametros] = useSearchParams()
+  const paso = pasoDe(parametros.get('paso'))
+  // Fotos y fuentes se cargan en sus pasos y avisan cuántas hay, para el estado de cada paso.
+  const [medios, setMedios] = useState<ResumenMedios>({ fotos: null, fuentes: null })
+
+  // El título del punto va en el encabezado del gestor, en la fila de "Gestor de fichas".
+  const fijarEncabezado = useContext(FijarEncabezado)
+  const listo = estado.tipo === 'listo' ? estado.punto : null
+  useEffect(() => {
+    if (!listo) return
+    fijarEncabezado({
+      titulo: t('editor.titulo', { numero: listo.orden }),
+      detalle: t('editor.zona', {
+        zona: tGuia(`zonas.${listo.zona}` as ClaveZona, { defaultValue: listo.zona }),
+      }),
+    })
+    return () => fijarEncabezado(null)
+    // Solo cambia con el punto y su zona.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listo?.orden, listo?.zona, fijarEncabezado])
 
   useEffect(() => {
     let vigente = true
@@ -164,124 +199,262 @@ export function EditorPunto({ rol }: { rol: Rol }) {
 
   const acciones = ficha ? accionesDisponibles(rol, ficha.estado) : []
   const esError = aviso === 'errorGuardar' || aviso === 'errorEstado'
+  const sinGuardar = hayCambios(campos, ficha)
+  const lista = requisitos(punto, medios)
+  const avance = avanceDe(conBorradores(punto, borradores), medios)
+  const nombrePunto = punto.fichas.es?.titulo
+    ? t('editor.nombrePunto', { numero: punto.orden, nombre: punto.fichas.es.titulo })
+    : t('editor.titulo', { numero: punto.orden })
+  const indice = PASOS.indexOf(paso)
+  const estados = Object.fromEntries(
+    PASOS.map((p) => [p, estadoDePaso(p, punto, medios)]),
+  ) as Record<Paso, EstadoPaso>
+  const irA = (destino: Paso) => {
+    setParametros((actuales) => {
+      const nuevos = new URLSearchParams(actuales)
+      nuevos.set('paso', destino)
+      return nuevos
+    })
+    window.scrollTo({ top: 0 })
+  }
+  const avisoEstado =
+    aviso === 'estadoCambiado' || aviso === 'errorEstado' || aviso === 'guardaPrimero'
+
+  const pestanasIdioma = (
+    <div className="gestor__pestanas" role="group" aria-label={t('editor.idioma')}>
+      {IDIOMAS_GESTOR.map((codigo) => (
+        <Boton
+          key={codigo}
+          tamano="sm"
+          variante={codigo === idioma ? 'primario' : 'secundario'}
+          aria-pressed={codigo === idioma}
+          onClick={() => {
+            setIdioma(codigo)
+            setAviso(null)
+          }}
+        >
+          {t(`idiomas.${codigo}`)}
+        </Boton>
+      ))}
+    </div>
+  )
 
   return (
     <section className="gestor__seccion">
-      {barra}
-      <div className="gestor__titulos">
-        <h1 className="gestor__titulo texto-title-1">
-          {t('editor.titulo', { numero: punto.orden })}
-        </h1>
-        <p className="gestor__texto texto-body">
-          {t('editor.zona', {
-            zona: tGuia(`zonas.${punto.zona}` as ClaveZona, { defaultValue: punto.zona }),
-          })}
-        </p>
+      <BarraAvance hechos={avance.hechos} total={avance.total} />
+      {/* Volver y los pasos en una sola fila. */}
+      <div className="gestor__barra-pasos">
+        {barra}
+        <PasosEditor
+          actual={paso}
+          estados={estados}
+          sinGuardar={sinGuardar ? 'textos' : null}
+          alElegir={irA}
+        />
       </div>
-
-      <div className="gestor__pestanas" role="group" aria-label={t('editor.idioma')}>
-        {IDIOMAS_GESTOR.map((codigo) => (
-          <Boton
-            key={codigo}
-            tamano="sm"
-            variante={codigo === idioma ? 'primario' : 'secundario'}
-            aria-pressed={codigo === idioma}
-            onClick={() => {
-              setIdioma(codigo)
-              setAviso(null)
-            }}
-          >
-            {t(`idiomas.${codigo}`)}
-          </Boton>
-        ))}
-      </div>
-
-      <div className="gestor__estado">
-        <Insignia tono={TONO_ESTADO[ficha?.estado ?? 'falta']}>
-          {t('editor.estado', { estado: t(`estados.${ficha?.estado ?? 'falta'}`) })}
-        </Insignia>
+      {/* Todos los pasos quedan montados (ocultos los que no se ven): cambiar de paso no pierde lo
+          escrito sin guardar. */}
+      <div className="gestor__paso" hidden={paso !== 'textos'}>
+        <EncabezadoPaso paso="textos" />
+        {pestanasIdioma}
         {!ficha && (
-          <p className="gestor__texto texto-small">
+          <p className="gestor__aviso texto-small">
             {t('editor.sinFicha', { idioma: nombreIdioma.toLowerCase() })}
           </p>
         )}
         {ficha?.estado === 'aprobado' && (
-          <p className="gestor__texto texto-small">{t('editor.publicada')}</p>
+          <p className="gestor__aviso texto-small">{t('editor.publicada')}</p>
         )}
-        {ficha?.estado === 'revision' && acciones.length === 0 && (
-          <p className="gestor__texto texto-small">{t('editor.esperandoRevision')}</p>
-        )}
-        {ficha?.revision && (
-          <p className="gestor__texto texto-small">
-            {t('editor.revisadaPor', {
-              nombre: ficha.revision.nombre ?? t('editor.revisorDesconocido'),
-              fecha: FORMATO_FECHA.format(new Date(ficha.revision.fecha)),
-            })}
-          </p>
-        )}
-        {acciones.length > 0 && (
-          <div className="gestor__pestanas">
-            {acciones.map((accion) => (
-              <Boton
-                key={accion}
-                tamano="sm"
-                variante={accion === 'devolverABorrador' ? 'secundario' : 'primario'}
-                cargando={cambiandoEstado === accion}
-                disabled={cambiandoEstado !== null && cambiandoEstado !== accion}
-                onClick={() => void aplicar(accion)}
-              >
-                {t(`acciones.${accion}`)}
-              </Boton>
-            ))}
-          </div>
-        )}
+
+        <form className="gestor__formulario" onSubmit={guardar} noValidate lang={idioma}>
+          <Campo
+            etiqueta={t('editor.campos.titulo')}
+            ayuda={t('editor.campos.tituloAyuda')}
+            requisito="obligatorio"
+            value={campos.titulo}
+            error={aviso === 'faltaTitulo' ? t('editor.faltaTitulo') : undefined}
+            onChange={(e) => cambiar('titulo', e.target.value)}
+          />
+          <CampoArea
+            etiqueta={t('editor.campos.queVes')}
+            ayuda={t('editor.campos.queVesAyuda')}
+            requisito="obligatorio"
+            value={campos.que_ves}
+            onChange={(e) => cambiar('que_ves', e.target.value)}
+          />
+          <CampoArea
+            etiqueta={t('editor.campos.historia')}
+            ayuda={t('editor.campos.historiaAyuda')}
+            requisito="obligatorio"
+            rows={8}
+            value={campos.historia}
+            onChange={(e) => cambiar('historia', e.target.value)}
+          />
+          <CampoArea
+            etiqueta={t('editor.campos.datoSanti')}
+            ayuda={t('editor.campos.datoSantiAyuda')}
+            requisito="opcional"
+            value={campos.dato_santi}
+            onChange={(e) => cambiar('dato_santi', e.target.value)}
+          />
+
+          {aviso && aviso !== 'faltaTitulo' && !avisoEstado && (
+            <p
+              className={esError ? 'gestor__error texto-body' : 'gestor__texto texto-body'}
+              role={esError ? 'alert' : 'status'}
+            >
+              {t(`editor.${aviso}`, { estado: t(`estados.${ficha?.estado ?? 'falta'}`) })}
+            </p>
+          )}
+          {sinGuardar && !aviso && (
+            <p className="gestor__aviso texto-small-strong">{t('editor.sinGuardar')}</p>
+          )}
+
+          <Boton type="submit" icono={Save} cargando={guardando}>
+            {t('editor.guardar')}
+          </Boton>
+        </form>
       </div>
 
-      <form className="gestor__formulario" onSubmit={guardar} noValidate lang={idioma}>
-        <Campo
-          etiqueta={t('editor.campos.titulo')}
-          ayuda={t('editor.campos.tituloAyuda')}
-          value={campos.titulo}
-          error={aviso === 'faltaTitulo' ? t('editor.faltaTitulo') : undefined}
-          onChange={(e) => cambiar('titulo', e.target.value)}
+      <div className="gestor__paso" hidden={paso !== 'narracion'}>
+        <EncabezadoPaso paso="narracion" />
+        {pestanasIdioma}
+        <AudioFicha
+          punto={punto}
+          idioma={idioma}
+          ficha={ficha}
+          alCambiarFicha={(actualizada) =>
+            setEstado({
+              tipo: 'listo',
+              punto: { ...punto, fichas: { ...punto.fichas, [idioma]: actualizada } },
+            })
+          }
         />
-        <CampoArea
-          etiqueta={t('editor.campos.queVes')}
-          ayuda={t('editor.campos.queVesAyuda')}
-          value={campos.que_ves}
-          onChange={(e) => cambiar('que_ves', e.target.value)}
-        />
-        <CampoArea
-          etiqueta={t('editor.campos.historia')}
-          ayuda={t('editor.campos.historiaAyuda')}
-          rows={8}
-          value={campos.historia}
-          onChange={(e) => cambiar('historia', e.target.value)}
-        />
-        <CampoArea
-          etiqueta={t('editor.campos.datoSanti')}
-          ayuda={t('editor.campos.datoSantiAyuda')}
-          value={campos.dato_santi}
-          onChange={(e) => cambiar('dato_santi', e.target.value)}
-        />
+      </div>
 
-        {aviso && aviso !== 'faltaTitulo' && (
-          <p
-            className={esError ? 'gestor__error texto-body' : 'gestor__texto texto-body'}
-            role={esError ? 'alert' : 'status'}
-          >
-            {t(`editor.${aviso}`, { estado: t(`estados.${ficha?.estado ?? 'falta'}`) })}
-          </p>
-        )}
+      <div className="gestor__paso" hidden={paso !== 'fotos'}>
+        <EncabezadoPaso paso="fotos" />
+        <FotosPunto
+          punto={punto}
+          alResumir={(fotos) => setMedios((actuales) => ({ ...actuales, fotos }))}
+        />
+      </div>
 
-        <Boton type="submit" icono={Save} cargando={guardando} anchoCompleto>
-          {t('editor.guardar')}
+      <div className="gestor__paso" hidden={paso !== 'fuentes'}>
+        <EncabezadoPaso paso="fuentes" />
+        <FuentesPunto
+          idPunto={punto.id}
+          nombrePunto={nombrePunto}
+          alResumir={(fuentes) => setMedios((actuales) => ({ ...actuales, fuentes }))}
+        />
+      </div>
+
+      <div className="gestor__paso" hidden={paso !== 'revision'}>
+        <EncabezadoPaso paso="revision" />
+        <ul className="gestor__requisitos">
+          {lista.map((requisito) => {
+            const tipo = requisito.cumplido ? 'listo' : requisito.obligatorio ? 'falta' : 'opcional'
+            return (
+              <li key={requisito.clave} className={`gestor__requisito gestor__requisito--${tipo}`}>
+                {requisito.cumplido ? (
+                  <CircleCheck className="gestor__requisito-icono" aria-hidden="true" />
+                ) : (
+                  <CircleDashed className="gestor__requisito-icono" aria-hidden="true" />
+                )}
+                <span className="gestor__requisito-texto">
+                  <span className="texto-body">{t(`requisitos.${requisito.clave}`)}</span>
+                  <span className="gestor__requisito-estado texto-small-strong">
+                    {t(`requisitos.${tipo}`)}
+                  </span>
+                </span>
+                {!requisito.cumplido && (
+                  <Boton variante="fantasma" tamano="sm" onClick={() => irA(requisito.paso)}>
+                    {t('requisitos.ir', { paso: t(`pasos.${requisito.paso}.nombre`) })}
+                  </Boton>
+                )}
+              </li>
+            )
+          })}
+        </ul>
+
+        <div className="gestor__estado">
+          <h3 className="gestor__subtitulo texto-heading">{t('editor.publicar')}</h3>
+          {pestanasIdioma}
+          <Insignia tono={TONO_ESTADO[ficha?.estado ?? 'falta']}>
+            {t('editor.estado', { estado: t(`estados.${ficha?.estado ?? 'falta'}`) })}
+          </Insignia>
+          {!ficha && (
+            <p className="gestor__texto texto-small">
+              {t('editor.sinFicha', { idioma: nombreIdioma.toLowerCase() })}
+            </p>
+          )}
+          {ficha?.estado === 'revision' && acciones.length === 0 && (
+            <p className="gestor__texto texto-small">{t('editor.esperandoRevision')}</p>
+          )}
+          {ficha?.revision && (
+            <p className="gestor__texto texto-small">
+              {t('editor.revisadaPor', {
+                nombre: ficha.revision.nombre ?? t('editor.revisorDesconocido'),
+                fecha: FORMATO_FECHA.format(new Date(ficha.revision.fecha)),
+              })}
+            </p>
+          )}
+          {acciones.length > 0 && (
+            <div className="gestor__pestanas">
+              {acciones.map((accion) => (
+                <Boton
+                  key={accion}
+                  tamano="sm"
+                  variante={accion === 'devolverABorrador' ? 'secundario' : 'primario'}
+                  cargando={cambiandoEstado === accion}
+                  disabled={cambiandoEstado !== null && cambiandoEstado !== accion}
+                  onClick={() => void aplicar(accion)}
+                >
+                  {t(`acciones.${accion}`)}
+                </Boton>
+              ))}
+            </div>
+          )}
+          {avisoEstado && (
+            <p
+              className={esError ? 'gestor__error texto-body' : 'gestor__texto texto-body'}
+              role={esError ? 'alert' : 'status'}
+            >
+              {t(`editor.${aviso}`, { estado: t(`estados.${ficha?.estado ?? 'falta'}`) })}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <nav className="gestor__navegacion-pasos" aria-label={t('pasos.navegacion')}>
+        <Boton
+          variante="secundario"
+          icono={ArrowLeft}
+          disabled={indice === 0}
+          onClick={() => irA(PASOS[indice - 1] ?? paso)}
+        >
+          {t('pasos.anterior')}
         </Boton>
-      </form>
-
-      <FotosPunto punto={punto} />
-
-      <FuentesPunto idPunto={punto.id} />
+        {indice < PASOS.length - 1 && (
+          <Boton icono={ArrowRight} onClick={() => irA(PASOS[indice + 1] ?? paso)}>
+            {t('pasos.siguiente', { paso: t(`pasos.${PASOS[indice + 1] ?? paso}.nombre`) })}
+          </Boton>
+        )}
+      </nav>
     </section>
+  )
+}
+
+/** Título y explicación del paso actual ("Paso 2 de 5 · Narración"). */
+function EncabezadoPaso({ paso }: { paso: Paso }) {
+  const { t } = useTranslation('gestor')
+  return (
+    <div className="gestor__titulos">
+      <p className="gestor__marca texto-label">
+        {t('pasos.contador', { numero: PASOS.indexOf(paso) + 1, total: PASOS.length })}
+      </p>
+      <h2 className="gestor__subtitulo texto-title-2">{t(`pasos.${paso}.nombre`)}</h2>
+      <p className="gestor__texto texto-body">{t(`pasos.${paso}.texto`)}</p>
+    </div>
   )
 }
