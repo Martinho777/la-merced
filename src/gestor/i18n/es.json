@@ -287,5 +287,43 @@
   "avance": {
     "etiqueta": "Ficha completa",
     "valor": "{{hechos}} de {{total}} listos"
+  },
+  "navegacion": {
+    "etiqueta": "Secciones del gestor",
+    "fichas": "Fichas",
+    "ubicacion": "Ubicación"
+  },
+  "ubicaciones": {
+    "titulo": "Ubicación de los puntos",
+    "texto": "Arrastra cada punto hasta su lugar en la ilustración y elige si es esencial u opcional. Nada se guarda hasta que presiones «Guardar cambios».",
+    "error": "No se pudieron cargar los puntos.",
+    "vacio": "Todavía no hay puntos cargados.",
+    "zonas": "Zona a editar",
+    "sinIlustracion": "Esta zona todavía no tiene ilustración.",
+    "escena": "Ilustración de la zona con los puntos ubicados",
+    "listaTitulo": "Puntos de la zona",
+    "sinUbicar": "Sin ubicar",
+    "modificado": "Modificado",
+    "esencial": "Esencial",
+    "opcional": "Opcional",
+    "marcador": "Punto {{numero}}, {{nombre}}, {{clasificacion}}",
+    "punto": "Punto {{numero}} · {{nombre}}",
+    "sinSeleccion": "Elige un punto de la lista o un marcador de la ilustración para editarlo.",
+    "instruccionSinUbicar": "Este punto todavía no tiene ubicación. Toca la ilustración donde va; después puedes ajustarlo arrastrándolo.",
+    "instruccionUbicado": "Arrastra el marcador para moverlo. Con el teclado, usa las flechas (con Mayús, pasos más grandes).",
+    "posicion": "Posición: {{x}} % desde la izquierda, {{y}} % desde arriba.",
+    "clasificacion": "Clasificación del punto",
+    "guardar": "Guardar cambios",
+    "descartar": "Descartar cambios",
+    "pendientes_one": "{{count}} punto con cambios sin guardar",
+    "pendientes_other": "{{count}} puntos con cambios sin guardar",
+    "sinCambios": "No hay cambios por guardar.",
+    "guardadoTodo_one": "Se guardó {{count}} punto.",
+    "guardadoTodo_other": "Se guardaron {{count}} puntos.",
+    "guardadoParcial": "Se guardaron {{guardados}} de {{total}} puntos. Cada punto se guarda por separado: los que fallaron siguen pendientes y puedes intentarlo de nuevo.",
+    "errorGuardar": "No se pudo guardar ningún punto. Los cambios siguen pendientes.",
+    "falloPunto": "Punto {{numero}} · {{nombre}}: {{mensaje}}",
+    "descartado": "Se descartaron los cambios. Se muestra lo último guardado.",
+    "confirmarSalir": "Tienes cambios de ubicación sin guardar. Si sales, se pierden. ¿Salir de todos modos?"
   }
 }

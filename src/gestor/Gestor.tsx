@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Route, Routes, useNavigate } from 'react-router'
+import { Link, Route, Routes, useLocation, useNavigate } from 'react-router'
 import { LogOut } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { alCambiarSesion, cerrarSesion, obtenerSesion, type SesionGestor } from '@/datos/sesion'
 import { FijarEncabezado, type ContextoEncabezado } from '@/gestor/contexto'
 import { EditorPunto } from '@/gestor/EditorPunto'
+import { EditorUbicaciones } from '@/gestor/EditorUbicaciones'
 import { ListaPuntos } from '@/gestor/ListaPuntos'
 import { PantallaEntrar } from '@/gestor/PantallaEntrar'
 import '@/gestor/i18n'
@@ -67,6 +68,33 @@ function EncabezadoGestor({
         {t('sesion.salir')}
       </Boton>
     </header>
+  )
+}
+
+/** Secciones del gestor. Se ve en la lista y en las ubicaciones, no mientras se edita un punto. */
+function NavegacionGestor() {
+  const { t } = useTranslation('gestor')
+  const { pathname } = useLocation()
+  if (pathname.startsWith('/gestor/punto/')) return null
+  const enUbicaciones = pathname.startsWith('/gestor/ubicaciones')
+
+  const enlace = (a: string, activo: boolean, texto: string) => (
+    <Link
+      to={a}
+      className={
+        activo ? 'gestor__seccion-enlace gestor__seccion-enlace--activo' : 'gestor__seccion-enlace'
+      }
+      aria-current={activo ? 'page' : undefined}
+    >
+      <span className="texto-button">{texto}</span>
+    </Link>
+  )
+
+  return (
+    <nav className="gestor__navegacion" aria-label={t('navegacion.etiqueta')}>
+      {enlace('/gestor', !enUbicaciones, t('navegacion.fichas'))}
+      {enlace('/gestor/ubicaciones', enUbicaciones, t('navegacion.ubicacion'))}
+    </nav>
   )
 }
 
@@ -140,17 +168,21 @@ export function Gestor() {
       <div className="gestor">
         <EncabezadoGestor sesion={sesion} contexto={contexto} alSalir={() => void salir()} />
         {sesion.rol ? (
-          <Routes>
-            <Route
-              index
-              element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
-            />
-            <Route path="punto/:idPunto" element={<EditorPunto rol={sesion.rol} />} />
-            <Route
-              path="*"
-              element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
-            />
-          </Routes>
+          <>
+            <NavegacionGestor />
+            <Routes>
+              <Route
+                index
+                element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
+              />
+              <Route path="punto/:idPunto" element={<EditorPunto rol={sesion.rol} />} />
+              <Route path="ubicaciones" element={<EditorUbicaciones />} />
+              <Route
+                path="*"
+                element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
+              />
+            </Routes>
+          </>
         ) : (
           <section className="gestor__titulos">
             <h1 className="gestor__titulo texto-title-1">{t('sesion.sinRolTitulo')}</h1>

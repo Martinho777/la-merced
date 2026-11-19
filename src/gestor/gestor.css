@@ -657,3 +657,125 @@
   flex-shrink: 0;
   align-self: flex-start;
 }
+
+/* --- Editor de ubicaciones --- */
+
+/* Navegación entre secciones del gestor (Fichas, Ubicación): pestañas sencillas bajo el encabezado. */
+.gestor__navegacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.gestor__seccion-enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-min);
+  padding-inline: var(--space-4);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.gestor__seccion-enlace--activo {
+  border-color: var(--border-strong);
+  background: var(--surface-sunken);
+}
+
+/* Ilustración y panel de puntos: en dos columnas cuando caben, como el resto del gestor. */
+.ubicacion__cuerpo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--gestor-columna)), 1fr));
+  gap: var(--space-6);
+  align-items: start;
+}
+
+/* La escena mide el ancho disponible con la proporción de la ilustración (2:1), igual que en el mapa
+   del visitante, para que el 0–1 de cada punto caiga en el mismo lugar. */
+.ubicacion__escena {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+  user-select: none;
+}
+
+.ubicacion__ilustracion {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+
+.ubicacion__sin-ilustracion {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+  color: var(--ink-muted);
+}
+
+.ubicacion__icono {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+/* Arrastrar con el dedo no debe desplazar la página. */
+.marcador-editable {
+  touch-action: none;
+  cursor: grab;
+}
+
+.marcador-editable:active {
+  cursor: grabbing;
+}
+
+.ubicacion__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ubicacion__detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--pad-card);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.ubicacion__detalle p,
+.ubicacion__detalle h3 {
+  margin: 0;
+}
+
+.ubicacion__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.ubicacion__acciones p {
+  margin: 0;
+}
+
+.ubicacion__fallos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
