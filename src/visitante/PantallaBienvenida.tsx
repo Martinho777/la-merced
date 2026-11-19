@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import { UserCog } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
-import { Santi } from '@/componentes/Santi/Santi'
+import { SantiAnimado } from '@/componentes/Santi/SantiAnimado'
 import { BarraVisitante } from '@/visitante/BarraVisitante'
 import '@/visitante/pantalla.css'
 import './PantallaBienvenida.css'
@@ -25,9 +25,11 @@ export function PantallaBienvenida() {
         <UserCog className="bienvenida__acceso-icono" aria-hidden="true" />
       </Link>
       <div className="pantalla__cuerpo pantalla__cuerpo--centrado">
-        <Santi
+        {/* Saluda después de entrar (la entrada es CSS; el saludo, GSAP sobre otro elemento). */}
+        <SantiAnimado
           pose="wave-large"
           tamano="lg"
+          animacion="saludo"
           className="bienvenida__entrada bienvenida__entrada--santi"
         />
         <h1 className="pantalla__titulo texto-display bienvenida__entrada bienvenida__entrada--2">

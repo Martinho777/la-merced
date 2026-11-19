@@ -42,12 +42,16 @@ const registroDemo = (id: string) => ({
   credito: null,
 })
 
+// Posiciones y números que pidió la fundación (nov. 2026), medidos sobre la ilustración: 1 la puerta,
+// 2 la Virgen del nicho central, 3 la figura de arriba, 4 y 5 las figuras a los lados de la Virgen,
+// 6 y 7 las de abajo, 8 sobre la puerta, 9 la columna junto a la puerta, 10 la columna fina de
+// encima, 11 la ventana honda de abajo a la derecha y 12 la ventana de la torre derecha.
 export const PUNTOS_DEMO: Readonly<Record<string, readonly PuntoConFicha[]>> = {
   'fachada-principal': [
-    puntoDemo(1, 0.5, 0.76),
-    puntoDemo(2, 0.37, 0.82),
+    puntoDemo(1, 0.499, 0.905),
+    puntoDemo(2, 0.4975, 0.495),
     // Transcripción sin audio (se puede leer aunque la narración no esté) y dato de Santi.
-    puntoDemo(3, 0.63, 0.82, {
+    puntoDemo(3, 0.499, 0.19, {
       ficha: {
         idioma: 'es',
         titulo: 'Punto de demostración 3',
@@ -69,17 +73,17 @@ export const PUNTOS_DEMO: Readonly<Record<string, readonly PuntoConFicha[]>> = {
         { cita: 'Fuente de demostración 3', url: null, nivel: 'especulativo', nota: null },
       ],
     }),
-    puntoDemo(4, 0.5, 0.6),
+    puntoDemo(4, 0.3835, 0.48),
     // Varios registros de archivo, todavía sin imagen.
-    puntoDemo(5, 0.4, 0.62, {
+    puntoDemo(5, 0.614, 0.48, {
       archivo: [registroDemo('demo-05-a'), registroDemo('demo-05-b'), registroDemo('demo-05-c')],
     }),
-    puntoDemo(6, 0.6, 0.62),
-    puntoDemo(7, 0.5, 0.4),
-    puntoDemo(8, 0.38, 0.47),
-    puntoDemo(9, 0.62, 0.47),
-    puntoDemo(10, 0.5, 0.2),
-    puntoDemo(11, 0.3, 0.27),
-    puntoDemo(12, 0.7, 0.27),
+    puntoDemo(6, 0.364, 0.86),
+    puntoDemo(7, 0.631, 0.86),
+    puntoDemo(8, 0.4975, 0.76),
+    puntoDemo(9, 0.585, 0.83),
+    puntoDemo(10, 0.578, 0.43),
+    puntoDemo(11, 0.786, 0.83),
+    puntoDemo(12, 0.71, 0.279),
   ],
 }

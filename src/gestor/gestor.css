@@ -1,9 +1,21 @@
-/* Estructura de las pantallas del gestor. Usa los tokens del Design System; no define valores. */
+/* Estructura de las pantallas del gestor. Usa los tokens del Design System; no define valores.
+   En computadora el gestor llega a gestor-max: las listas y el editor se reparten en dos columnas
+   cuando caben (auto-fit, sin puntos de corte); en el teléfono todo queda en una columna. */
 
 .gestor {
+  /* Ancho mínimo de una columna: con gestor-max caben dos; en el teléfono, una. */
+  --gestor-columna: calc(var(--content-max) * 0.8);
+
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
+}
+
+/* Pantallas de un solo formulario (entrar): columna de lectura cómoda, centrada. */
+.gestor--estrecho {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
 }
 
 .gestor__encabezado {
@@ -63,8 +75,8 @@
 }
 
 .gestor__lista {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--gestor-columna)), 1fr));
   gap: var(--space-3);
   margin: 0;
   padding: 0;
@@ -117,4 +129,531 @@
 
 .gestor__enlace {
   color: var(--link);
+}
+
+/* La tarjeta de cada punto ocupa todo el alto de su fila. */
+.gestor__lista > li {
+  display: flex;
+}
+
+/* --- Editor por pasos --- */
+
+/* Barra de pasos: tarjetas en fila que se desplazan de lado en el teléfono. */
+.pasos__lista {
+  display: grid;
+  grid-auto-columns: minmax(calc(var(--content-max) * 0.32), 1fr);
+  grid-auto-flow: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  overflow-x: auto;
+  list-style: none;
+}
+
+.pasos__paso {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: start;
+  cursor: pointer;
+}
+
+/* Paso actual: borde de control como la tarjeta seleccionada (componentes.md → Card). */
+.pasos__paso--actual {
+  border: var(--border-control) solid var(--border-strong);
+  background: var(--surface-sunken);
+}
+
+.pasos__numero {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  border: var(--border-control) solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+}
+
+/* Listo: disco green-700 con check blanco (contraste.md: surface sobre green-700). */
+.pasos__paso--completo .pasos__numero {
+  border-color: var(--success);
+  background: var(--success);
+  color: var(--text-on-dark);
+}
+
+.pasos__check {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.pasos__textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pasos__estado {
+  color: var(--ink-muted);
+}
+
+.pasos__paso--completo .pasos__estado {
+  color: var(--success);
+}
+
+.pasos__paso--pendiente .pasos__estado {
+  color: var(--warning);
+}
+
+.gestor__paso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* `display: flex` le gana al `hidden` del navegador: los pasos ocultos se ocultan aquí. */
+.gestor__paso[hidden] {
+  display: none;
+}
+
+/* Formularios de lectura cómoda aunque el gestor sea ancho. */
+.gestor__paso .gestor__formulario {
+  max-width: var(--gestor-max);
+}
+
+/* Aviso suave: texto de advertencia sobre su tinte (contraste.md: orange-700 sobre orange-50). */
+.gestor__aviso {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--orange-50);
+  color: var(--orange-700);
+}
+
+.gestor__navegacion-pasos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block-start: var(--space-4);
+  border-block-start: var(--border-hairline) solid var(--border);
+}
+
+/* Lista de lo que tiene y lo que falta, en el paso de revisión. */
+.gestor__requisitos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gestor__requisito {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.gestor__requisito-icono {
+  flex-shrink: 0;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  color: var(--ink-subtle);
+}
+
+.gestor__requisito--listo .gestor__requisito-icono {
+  color: var(--success);
+}
+
+.gestor__requisito--falta .gestor__requisito-icono {
+  color: var(--warning);
+}
+
+.gestor__requisito-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gestor__requisito-estado {
+  color: var(--ink-muted);
+}
+
+.gestor__requisito--listo .gestor__requisito-estado {
+  color: var(--success);
+}
+
+.gestor__requisito--falta .gestor__requisito-estado {
+  color: var(--warning);
+}
+
+/* --- Galería de fotos --- */
+
+.gestor__galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--content-max) * 0.34)), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gestor__tarjeta-foto {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+/* La que se está editando: borde de control, como la tarjeta seleccionada. */
+.gestor__tarjeta-foto--editando {
+  border: var(--border-control) solid var(--border-strong);
+}
+
+.gestor__tarjeta-imagen {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--surface-sunken);
+}
+
+.gestor__tarjeta-datos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-3) 0;
+}
+
+.gestor__tarjeta-datos p {
+  margin: 0;
+}
+
+.gestor__tarjeta-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-block-start: auto;
+  padding: var(--space-3);
+}
+
+.gestor__tarjeta-acciones p {
+  width: 100%;
+  margin: 0;
+}
+
+/* Mosaico para agregar: punteado, del alto de una tarjeta, con un "+" grande. */
+.gestor__agregar-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+  min-height: calc(var(--touch-min) * 4);
+  padding: var(--space-4);
+  border: var(--border-control) dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.gestor__agregar-icono {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}
+
+/* Panel de edición o subida: uno a la vez, bajo su grupo de fotos. */
+.gestor__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border: var(--border-control) solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.gestor__panel-cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.gestor__panel-miniatura {
+  width: calc(var(--touch-min) * 1.5);
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+/* Foto del detalle: los datos a la izquierda y la foto a la derecha (debajo en el teléfono). */
+.gestor__detalle {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--gestor-columna)), 1fr));
+  align-items: start;
+  gap: var(--space-6);
+}
+
+.gestor__detalle-campos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.gestor__detalle-foto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  position: sticky;
+  top: var(--space-6);
+}
+
+.gestor__detalle-foto img,
+.gestor__detalle-vacia {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background: var(--surface-sunken);
+}
+
+.gestor__detalle-vacia {
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  border: var(--border-control) dashed var(--border-strong);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+/* --- Línea de avance: de borde a borde de la pantalla, siempre arriba --- */
+
+.barra-avance {
+  /* Debajo del encabezado del gestor, de borde a borde de la ventana; al bajar, queda pegada
+     arriba. */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  width: 100vw;
+  height: var(--space-1);
+  margin-inline: calc(50% - 50vw);
+  /* Sube hasta quedar sobre la línea fina del encabezado ("Gestor de fichas" y Salir). */
+  margin-block-start: calc(-1 * (var(--space-6) + var(--border-hairline)));
+  background: var(--border);
+}
+
+.barra-avance__relleno {
+  height: 100%;
+  background: var(--success);
+  transition: width var(--duration-slow) var(--ease-standard);
+}
+
+/* --- Fuentes --- */
+
+.gestor__fuentes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gestor__tarjeta-fuente {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--pad-card);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.gestor__tarjeta-fuente--editando {
+  border: var(--border-control) solid var(--border-strong);
+}
+
+.gestor__tarjeta-fuente-datos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: min(100%, var(--gestor-columna));
+}
+
+.gestor__tarjeta-fuente-datos p,
+.gestor__nivel-linea {
+  margin: 0;
+}
+
+.gestor__tarjeta-fuente .gestor__tarjeta-acciones {
+  margin: 0;
+  padding: 0;
+}
+
+.gestor__nivel-linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink-muted);
+}
+
+.gestor__agregar-fuente {
+  min-height: calc(var(--touch-min) * 2);
+}
+
+/* Preguntas numeradas del panel para agregar. */
+.gestor__pregunta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 var(--space-5);
+  border: none;
+  border-block-end: var(--border-hairline) solid var(--border);
+}
+
+.gestor__pregunta-titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  color: var(--ink);
+}
+
+.gestor__pregunta-numero {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--text-on-dark);
+}
+
+/* Niveles de confianza: tarjetas de opción única con su insignia y su significado. */
+.gestor__niveles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.gestor__niveles legend {
+  padding: 0;
+}
+
+.gestor__nivel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-min);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.gestor__nivel--elegido {
+  border: var(--border-control) solid var(--border-strong);
+  background: var(--surface-sunken);
+}
+
+.gestor__nivel input {
+  flex-shrink: 0;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  accent-color: var(--ink);
+}
+
+.gestor__nivel-textos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Fila de volver + pasos: la barra de volver no ocupa más que su botón y los pasos llenan el resto
+   (se desplazan de lado si no caben). */
+.gestor__barra-pasos {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.gestor__barra-pasos .barra-superior {
+  flex-shrink: 0;
+  padding-inline: 0;
+}
+
+.gestor__barra-pasos .pasos {
+  flex: 1;
+  min-width: 0;
+}
+
+.gestor__barra-pasos .pasos__lista {
+  padding-block-end: 0;
+}
+
+/* Encabezado: marca y usuario, y a su lado (separado por una línea) el punto que se edita. */
+.gestor__encabezado-izquierda {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  min-width: 0;
+}
+
+.gestor__contexto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding-inline-start: var(--space-6);
+  border-inline-start: var(--border-hairline) solid var(--border);
+}
+
+/* La línea de avance llega a los bordes de la ventana: sin desplazamiento de lado por ella. */
+:root:has(.barra-avance) {
+  overflow-x: clip;
+}
+
+/* Salir no se encoge: en el teléfono el título del punto baja de línea, el botón queda entero. */
+.gestor__encabezado > .boton {
+  flex-shrink: 0;
+  align-self: flex-start;
 }

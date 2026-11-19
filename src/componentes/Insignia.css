@@ -11,6 +11,12 @@
   white-space: nowrap;
 }
 
+/* Grande: el alto de un botón pequeño (button-h-sm) y el padding de los chips un poco mayor. */
+.insignia--grande {
+  min-height: var(--button-h-sm);
+  padding: 0 var(--space-4);
+}
+
 .insignia__icono {
   flex-shrink: 0;
   width: var(--icon-sm);

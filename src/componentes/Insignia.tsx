@@ -8,12 +8,25 @@ type Props = {
   tono?: TonoInsignia
   icono?: LucideIcon
   className?: string
+  /** Grande: texto body-strong y más alto, para la insignia principal de una pantalla. */
+  grande?: boolean
   children: ReactNode
 }
 
 /** Insignia o chip: tiempos ("50 min"), conteos ("3 / 12") y "Próximamente". */
-export function Insignia({ tono = 'neutral', icono: Icono, className, children }: Props) {
-  const clases = ['insignia', 'texto-small-strong', `insignia--${tono}`, className]
+export function Insignia({
+  tono = 'neutral',
+  icono: Icono,
+  className,
+  grande = false,
+  children,
+}: Props) {
+  const clases = [
+    'insignia',
+    grande ? 'insignia--grande texto-body-strong' : 'texto-small-strong',
+    `insignia--${tono}`,
+    className,
+  ]
     .filter(Boolean)
     .join(' ')
 

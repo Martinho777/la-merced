@@ -3,12 +3,18 @@ import { useTranslation } from 'react-i18next'
 import { Pause, Play } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import type { PuntoConFicha } from '@/datos/puntos'
+import { prepararVoz, type VozNarracion } from '@/visitante/analizadorVoz'
 import { formatearTiempo, porcentajeAvance } from '@/visitante/audio'
 import './BarraAudio.css'
 
 type Props = {
   audio: PuntoConFicha['audio']
   transcripcion: string | null
+  /**
+   * Avisa cuando la narración empieza a sonar (con su nivel de voz, o null si no se puede leer el
+   * volumen) y cuando se detiene (`false`). La ficha lo usa para que Santi hable.
+   */
+  alCambiarVoz?: (voz: VozNarracion | null | false) => void
 }
 
 /**
@@ -16,7 +22,7 @@ type Props = {
  * "Audio próximamente" y deshabilita la reproducción, sin simular tiempo ni avance; la transcripción
  * se puede leer aunque no haya audio y su botón se deshabilita solo si tampoco hay transcripción.
  */
-export function BarraAudio({ audio, transcripcion }: Props) {
+export function BarraAudio({ audio, transcripcion, alCambiarVoz }: Props) {
   const { t } = useTranslation()
   const idTranscripcion = useId()
   const reproductor = useRef<HTMLAudioElement>(null)
@@ -24,6 +30,7 @@ export function BarraAudio({ audio, transcripcion }: Props) {
   const [actual, setActual] = useState(0)
   const [duracionCargada, setDuracionCargada] = useState<number | null>(null)
   const [fallo, setFallo] = useState(false)
+  const voz = useRef<VozNarracion | null>(null)
   const [conTranscripcion, setConTranscripcion] = useState(false)
 
   const disponible = audio !== null && !fallo
@@ -33,8 +40,11 @@ export function BarraAudio({ audio, transcripcion }: Props) {
   function alternar() {
     const elemento = reproductor.current
     if (!elemento) return
-    if (elemento.paused) elemento.play().catch(() => setFallo(true))
-    else elemento.pause()
+    if (elemento.paused) {
+      // Dentro del toque: el navegador solo deja arrancar Web Audio con un gesto.
+      voz.current = prepararVoz(elemento)
+      elemento.play().catch(() => setFallo(true))
+    } else elemento.pause()
   }
 
   return (
@@ -104,9 +114,20 @@ export function BarraAudio({ audio, transcripcion }: Props) {
           ref={reproductor}
           src={audio.url}
           preload="metadata"
-          onPlay={() => setReproduciendo(true)}
-          onPause={() => setReproduciendo(false)}
-          onEnded={() => setReproduciendo(false)}
+          // Para poder leer el volumen de un archivo de otro dominio (ver analizadorVoz.ts).
+          crossOrigin="anonymous"
+          onPlay={() => {
+            setReproduciendo(true)
+            alCambiarVoz?.(voz.current)
+          }}
+          onPause={() => {
+            setReproduciendo(false)
+            alCambiarVoz?.(false)
+          }}
+          onEnded={() => {
+            setReproduciendo(false)
+            alCambiarVoz?.(false)
+          }}
           onTimeUpdate={(evento) => setActual(evento.currentTarget.currentTime)}
           onLoadedMetadata={(evento) => {
             const { duration } = evento.currentTarget
@@ -115,6 +136,7 @@ export function BarraAudio({ audio, transcripcion }: Props) {
           onError={() => {
             setReproduciendo(false)
             setFallo(true)
+            alCambiarVoz?.(false)
           }}
         />
       )}

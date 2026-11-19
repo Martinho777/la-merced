@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { Boton } from '@/componentes/Boton'
 import { Insignia } from '@/componentes/Insignia'
-import { Santi } from '@/componentes/Santi/Santi'
+import { SantiAnimado } from '@/componentes/Santi/SantiAnimado'
 import type { PuntoConFicha } from '@/datos/puntos'
 import { BarraVisitante } from '@/visitante/BarraVisitante'
 import { rutaConZona } from '@/visitante/camara'
@@ -44,21 +44,21 @@ function Confirmacion({ zona, punto }: { zona: string; punto: PuntoConFicha }) {
       />
       <div className="confirmacion__cuerpo">
         <div className="confirmacion__encabezado">
-          <p className="confirmacion__intro texto-label">{t('punto.confirmacion.intro')}</p>
           <Insignia>{identificador}</Insignia>
         </div>
 
         <div className="confirmacion__escena">
           <div className="confirmacion__santi">
-            <Santi pose="point" tamano="md" />
+            <SantiAnimado pose="point" tamano="lg" animacion="senalar" />
           </div>
           <FotoReservada imagen={punto.foto} className="confirmacion__foto" />
         </div>
 
-        <div className="confirmacion__texto">
-          <h1 className="confirmacion__titulo texto-title-1">{t('punto.confirmacion.titulo')}</h1>
-          <p className="pantalla__texto texto-body">{t('punto.confirmacion.frase', { nombre })}</p>
-        </div>
+        {/* Solo la confirmación corta a la vista; el nombre del punto, para lectores de pantalla. */}
+        <h1 className="confirmacion__titulo texto-title-1">
+          {t('punto.confirmacion.pregunta')}
+          <span className="visualmente-oculto"> {t('punto.confirmacion.frase', { nombre })}</span>
+        </h1>
       </div>
 
       <div className="pantalla__acciones">

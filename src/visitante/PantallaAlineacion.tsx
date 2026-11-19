@@ -4,7 +4,7 @@ import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-route
 import { TriangleAlert } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { duracionHabla } from '@/componentes/Santi/habla'
-import { SantiHablando } from '@/componentes/Santi/SantiHablando'
+import { SantiAnimado } from '@/componentes/Santi/SantiAnimado'
 import { SantiBurbuja } from '@/componentes/SantiBurbuja'
 import { obtenerZona } from '@/datos/zonas'
 import {
@@ -206,7 +206,12 @@ export function PantallaAlineacion() {
       {estado.tipo === 'activa' && (
         <div className="alineacion__santi">
           <SantiBurbuja cola="abajo">{t('alineacion.santi')}</SantiBurbuja>
-          <SantiHablando duracionMs={duracionHabla(t('alineacion.santi'))} />
+          <SantiAnimado
+            pose="idle"
+            tamano="lg"
+            animacion="habla"
+            duracionHablaMs={duracionHabla(t('alineacion.santi'))}
+          />
         </div>
       )}
 

@@ -31,57 +31,61 @@
   gap: var(--space-2);
 }
 
-.confirmacion__intro {
-  margin: 0;
-  color: var(--yellow-800);
+/* La foto a la derecha y Santi grande abajo a la izquierda, centrados en el alto libre. La imagen de
+   Santi trae margen transparente (unos 22% a cada lado): ese margen puede quedar fuera de la pantalla
+   (se recorta) o detrás de la foto; el dibujo llega justo al borde de la foto, sin taparla. */
+.confirmacion {
+  overflow-x: clip;
 }
 
-/* Santi a la izquierda, al pie, junto a la tarjeta: no se monta sobre la foto. */
 .confirmacion__escena {
+  position: relative;
   display: flex;
-  flex: 1;
-  align-items: flex-end;
   justify-content: flex-end;
-  gap: var(--space-2);
-  min-height: 0;
+  margin-block: auto;
+  padding-block: var(--space-4);
 }
 
 .confirmacion__santi {
-  flex: 0 0 32%;
-  min-width: 0;
+  position: absolute;
+  inset-block-end: var(--space-4);
+  inset-inline-start: -16%;
+  z-index: 1;
+  width: 66%;
+  pointer-events: none;
 }
 
-/* Tarjeta de foto, un poco girada como una foto impresa. */
+.confirmacion__santi .santi-animado,
+.confirmacion__santi .santi {
+  width: 100%;
+}
+
+/* Tarjeta de foto 3:4, un poco girada como una foto impresa; nunca más alta que la mitad de la
+   pantalla. */
 .confirmacion__foto {
-  flex: 1;
-  align-self: stretch;
-  min-height: 40dvh;
+  width: min(68%, 36dvh);
+  aspect-ratio: 3 / 4;
   border: var(--space-2) solid var(--surface);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-raised);
   rotate: 1.5deg;
 }
 
-[data-theme='contrast'] .confirmacion__foto {
-  outline: var(--border-hairline) solid var(--ink);
-}
-
-.confirmacion__texto {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding-top: var(--space-3);
-  text-align: center;
-}
-
+/* Confirmación corta bajo la foto (contraste.md: green-700 sobre surface). */
 .confirmacion__titulo {
   margin: 0;
   color: var(--green-700);
+  text-align: center;
+}
+
+[data-theme='contrast'] .confirmacion__foto {
+  outline: var(--border-hairline) solid var(--ink);
 }
 
 /* --- Ficha --- */
 
 .ficha__encabezado {
+  position: relative;
   padding-bottom: var(--space-6);
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   background: var(--green-700);
@@ -108,7 +112,10 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-2);
-  padding: 0 var(--pad-screen-x);
+  /* Alto suficiente para que Santi, parado en el borde, no llegue a la barra (idioma, volver). */
+  min-height: calc(var(--santi-md) * 0.73 - var(--space-6));
+  /* El texto no pasa por debajo de Santi (su dibujo ocupa unos dos tercios de su ancho). */
+  padding: 0 calc(var(--pad-screen-x) + var(--santi-md) * 0.65) 0 var(--pad-screen-x);
 }
 
 .ficha__titulos-texto {
@@ -124,8 +131,14 @@
   overflow-wrap: anywhere;
 }
 
+/* Santi parado en el borde del encabezado: sus pies (al 90,2% del alto de su imagen, que trae margen
+   transparente debajo) quedan justo en la línea entre el verde y el blanco. No recibe toques, para
+   no tapar el botón de idioma si salta al celebrar. */
 .ficha__santi {
-  flex-shrink: 0;
+  position: absolute;
+  inset-block-end: calc(var(--santi-md) * -0.098);
+  inset-inline-end: var(--pad-screen-x);
+  pointer-events: none;
 }
 
 .ficha__cuerpo {

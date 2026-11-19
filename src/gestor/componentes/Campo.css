@@ -6,8 +6,49 @@
   gap: var(--space-2);
 }
 
+.campo__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
 .campo__etiqueta {
   color: var(--ink);
+}
+
+/* Obligatorio / opcional: etiqueta en mayúsculas (contraste.md: ink-muted sobre surface). */
+.campo__requisito {
+  color: var(--ink-muted);
+}
+
+/* Obligatorio en rojo (contraste.md: red-600 sobre surface, 5.5:1), y siempre con la palabra. */
+.campo__requisito--obligatorio {
+  color: var(--error);
+}
+
+/* Listo o vacío: palabra + icono, nunca solo color (contraste.md: green-700 y ink-muted sobre
+   surface). Va a la derecha de la etiqueta. */
+.campo__estado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+  color: var(--ink-muted);
+}
+
+.campo--lleno .campo__estado {
+  color: var(--success);
+}
+
+.campo__estado-icono {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+/* Vacío: borde punteado, para distinguirlo de un campo ya lleno. */
+.campo--vacio .campo__control {
+  border-style: dashed;
 }
 
 .campo__ayuda,
@@ -45,4 +86,34 @@
 
 select.campo__control {
   cursor: pointer;
+}
+
+/* Contraseña con botón de mostrar u ocultar dentro del campo, a la derecha. */
+.campo__con-boton {
+  position: relative;
+  display: block;
+}
+
+.campo__control--con-boton {
+  padding-inline-end: var(--touch-min);
+}
+
+.campo__boton {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  display: grid;
+  place-items: center;
+  width: var(--touch-min);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.campo__boton-icono {
+  width: var(--icon-md);
+  height: var(--icon-md);
 }

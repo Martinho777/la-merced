@@ -1,0 +1,60 @@
+/* Santi animado: los cuadros apilados en la misma celda y solo uno visible (data-activo). */
+
+.santi-animado {
+  position: relative;
+  display: inline-grid;
+  /* Tan ancho como Santi (aunque el contenedor lo estire): el confeti sale de su centro. */
+  width: fit-content;
+  max-width: 100%;
+}
+
+.santi-animado__cuerpo {
+  display: inline-grid;
+  max-width: 100%;
+  /* GSAP mueve este elemento; la clase externa (entradas en CSS) queda en .santi-animado. */
+  will-change: transform;
+}
+
+.santi-animado__cuadro {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+
+.santi-animado__cuadro[data-activo] {
+  visibility: visible;
+}
+
+/* El confeti sale del centro de Santi y puede salir de su caja; no recibe toques. */
+.santi-animado__confeti {
+  position: absolute;
+  inset-block-start: 40%;
+  inset-inline-start: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.santi-animado__pieza {
+  position: absolute;
+  width: var(--space-2);
+  height: var(--space-3);
+  border-radius: var(--border-hairline);
+}
+
+/* Colores de celebración (tokens.json: red-400 solo para mascota y confeti, green-400 para acentos
+   de celebración). Decorativos: no llevan texto. */
+.santi-animado__pieza--rojo {
+  background: var(--red-400);
+}
+
+.santi-animado__pieza--amarillo {
+  background: var(--yellow-400);
+}
+
+.santi-animado__pieza--cielo {
+  background: var(--sky-400);
+}
+
+.santi-animado__pieza--blanco {
+  background: var(--surface);
+}

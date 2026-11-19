@@ -87,7 +87,8 @@
       "intro": "You saw it on the map!",
       "titulo": "That's the one!",
       "frase": "You chose {{nombre}}. Shall we explore it?",
-      "verDetalle": "Yes, see details"
+      "verDetalle": "Yes, see details",
+      "pregunta": "Is this what you see?"
     },
     "audio": {
       "titulo": "Listen to the story",
