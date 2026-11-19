@@ -147,6 +147,57 @@ export function reajustar(vista: Vista, antes: Lienzo, ahora: Lienzo): Vista {
   return centrarEn(escala, ahora, x, y)
 }
 
+/** Lienzo y vista que se pueden usar para convertir: medidas finitas y positivas. */
+function medidasValidas(vista: Vista, lienzo: Lienzo): boolean {
+  return [lienzo.ancho, lienzo.alto, vista.escala].every((n) => Number.isFinite(n) && n > 0)
+}
+
+const entre0y1 = (n: number) => Math.min(1, Math.max(0, n))
+
+/**
+ * Convierte una posición del puntero, en píxeles CSS desde la esquina superior izquierda del lienzo
+ * (por ejemplo `clientX - caja.left`), a la posición normalizada sobre la ilustración (`pos_x`,
+ * `pos_y`, de 0 a 1). Tiene en cuenta el zoom y el desplazamiento de la `vista`. Fuera de la
+ * ilustración se limita al borde más cercano. Con medidas inválidas devuelve null.
+ */
+export function punteroAEscena(
+  vista: Vista,
+  lienzo: Lienzo,
+  puntero: Punto,
+): { x: number; y: number } | null {
+  if (
+    !medidasValidas(vista, lienzo) ||
+    !Number.isFinite(puntero.x) ||
+    !Number.isFinite(puntero.y)
+  ) {
+    return null
+  }
+  const base = tamanoBase(lienzo)
+  return {
+    x: entre0y1((puntero.x - vista.x) / (base.ancho * vista.escala)),
+    y: entre0y1((puntero.y - vista.y) / (base.alto * vista.escala)),
+  }
+}
+
+/**
+ * Inversa de `punteroAEscena`: dónde cae, en píxeles del lienzo, un punto de la ilustración (x e y de
+ * 0 a 1). Es la misma cuenta que usa el mapa para colocar los marcadores. Con medidas inválidas
+ * devuelve null.
+ */
+export function escenaAPuntero(
+  vista: Vista,
+  lienzo: Lienzo,
+  x: number,
+  y: number,
+): { x: number; y: number } | null {
+  if (!medidasValidas(vista, lienzo) || !Number.isFinite(x) || !Number.isFinite(y)) return null
+  const base = tamanoBase(lienzo)
+  return {
+    x: vista.x + x * base.ancho * vista.escala,
+    y: vista.y + y * base.alto * vista.escala,
+  }
+}
+
 /** Dos vistas son la misma salvo errores de redondeo. */
 export function mismaVista(a: Vista, b: Vista): boolean {
   return (

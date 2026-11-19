@@ -20,7 +20,11 @@ export type PuntoGestor = {
   id: string
   slug: string
   orden: number
-  zona: { slug: string; orden: number }
+  zona: { id: string; slug: string; orden: number }
+  /** Posición sobre la ilustración (0 a 1); null mientras el punto no está ubicado. */
+  pos_x: number | null
+  pos_y: number | null
+  es_esencial: boolean
   /** Ficha de cada idioma del gestor, o null si todavía no existe. */
   fichas: Record<(typeof IDIOMAS_GESTOR)[number], ResumenFicha | null>
 }
@@ -40,7 +44,9 @@ export function fichasPorIdioma(fichas: readonly FilaFicha[]): PuntoGestor['fich
 export async function listarPuntosGestor(): Promise<PuntoGestor[]> {
   const { data, error } = await supabase
     .from('puntos')
-    .select('id, slug, orden, zonas!inner(slug, orden), fichas(id, idioma, estado, titulo)')
+    .select(
+      'id, slug, orden, pos_x, pos_y, es_esencial, zonas!inner(id, slug, orden), fichas(id, idioma, estado, titulo)',
+    )
 
   if (error) throw new Error(`No se pudieron leer los puntos: ${error.message}`)
 
@@ -49,7 +55,10 @@ export async function listarPuntosGestor(): Promise<PuntoGestor[]> {
       id: punto.id,
       slug: punto.slug,
       orden: punto.orden,
-      zona: { slug: punto.zonas.slug, orden: punto.zonas.orden },
+      zona: { id: punto.zonas.id, slug: punto.zonas.slug, orden: punto.zonas.orden },
+      pos_x: punto.pos_x,
+      pos_y: punto.pos_y,
+      es_esencial: punto.es_esencial,
       fichas: fichasPorIdioma(punto.fichas),
     }))
     .sort((a, b) => a.zona.orden - b.zona.orden || a.orden - b.orden)

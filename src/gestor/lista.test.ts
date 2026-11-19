@@ -7,7 +7,10 @@ function punto(id: string, zona: string): PuntoGestor {
     id,
     slug: id,
     orden: 1,
-    zona: { slug: zona, orden: 1 },
+    zona: { id: zona, slug: zona, orden: 1 },
+    pos_x: null,
+    pos_y: null,
+    es_esencial: false,
     fichas: { es: null, en: null },
   }
 }
