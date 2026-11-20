@@ -28,6 +28,13 @@
 - Textos de la interfaz desde la base (Sprint 4 · bloque 1, rama `feat/ficha-textos`): migración de `textos_interfaz`
   (lectura pública, escritura solo admin), semilla generada desde los JSON y carga al abrir la app con respaldo
   en los JSON (`i18n/textosBase.ts`). Migraciones y semilla aplicadas en `la-merced-dev` (16 nov 2026).
+- **Editor de textos de las pantallas** (`/gestor/textos`, solo admin, rama `feat/textos-pantallas`): bienvenida (título,
+  subtítulo, botón), título de idioma, título y pregunta de ruta, título de zona y pregunta de la confirmación, en es, en
+  y cak. La pantalla real se ve en un iframe con `?vista-previa` (`i18n/vistaPrevia.ts`) que recibe los borradores por
+  `postMessage` y marca el texto del campo enfocado; en ese modo la app no guarda idioma ni copia en el dispositivo.
+  Guardar escribe en `textos_interfaz`; "Volver al original" borra la fila. En kaqchikel sin traducción el campo
+  empieza vacío y la vista previa muestra el español. Entrada desde la lista de puntos (pasará a una pestaña cuando
+  se integre la navegación del gestor de `feat/gestor-puntos-lectura`).
 - Gestor de fichas (`/gestor`, Sprint 3 · bloque 3): inicio de sesión con roles, lista
   de puntos por zona, ficha por idioma (es y en), estados borrador / revisión / aprobado según el rol, foto del
   detalle y fotos históricas con créditos, fuentes con nivel de confianza. Acceso desde la bienvenida.
@@ -37,16 +44,17 @@
 Las pruebas de la tabla existen en el repositorio; **no se ejecutaron al escribir este archivo** (falta `node_modules`).
 La última columna es lo que ninguna prueba automática puede dar por cumplido.
 
-| Funcionalidad                                    | Pruebas automáticas que existen                                                                         | Comprobación manual o en dispositivo                                                                                   |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Entrada (bienvenida, idioma, ruta, zona)         | `preferencias.test.ts`, `traducciones.test.ts`, `zonas.test.tsx`                                        | No consta ninguna                                                                                                      |
-| Explicación de cámara (`/camara`)                | `camara-pantallas.test.tsx`, `camara.test.ts`                                                           | No consta ninguna                                                                                                      |
-| Alineación (`/alineacion`, `getUserMedia`)       | `camara.test.ts`, `camara-pantallas.test.tsx`                                                           | **No**: sin probar en Chrome Android, Samsung Internet ni iOS                                                          |
-| Mapa (`/mapa`, gestos, progreso, ayuda)          | `mapa.test.ts`, `gestos.test.ts`, `mapa-pantallas.test.tsx`, `progreso.test.ts`, `preferencias.test.ts` | **No**: los gestos táctiles no se han probado en un teléfono                                                           |
-| Confirmación y ficha (`/confirmacion`, `/punto`) | `punto-pantallas.test.tsx`, `puntos.test.ts`, `recorrido.test.ts`                                       | Solo en navegador de escritorio con datos simulados; no contra Supabase real ni en un teléfono                         |
-| Santi hablando sobre la cámara                   | `habla.test.ts`                                                                                         | No consta ninguna                                                                                                      |
-| Textos de la interfaz desde la base              | `textosBase.test.ts`, `textos.test.ts`, `semilla-textos.test.ts`                                        | Probado en navegador de escritorio: respaldo a los JSON sin la tabla y lectura real de `la-merced-dev`; no en teléfono |
-| Gestor de fichas (`/gestor`)                     | `sesion.test.ts`, `gestor*.test.ts`, `fotos.test.ts`, `fuentes.test.ts`, `gestor/*.test.ts`             | Probado en navegador de escritorio contra `la-merced-dev` con los usuarios de prueba (nov. 2026); no en teléfono       |
+| Funcionalidad                                    | Pruebas automáticas que existen                                                                         | Comprobación manual o en dispositivo                                                                                       |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Entrada (bienvenida, idioma, ruta, zona)         | `preferencias.test.ts`, `traducciones.test.ts`, `zonas.test.tsx`                                        | No consta ninguna                                                                                                          |
+| Explicación de cámara (`/camara`)                | `camara-pantallas.test.tsx`, `camara.test.ts`                                                           | No consta ninguna                                                                                                          |
+| Alineación (`/alineacion`, `getUserMedia`)       | `camara.test.ts`, `camara-pantallas.test.tsx`                                                           | **No**: sin probar en Chrome Android, Samsung Internet ni iOS                                                              |
+| Mapa (`/mapa`, gestos, progreso, ayuda)          | `mapa.test.ts`, `gestos.test.ts`, `mapa-pantallas.test.tsx`, `progreso.test.ts`, `preferencias.test.ts` | **No**: los gestos táctiles no se han probado en un teléfono                                                               |
+| Confirmación y ficha (`/confirmacion`, `/punto`) | `punto-pantallas.test.tsx`, `puntos.test.ts`, `recorrido.test.ts`                                       | Solo en navegador de escritorio con datos simulados; no contra Supabase real ni en un teléfono                             |
+| Santi hablando sobre la cámara                   | `habla.test.ts`                                                                                         | No consta ninguna                                                                                                          |
+| Textos de la interfaz desde la base              | `textosBase.test.ts`, `textos.test.ts`, `semilla-textos.test.ts`                                        | Probado en navegador de escritorio: respaldo a los JSON sin la tabla y lectura real de `la-merced-dev`; no en teléfono     |
+| Editor de textos (`/gestor/textos`)              | `gestor/textos.test.ts`, `vistaPrevia.test.ts`, `textos.test.ts`                                        | Navegador de escritorio con sesión y base simuladas (vista previa, idiomas, guardado interceptado); no contra la base real |
+| Gestor de fichas (`/gestor`)                     | `sesion.test.ts`, `gestor*.test.ts`, `fotos.test.ts`, `fuentes.test.ts`, `gestor/*.test.ts`             | Probado en navegador de escritorio contra `la-merced-dev` con los usuarios de prueba (nov. 2026); no en teléfono           |
 
 Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo no da ninguno por cumplido;** lo decide el equipo:
 

@@ -20,3 +20,9 @@
 .error {
   color: var(--error);
 }
+
+/* Vista previa del gestor (src/i18n/vistaPrevia.ts): el texto del campo que el admin está editando. */
+[data-vista-previa] {
+  outline: var(--border-focus) dashed var(--focus);
+  outline-offset: var(--border-control);
+}

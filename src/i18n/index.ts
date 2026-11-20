@@ -14,6 +14,7 @@ import {
 import cak from './cak.json'
 import en from './en.json'
 import es from './es.json'
+import { EN_VISTA_PREVIA } from './vistaPrevia'
 
 export const recursos = {
   es: { translation: es },
@@ -39,7 +40,8 @@ function aplicarIdiomaAlDocumento(idioma: string) {
 i18n.on('languageChanged', (idioma) => {
   aplicarIdiomaAlDocumento(idioma)
   const conocido = IDIOMAS.find((i) => i === idioma)
-  if (conocido) guardarIdioma(conocido)
+  // En la vista previa del gestor no: comparte el almacenamiento con la app del admin.
+  if (conocido && !EN_VISTA_PREVIA) guardarIdioma(conocido)
 })
 
 void i18n.use(initReactI18next).init({

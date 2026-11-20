@@ -8,6 +8,7 @@ import { Boton } from '@/componentes/Boton'
 import { alCambiarSesion, cerrarSesion, obtenerSesion, type SesionGestor } from '@/datos/sesion'
 import { FijarEncabezado, type ContextoEncabezado } from '@/gestor/contexto'
 import { EditorPunto } from '@/gestor/EditorPunto'
+import { EditorTextos } from '@/gestor/EditorTextos'
 import { ListaPuntos } from '@/gestor/ListaPuntos'
 import { PantallaEntrar } from '@/gestor/PantallaEntrar'
 import '@/gestor/i18n'
@@ -135,21 +136,23 @@ export function Gestor() {
   }
 
   const { sesion } = estado
+  // Los textos de las pantallas solo los cambia un admin (RLS de textos_interfaz).
+  const lista = (
+    <ListaPuntos
+      alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)}
+      alAbrirTextos={sesion.rol === 'admin' ? () => navegar('/gestor/textos') : undefined}
+    />
+  )
   return (
     <FijarEncabezado.Provider value={setContexto}>
       <div className="gestor">
         <EncabezadoGestor sesion={sesion} contexto={contexto} alSalir={() => void salir()} />
         {sesion.rol ? (
           <Routes>
-            <Route
-              index
-              element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
-            />
+            <Route index element={lista} />
             <Route path="punto/:idPunto" element={<EditorPunto rol={sesion.rol} />} />
-            <Route
-              path="*"
-              element={<ListaPuntos alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)} />}
-            />
+            <Route path="textos" element={<EditorTextos rol={sesion.rol} />} />
+            <Route path="*" element={lista} />
           </Routes>
         ) : (
           <section className="gestor__titulos">
