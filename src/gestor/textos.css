@@ -1,0 +1,76 @@
+/* Editor de textos de las pantallas (EditorTextos.tsx). Solo tokens; archivo aparte de gestor.css
+   para no mezclarse con otras secciones del gestor. */
+
+/* Selector de idioma: botones en fila. */
+.textos__idiomas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.textos__idiomas legend {
+  float: inline-start;
+  margin-inline-end: var(--space-3);
+  padding: 0;
+  color: var(--ink);
+}
+
+/* Vista previa y campos en dos columnas cuando caben, como el resto del gestor. */
+.textos__cuerpo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--gestor-columna)), 1fr));
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.textos__vista-previa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  text-align: center;
+}
+
+/* Marco con forma de teléfono (proporción de uno común); el ancho de un teléfono grande. */
+.textos__telefono {
+  width: min(100%, calc(var(--content-max) * 0.8));
+  aspect-ratio: 9 / 19.5;
+  overflow: hidden;
+  border: var(--space-2) solid var(--ink);
+  border-radius: var(--radius-xl);
+  background: var(--bg);
+  box-shadow: var(--shadow-raised);
+}
+
+.textos__marco {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.textos__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Junto al campo, no al borde (gestor__insignias las alinea a la derecha en las listas). */
+.textos__campo .textos__insignias {
+  justify-content: flex-start;
+}
+
+.textos__restaurar {
+  align-self: flex-start;
+}
+
+.textos__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

@@ -152,7 +152,7 @@ copia en el teléfono para la próxima visita. Si la base no responde, sigue con
   (el kaqchikel solo con lo que ya está en `cak.json`). Se aplica con `npx supabase db push --include-seed`
   o pegándolo en el SQL Editor. No pisa los textos que ya existan.
 - **Una vez cargado un texto en la base, la base manda:** cambiar ese texto en `es.json` ya no cambia la app.
-  Se cambia desde el gestor (Sprint 4, bloque 3). Las claves nuevas que se agreguen a los JSON se ven de
+  Se cambia desde el gestor, en «Textos de las pantallas» (`/gestor/textos`, solo admin), viendo la pantalla. Las claves nuevas que se agreguen a los JSON se ven de
   inmediato; para que el admin pueda editarlas, se vuelve a generar y aplicar la semilla.
 
 ## Puesta en marcha del proyecto de Supabase (una sola vez)

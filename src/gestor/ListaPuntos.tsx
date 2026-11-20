@@ -11,8 +11,17 @@ type Estado = { tipo: 'cargando' } | { tipo: 'error' } | { tipo: 'listo'; puntos
 
 type ClaveZona = `zonas.${keyof typeof es.zonas}`
 
-/** Lista de puntos de todas las zonas con el estado de su ficha en cada idioma. */
-export function ListaPuntos({ alAbrir }: { alAbrir?: (punto: PuntoGestor) => void }) {
+/**
+ * Lista de puntos de todas las zonas con el estado de su ficha en cada idioma. Con `alAbrirTextos`
+ * (solo admin), muestra arriba la entrada al editor de textos de las pantallas.
+ */
+export function ListaPuntos({
+  alAbrir,
+  alAbrirTextos,
+}: {
+  alAbrir?: (punto: PuntoGestor) => void
+  alAbrirTextos?: () => void
+}) {
   const { t } = useTranslation('gestor')
   const { t: tGuia } = useTranslation()
   const [estado, setEstado] = useState<Estado>({ tipo: 'cargando' })
@@ -34,6 +43,14 @@ export function ListaPuntos({ alAbrir }: { alAbrir?: (punto: PuntoGestor) => voi
         <h1 className="gestor__titulo texto-title-1">{t('lista.titulo')}</h1>
         <p className="gestor__texto texto-body">{t('lista.texto')}</p>
       </div>
+
+      {alAbrirTextos && (
+        <Tarjeta
+          titulo={t('textos.enlace')}
+          subtitulo={t('textos.enlaceAyuda')}
+          onPresionar={alAbrirTextos}
+        />
+      )}
 
       {estado.tipo === 'cargando' && (
         <p className="gestor__texto texto-body" role="status">
