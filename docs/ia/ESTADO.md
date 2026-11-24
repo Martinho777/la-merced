@@ -33,8 +33,17 @@
   y cak. La pantalla real se ve en un iframe con `?vista-previa` (`i18n/vistaPrevia.ts`) que recibe los borradores por
   `postMessage` y marca el texto del campo enfocado; en ese modo la app no guarda idioma ni copia en el dispositivo.
   Guardar escribe en `textos_interfaz`; "Volver al original" borra la fila. En kaqchikel sin traducción el campo
-  empieza vacío y la vista previa muestra el español. Entrada desde la lista de puntos (pasará a una pestaña cuando
-  se integre la navegación del gestor de `feat/gestor-puntos-lectura`).
+  empieza vacío y la vista previa muestra el español. Entrada desde la pestaña «Textos» de la navegación del gestor
+  (`gestor/secciones.ts`), que solo ve el admin.
+- **Ubicación, clasificación y orden de puntos** (`/gestor/ubicaciones`, Sprint 4 · bloque 3, rama
+  `feat/gestor-puntos-lectura`; editor, revisor y admin): arrastrar o mover con el teclado cada punto sobre la
+  ilustración de su zona, marcarlo esencial u opcional y reordenarlo con «Subir» y «Bajar», todo en un borrador local
+  hasta «Guardar cambios» (`gestor/ubicacion.ts`, `orden.ts`, `guardado.ts`). Posiciones y clasificación se guardan
+  por punto (`datos/ubicaciones.ts`, sin atomicidad); el orden, por zona con la función `reordenar_puntos`
+  (`datos/reordenar.ts`, atómica por zona, conserva los valores de `orden`). El gestor no crea ni borra puntos.
+  La migración `20261123000001_reordenar_puntos.sql` está aplicada en `la-merced-dev` (no en otros proyectos); su guía
+  de aplicación y reversión es `docs/ia/MIGRACION-S4B3-4-REORDENAR-PUNTOS.md`. `tipos-db.ts` aún no conoce la
+  función (`db:types` pendiente de aprobación).
 - Gestor de fichas (`/gestor`, Sprint 3 · bloque 3): inicio de sesión con roles, lista
   de puntos por zona, ficha por idioma (es y en), estados borrador / revisión / aprobado según el rol, foto del
   detalle y fotos históricas con créditos, fuentes con nivel de confianza. Acceso desde la bienvenida.
@@ -54,6 +63,7 @@ La última columna es lo que ninguna prueba automática puede dar por cumplido.
 | Santi hablando sobre la cámara                   | `habla.test.ts`                                                                                         | No consta ninguna                                                                                                          |
 | Textos de la interfaz desde la base              | `textosBase.test.ts`, `textos.test.ts`, `semilla-textos.test.ts`                                        | Probado en navegador de escritorio: respaldo a los JSON sin la tabla y lectura real de `la-merced-dev`; no en teléfono     |
 | Editor de textos (`/gestor/textos`)              | `gestor/textos.test.ts`, `vistaPrevia.test.ts`, `textos.test.ts`                                        | Navegador de escritorio con sesión y base simuladas (vista previa, idiomas, guardado interceptado); no contra la base real |
+| Ubicación y orden (`/gestor/ubicaciones`)        | `ubicacion.test.ts`, `orden.test.ts`, `guardado.test.ts`, `ubicaciones.test.ts`, `reordenar.test.ts`    | RPC probada en SQL con los 3 roles en `la-merced-dev`; pantalla validada por el equipo en navegador; no en teléfono        |
 | Gestor de fichas (`/gestor`)                     | `sesion.test.ts`, `gestor*.test.ts`, `fotos.test.ts`, `fuentes.test.ts`, `gestor/*.test.ts`             | Probado en navegador de escritorio contra `la-merced-dev` con los usuarios de prueba (nov. 2026); no en teléfono           |
 
 Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo no da ninguno por cumplido;** lo decide el equipo:
@@ -81,7 +91,7 @@ Criterios de terminado del Sprint 2 (`docs/producto/SPRINTS.md`). **Este archivo
 
 ## No existe (según búsqueda en `src/` y `package.json`)
 
-Modelo 3D real (solo hay una esfera provisional, ver Parcial), ubicación de puntos y publicación desde el gestor (Sprint 4), PWA / uso sin conexión, interruptor de tema `contrast`
+Modelo 3D real (solo hay una esfera provisional, ver Parcial), publicación desde el gestor (Sprint 4), PWA / uso sin conexión, interruptor de tema `contrast`
 en producción (solo en `/estilos`), ajuste de texto grande, modo respeto, estampa animada al completar un punto.
 
 ## Discrepancias especificación ↔ código (informativas)

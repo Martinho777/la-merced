@@ -1,8 +1,8 @@
 # S4B3.4: reordenar los puntos de una zona (migración y guía de aplicación)
 
-> **Para quién es:** para ti, que vas a aplicar esta migración tú mismo en `la-merced-dev` desde el SQL Editor de Supabase.
-> **Estado:** la migración está **escrita pero no aplicada** en ningún proyecto de Supabase. Esta guía no ejecuta nada por ti.
-> **Qué no está hecho:** la interfaz para reordenar. No se empieza hasta que confirmes que la función existe y funciona en `la-merced-dev`.
+> **Para quién es:** para quien aplique esta migración desde el SQL Editor de Supabase (o la revierta).
+> **Estado:** la migración **ya se aplicó en `la-merced-dev`** (nov. 2026, desde el SQL Editor, no con `db push`); el equipo verificó la función y la prueba controlada con editor, revisor y admin. **No** se ha aplicado en ningún otro proyecto: para uno nuevo, sigue esta guía. Esta guía no ejecuta nada por ti.
+> **Quién la usa:** el editor de ubicaciones del gestor (`/gestor/ubicaciones`, S4B3.6) llama a la función con `reordenarPuntos` (`src/datos/reordenar.ts`). Sin la función aplicada, esa pantalla no puede guardar el orden.
 
 Cada bloque de SQL lleva una etiqueta:
 
@@ -410,7 +410,7 @@ Efectos:
 
 - Se elimina la función y, con ella, sus permisos. Es lo único que la migración creó.
 - **No afecta a los puntos existentes**: sus valores de `orden`, las fichas, la restricción y las políticas quedan igual. **Si ya se había reordenado algo, el orden nuevo se queda**; para devolverlo usa 9.2.
-- Hoy ningún código de la app llama a la función, así que no se rompe nada. Si más adelante la interfaz ya la usa, dejaría de poder reordenar hasta que se vuelva a aplicar la migración.
+- **El editor de ubicaciones del gestor (S4B3.6) llama a esta función.** Si la quitas, esa pantalla sigue cargando y guardando posiciones y clasificación, pero «Guardar cambios» falla al reordenar (lo muestra como error de orden y conserva el borrador) hasta que se vuelva a aplicar la migración. El mapa del visitante no se ve afectado.
 - El archivo de migración del repositorio no cambia: volver a aplicarlo la crea de nuevo.
 
 ### 9.2 Restaurar datos reordenados
@@ -432,7 +432,7 @@ Notas:
 
 ## 10. Después de aplicar
 
-- **No empieces la interfaz.** Esperamos tu confirmación de que la función existe (sección 6) y pasa la prueba (sección 7) en `la-merced-dev`.
+- **La interfaz ya existe** (S4B3.6, `/gestor/ubicaciones`). Su validación de extremo a extremo con sesiones reales (sección 8) la hizo el equipo en `la-merced-dev`.
 - **Tipos generados:** `src/lib/tipos-db.ts` todavía no conoce la función. Se regenera con `npm run db:types`, que consulta el proyecto enlazado y por eso necesita tu aprobación explícita. Mientras tanto, [`src/datos/reordenar.ts`](../../src/datos/reordenar.ts) la llama con un envoltorio sin tipos, que se quita al regenerar.
 
 **Contrato que usa la app:**
@@ -452,7 +452,7 @@ Notas:
 - **Roles:** la función usa `es_personal()`, la misma que las políticas, así que sigue cualquier cambio en cómo se definen los roles.
 - **`security invoker`:** si alguien quita la política «personal edita puntos», la función dejaría de poder actualizar. Es lo deseado.
 - **Una simulación SQL no es una sesión real:** la sección 7 no demuestra por sí sola que funcione con un inicio de sesión real (sección 7.5).
-- **Sin probar en Supabase** hasta que ejecutes las secciones 6 y 7.
+- **Solo verificada en `la-merced-dev`.** En otro proyecto, ejecuta primero las secciones 6 y 7.
 
 ## 12. Checklist
 
