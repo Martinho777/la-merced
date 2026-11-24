@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { PuntoGestor } from '@/datos/gestor'
 import type { ResultadoGuardado } from '@/datos/ubicaciones'
 import {
@@ -16,6 +16,11 @@ import {
   zonaElegida,
   zonasDe,
 } from '@/gestor/ubicacion'
+
+// `ubicacion.ts` usa `diferenciaUbicacion` de `@/datos/ubicaciones`, que importa el cliente de Supabase, y
+// ese cliente lanza si faltan VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY (como en la CI). Estas pruebas son
+// de lógica pura y no usan la base: el cliente se sustituye por uno vacío, y si algo lo usara fallaría.
+vi.mock('@/lib/supabase', () => ({ supabase: {} }))
 
 function punto(id: string, zona: string, extra: Partial<PuntoGestor> = {}): PuntoGestor {
   return {

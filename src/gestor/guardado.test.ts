@@ -2,9 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PuntoGestor } from '@/datos/gestor'
 
 // Sin Supabase real: se simulan las dos operaciones de la base (ubicaciones por punto y orden por zona)
-// para comprobar cómo se combinan sus resultados.
+// para comprobar cómo se combinan sus resultados. El mock de `@/datos/ubicaciones` conserva el resto del
+// módulo real (p. ej. `diferenciaUbicacion`), y para cargarlo hace falta el cliente de Supabase, que lanza
+// si faltan las variables de entorno (como en la CI): por eso también se sustituye `@/lib/supabase`.
 const guardarUbicaciones = vi.fn()
 const reordenarPuntos = vi.fn()
+vi.mock('@/lib/supabase', () => ({ supabase: {} }))
 vi.mock('@/datos/ubicaciones', async (original) => ({
   ...(await original<typeof import('@/datos/ubicaciones')>()),
   guardarUbicaciones: (...args: unknown[]) => guardarUbicaciones(...args),
