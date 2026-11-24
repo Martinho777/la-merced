@@ -779,3 +779,11 @@
   margin: 0;
   padding-inline-start: var(--space-5);
 }
+
+/* Subir y bajar un punto: bajo su tarjeta, porque la tarjeta ya es un botón y no puede contener otros. */
+.ubicacion__orden {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-2);
+}

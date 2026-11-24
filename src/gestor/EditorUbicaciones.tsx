@@ -1,30 +1,44 @@
-// Editor de ubicaciones (/gestor/ubicaciones): sobre la ilustración de cada zona, ubicar los puntos y
-// marcarlos como esenciales u opcionales. Todo vive en un borrador local hasta «Guardar cambios»; el
-// borrador es de todas las zonas, así que cambiar de zona no pierde nada.
+// Editor de ubicaciones (/gestor/ubicaciones): sobre la ilustración de cada zona, ubicar los puntos,
+// marcarlos como esenciales u opcionales y cambiar su orden con «Subir» y «Bajar». Todo vive en un
+// borrador local hasta «Guardar cambios»; el borrador es de todas las zonas, así que cambiar de zona no
+// pierde nada. Posiciones, clasificación y orden se guardan por separado (ver `guardado.ts`).
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useBlocker } from 'react-router'
-import { Image } from 'lucide-react'
+import { ArrowDown, ArrowUp, Image } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { Insignia } from '@/componentes/Insignia'
 import { Tarjeta } from '@/componentes/Tarjeta'
 import { listarPuntosGestor, type PuntoGestor } from '@/datos/gestor'
-import { guardarUbicaciones, type ResultadoGuardado } from '@/datos/ubicaciones'
 import { obtenerZonas } from '@/datos/zonas'
 import { MarcadorEditable } from '@/gestor/componentes/MarcadorEditable'
 import {
-  aplicarResultado,
+  aplicarCambios,
+  guardarCambios,
+  hayCambios,
+  tipoDeCambios,
+  type ResultadoCambios,
+} from '@/gestor/guardado'
+import {
+  crearOrden,
+  moverPunto,
+  ordenProyectado,
+  posicionEnOrden,
+  puedeMover,
+  puntosConOrdenCambiado,
+  puntosDeZonaEnOrden,
+  zonasConOrdenPendiente,
+  type OrdenBorrador,
+} from '@/gestor/orden'
+import {
   clasificarPunto,
   colocarPunto,
   crearBorrador,
   desplazarPunto,
-  editadosParaGuardar,
   ilustracionDeZona,
   posicionDelPuntero,
-  puntosDeZona,
   puntosPendientes,
-  tipoDeResultado,
   zonaElegida,
   zonasDe,
   type Borrador,
@@ -36,8 +50,11 @@ type Estado = { tipo: 'cargando' } | { tipo: 'error' } | { tipo: 'listo' }
 
 type ClaveZona = `zonas.${keyof typeof es.zonas}`
 
-/** Qué se le cuenta al usuario tras guardar o descartar. */
-type Aviso = { tipo: TipoResultado; resultado: ResultadoGuardado } | { tipo: 'descartado' }
+/** Qué se le cuenta al usuario tras guardar, descartar o mover un punto. */
+type Aviso =
+  | { tipo: TipoResultado; resultado: ResultadoCambios }
+  | { tipo: 'descartado' }
+  | { tipo: 'movido'; texto: string }
 
 export function EditorUbicaciones() {
   const { t } = useTranslation('gestor')
@@ -47,12 +64,16 @@ export function EditorUbicaciones() {
   // Lo último confirmado por la base, y el borrador que se edita encima.
   const [puntos, setPuntos] = useState<PuntoGestor[]>([])
   const [borrador, setBorrador] = useState<Borrador>({})
+  const [orden, setOrden] = useState<OrdenBorrador>({})
   const [urlsIlustracion, setUrlsIlustracion] = useState<Record<string, string | null>>({})
   const [zona, setZona] = useState<string | null>(null)
   const [seleccion, setSeleccion] = useState<string | null>(null)
   const [guardando, setGuardando] = useState(false)
   const [aviso, setAviso] = useState<Aviso | null>(null)
   const escenaRef = useRef<HTMLDivElement>(null)
+  const listaRef = useRef<HTMLUListElement>(null)
+  // Botón de orden que acaba de usarse: al reordenar la fila cambia de lugar, y el foco vuelve a él.
+  const focoRef = useRef<{ id: string; sentido: -1 | 1 } | null>(null)
 
   useEffect(() => {
     let vigente = true
@@ -62,6 +83,7 @@ export function EditorUbicaciones() {
         if (!vigente) return
         setPuntos(lista)
         setBorrador(crearBorrador(lista))
+        setOrden(crearOrden(lista))
         setUrlsIlustracion(
           Object.fromEntries(zonas.map((z) => [z.slug, z.ilustracion?.url ?? null])),
         )
@@ -75,7 +97,10 @@ export function EditorUbicaciones() {
   }, [intento])
 
   const pendientes = useMemo(() => puntosPendientes(puntos, borrador), [puntos, borrador])
-  const hayPendientes = pendientes.length > 0
+  const zonasPendientes = useMemo(() => zonasConOrdenPendiente(puntos, orden), [puntos, orden])
+  const ordenCambiado = useMemo(() => puntosConOrdenCambiado(puntos, orden), [puntos, orden])
+  const numeros = useMemo(() => ordenProyectado(puntos, orden), [puntos, orden])
+  const hayPendientes = hayCambios(puntos, borrador, orden)
 
   // Con cambios sin guardar: confirmar antes de salir a otra pantalla del gestor...
   const bloqueo = useBlocker(hayPendientes && !guardando)
@@ -92,6 +117,21 @@ export function EditorUbicaciones() {
     window.addEventListener('beforeunload', alSalir)
     return () => window.removeEventListener('beforeunload', alSalir)
   }, [hayPendientes])
+
+  // Tras mover un punto, el foco sigue en su botón; si ya no puede moverse más en ese sentido (llegó al
+  // primero o al último lugar, y el botón queda deshabilitado), pasa al botón contrario.
+  useEffect(() => {
+    const foco = focoRef.current
+    if (!foco) return
+    focoRef.current = null
+    const botones = (sentido: -1 | 1) =>
+      listaRef.current?.querySelector<HTMLButtonElement>(
+        `[data-orden-punto="${foco.id}"][data-sentido="${sentido}"]`,
+      )
+    const preferido = botones(foco.sentido)
+    const otro = botones(foco.sentido === -1 ? 1 : -1)
+    ;(preferido && !preferido.disabled ? preferido : otro)?.focus()
+  }, [orden])
 
   const nombreDe = (punto: PuntoGestor) =>
     punto.fichas.es?.titulo ?? t('lista.sinTitulo', { slug: punto.slug })
@@ -128,7 +168,9 @@ export function EditorUbicaciones() {
   }
 
   const zonas = zonasDe(puntos)
-  const puntosZona = puntosDeZona(puntos, zona)
+  const zonaId = puntos.find((punto) => punto.zona.slug === zona)?.zona.id ?? null
+  const puntosZona = puntosDeZonaEnOrden(puntos, orden, zonaId)
+  const numeroDe = (punto: PuntoGestor) => numeros[punto.id] ?? punto.orden
   const elegido = puntosZona.find((punto) => punto.id === seleccion) ?? null
   const ubicacionElegida = elegido ? borrador[elegido.id] : undefined
   const elegidoSinUbicar = ubicacionElegida?.pos_x === null || ubicacionElegida?.pos_y === null
@@ -162,17 +204,34 @@ export function EditorUbicaciones() {
     setAviso(null)
   }
 
+  /** Sube (`-1`) o baja (`1`) un punto en el borrador. Nada se guarda hasta «Guardar cambios». */
+  function mover(punto: PuntoGestor, sentido: -1 | 1) {
+    if (guardando || zonaId === null) return
+    const siguiente = moverPunto(orden, zonaId, punto.id, sentido)
+    if (siguiente === orden) return
+    setOrden(siguiente)
+    focoRef.current = { id: punto.id, sentido }
+    setAviso({
+      tipo: 'movido',
+      texto: t('ubicaciones.movido', {
+        nombre: nombreDe(punto),
+        posicion: posicionEnOrden(siguiente, zonaId, punto.id) + 1,
+        total: siguiente[zonaId]?.length ?? 0,
+      }),
+    })
+  }
+
   async function guardar() {
-    const editados = editadosParaGuardar(puntos, borrador)
-    if (editados.length === 0) return
+    if (!hayPendientes) return
     setGuardando(true)
     setAviso(null)
     try {
-      const resultado = await guardarUbicaciones(editados)
-      const siguiente = aplicarResultado(puntos, borrador, resultado)
+      const resultado = await guardarCambios(puntos, borrador, orden)
+      const siguiente = aplicarCambios(puntos, borrador, orden, resultado)
       setPuntos(siguiente.puntos)
       setBorrador(siguiente.borrador)
-      setAviso({ tipo: tipoDeResultado(resultado), resultado })
+      setOrden(siguiente.orden)
+      setAviso({ tipo: tipoDeCambios(resultado), resultado })
     } finally {
       setGuardando(false)
     }
@@ -180,10 +239,20 @@ export function EditorUbicaciones() {
 
   function descartar() {
     setBorrador(crearBorrador(puntos))
+    setOrden(crearOrden(puntos))
     setAviso({ tipo: 'descartado' })
   }
 
-  const fallidos = aviso && aviso.tipo !== 'descartado' ? aviso.resultado.fallidos : []
+  const resultado = aviso && 'resultado' in aviso ? aviso.resultado : null
+  const fallidos = resultado?.ubicaciones.fallidos ?? []
+  const zonasFallidas = resultado?.orden.fallidas ?? []
+  const tieneDetalle =
+    (resultado?.ubicaciones.guardados.length ?? 0) +
+      (resultado?.orden.guardadas.length ?? 0) +
+      fallidos.length +
+      zonasFallidas.length >
+    0
+  const slugDeZona = (id: string) => puntos.find((p) => p.zona.id === id)?.zona.slug ?? id
 
   return (
     <section className="gestor__seccion">
@@ -238,13 +307,13 @@ export function EditorUbicaciones() {
                   return (
                     <MarcadorEditable
                       key={punto.id}
-                      numero={punto.orden}
+                      numero={numeroDe(punto)}
                       esencial={es_esencial}
                       seleccionado={punto.id === seleccion}
                       x={pos_x}
                       y={pos_y}
                       etiquetaAccesible={t('ubicaciones.marcador', {
-                        numero: punto.orden,
+                        numero: numeroDe(punto),
                         nombre: nombreDe(punto),
                         clasificacion: clasificacionDe(es_esencial),
                       })}
@@ -262,7 +331,7 @@ export function EditorUbicaciones() {
 
             <div className="gestor__grupo">
               <h2 className="gestor__subtitulo texto-heading">{t('ubicaciones.listaTitulo')}</h2>
-              <ul className="ubicacion__lista">
+              <ul className="ubicacion__lista" ref={listaRef}>
                 {puntosZona.map((punto) => {
                   const actual = borrador[punto.id] ?? punto
                   const sinUbicar = actual.pos_x === null || actual.pos_y === null
@@ -270,7 +339,7 @@ export function EditorUbicaciones() {
                     <li key={punto.id}>
                       <Tarjeta
                         titulo={nombreDe(punto)}
-                        subtitulo={t('lista.punto', { numero: punto.orden })}
+                        subtitulo={t('lista.punto', { numero: numeroDe(punto) })}
                         seleccionada={punto.id === seleccion}
                         onPresionar={() => setSeleccion(punto.id)}
                         final={
@@ -281,12 +350,39 @@ export function EditorUbicaciones() {
                             {pendientes.includes(punto.id) && (
                               <Insignia tono="info">{t('ubicaciones.modificado')}</Insignia>
                             )}
+                            {ordenCambiado.includes(punto.id) && (
+                              <Insignia tono="info">{t('ubicaciones.ordenModificado')}</Insignia>
+                            )}
                             <Insignia tono={actual.es_esencial ? 'marca' : 'neutral'}>
                               {clasificacionDe(actual.es_esencial)}
                             </Insignia>
                           </span>
                         }
                       />
+                      <div className="ubicacion__orden">
+                        {([-1, 1] as const).map((sentido) => (
+                          <Boton
+                            key={sentido}
+                            tamano="sm"
+                            variante="secundario"
+                            icono={sentido === -1 ? ArrowUp : ArrowDown}
+                            disabled={
+                              guardando ||
+                              zonaId === null ||
+                              !puedeMover(orden, zonaId, punto.id, sentido)
+                            }
+                            data-orden-punto={punto.id}
+                            data-sentido={sentido}
+                            aria-label={t(
+                              sentido === -1 ? 'ubicaciones.subirPunto' : 'ubicaciones.bajarPunto',
+                              { numero: numeroDe(punto), nombre: nombreDe(punto) },
+                            )}
+                            onClick={() => mover(punto, sentido)}
+                          >
+                            {sentido === -1 ? t('ubicaciones.subir') : t('ubicaciones.bajar')}
+                          </Boton>
+                        ))}
+                      </div>
                     </li>
                   )
                 })}
@@ -298,7 +394,10 @@ export function EditorUbicaciones() {
                 ) : (
                   <>
                     <h3 className="gestor__subtitulo texto-body-strong">
-                      {t('ubicaciones.punto', { numero: elegido.orden, nombre: nombreDe(elegido) })}
+                      {t('ubicaciones.punto', {
+                        numero: numeroDe(elegido),
+                        nombre: nombreDe(elegido),
+                      })}
                     </h3>
                     <p className="gestor__texto texto-body">
                       {elegidoSinUbicar
@@ -344,9 +443,18 @@ export function EditorUbicaciones() {
 
           <div className="ubicacion__acciones">
             {hayPendientes ? (
-              <p className="gestor__aviso texto-small-strong">
-                {t('ubicaciones.pendientes', { count: pendientes.length })}
-              </p>
+              <div>
+                {pendientes.length > 0 && (
+                  <p className="gestor__aviso texto-small-strong">
+                    {t('ubicaciones.pendientes', { count: pendientes.length })}
+                  </p>
+                )}
+                {zonasPendientes.length > 0 && (
+                  <p className="gestor__aviso texto-small-strong">
+                    {t('ubicaciones.ordenPendiente', { count: zonasPendientes.length })}
+                  </p>
+                )}
+              </div>
             ) : (
               <p className="gestor__texto texto-small">{t('ubicaciones.sinCambios')}</p>
             )}
@@ -368,24 +476,30 @@ export function EditorUbicaciones() {
             {aviso?.tipo === 'descartado' && (
               <p className="gestor__texto texto-body">{t('ubicaciones.descartado')}</p>
             )}
+            {aviso?.tipo === 'movido' && <p className="gestor__texto texto-small">{aviso.texto}</p>}
             {aviso?.tipo === 'exito' && (
-              <p className="gestor__texto texto-body">
-                {t('ubicaciones.guardadoTodo', { count: aviso.resultado.guardados.length })}
-              </p>
+              <p className="gestor__texto texto-body">{t('ubicaciones.resultadoExito')}</p>
             )}
             {aviso?.tipo === 'parcial' && (
-              <p className="gestor__error texto-body">
-                {t('ubicaciones.guardadoParcial', {
-                  guardados: aviso.resultado.guardados.length,
-                  total: aviso.resultado.guardados.length + aviso.resultado.fallidos.length,
-                })}
-              </p>
+              <p className="gestor__error texto-body">{t('ubicaciones.resultadoParcial')}</p>
             )}
             {aviso?.tipo === 'error' && (
-              <p className="gestor__error texto-body">{t('ubicaciones.errorGuardar')}</p>
+              <p className="gestor__error texto-body">{t('ubicaciones.resultadoError')}</p>
             )}
-            {fallidos.length > 0 && (
+            {resultado && tieneDetalle && (
               <ul className="ubicacion__fallos">
+                {resultado.ubicaciones.guardados.length > 0 && (
+                  <li className="gestor__texto texto-small">
+                    {t('ubicaciones.detallePosiciones', {
+                      count: resultado.ubicaciones.guardados.length,
+                    })}
+                  </li>
+                )}
+                {resultado.orden.guardadas.length > 0 && (
+                  <li className="gestor__texto texto-small">
+                    {t('ubicaciones.detalleOrden', { count: resultado.orden.guardadas.length })}
+                  </li>
+                )}
                 {fallidos.map((fallo) => {
                   const punto = puntos.find((p) => p.id === fallo.id)
                   return (
@@ -400,6 +514,14 @@ export function EditorUbicaciones() {
                     </li>
                   )
                 })}
+                {zonasFallidas.map((fallo) => (
+                  <li key={fallo.zonaId} className="gestor__error texto-small">
+                    {t('ubicaciones.falloOrden', {
+                      zona: nombreZona(slugDeZona(fallo.zonaId)),
+                      mensaje: fallo.mensaje,
+                    })}
+                  </li>
+                ))}
               </ul>
             )}
           </div>
