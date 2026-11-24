@@ -192,8 +192,19 @@ Panel para que el equipo cargue y apruebe el contenido sin tocar código. Se abr
 
 - **Entrar:** correo y contraseña de una cuenta invitada (ver "Usuarios de prueba"). Una cuenta sin rol entra,
   pero no puede trabajar hasta que un admin le asigne uno.
-- **Puntos:** lista por zona con el estado de la ficha en cada idioma. El gestor no crea ni ubica puntos: los
-  carga el equipo cuando llega la información de la URL.
+- **Puntos:** lista por zona con el estado de la ficha en cada idioma. El gestor no crea puntos: los carga el
+  equipo cuando llega la información de la URL.
+- **Ubicación, clasificación y orden** (`/gestor/ubicaciones`, editor, revisor y admin): sobre la ilustración de
+  cada zona se arrastra cada punto a su lugar (o se toca la ilustración para ubicar uno sin ubicar), se marca
+  como esencial u opcional y se cambia su orden con «Subir» y «Bajar». Todo vive en un borrador hasta
+  «Guardar cambios». Posiciones y clasificación se guardan punto por punto (`src/datos/ubicaciones.ts`); el orden,
+  una zona a la vez con la función `reordenar_puntos` (`src/datos/reordenar.ts`), que es atómica dentro de la zona
+  y conserva los valores de `orden` que ya tenía (no renumera). Entre unas y otras no hay atomicidad: la pantalla
+  dice qué se guardó y qué sigue pendiente. La lógica está en `src/gestor/ubicacion.ts`, `orden.ts` y `guardado.ts`.
+  La función es una migración (`20261123000001_reordenar_puntos.sql`); su aplicación y reversión están en
+  [`docs/ia/MIGRACION-S4B3-4-REORDENAR-PUNTOS.md`](docs/ia/MIGRACION-S4B3-4-REORDENAR-PUNTOS.md). Ya está aplicada
+  en `la-merced-dev` (desde el SQL Editor: un futuro `db:push` la repetiría sin efecto, porque es idempotente).
+  Hasta regenerar `src/lib/tipos-db.ts` con `npm run db:types`, la llamada usa un envoltorio sin tipos.
 - **Ficha por idioma:** nombre, qué ves, historia y dato de Santi, en español e inglés. Kaqchikel se activa
   (`IDIOMAS_GESTOR` en `src/datos/gestor.ts`) cuando llegue el material.
 - **Estados:** el editor envía un borrador a revisión; el revisor (o admin) lo aprueba o lo devuelve a

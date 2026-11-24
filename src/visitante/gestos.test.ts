@@ -4,8 +4,10 @@ import {
   alternarZoom,
   enfocarPunto,
   escalas,
+  escenaAPuntero,
   mismaVista,
   mover,
+  punteroAEscena,
   reajustar,
   traerAVista,
   vistaInicial,
@@ -147,5 +149,66 @@ describe('cambio de tamaño del lienzo', () => {
   it('desde un lienzo sin medir parte de la vista inicial', () => {
     const ajustada = reajustar({ escala: 1, x: 0, y: 0 }, { ancho: 0, alto: 0 }, lienzo)
     expect(mismaVista(ajustada, vistaInicial(lienzo))).toBe(true)
+  })
+})
+
+describe('conversión entre puntero y coordenadas de la ilustración', () => {
+  // Escala 1: la escena mide 328 × 164 y queda centrada en vertical (y = 158).
+  const sinZoom: Vista = { escala: 1, x: 0, y: 158 }
+
+  it('esquina superior izquierda, centro y esquina inferior derecha', () => {
+    expect(punteroAEscena(sinZoom, lienzo, { x: 0, y: 158 })).toEqual({ x: 0, y: 0 })
+    expect(punteroAEscena(sinZoom, lienzo, { x: 164, y: 240 })).toEqual({ x: 0.5, y: 0.5 })
+    expect(punteroAEscena(sinZoom, lienzo, { x: 328, y: 322 })).toEqual({ x: 1, y: 1 })
+  })
+
+  it('limita al intervalo de 0 a 1 lo que cae fuera de la ilustración', () => {
+    expect(punteroAEscena(sinZoom, lienzo, { x: -50, y: 0 })).toEqual({ x: 0, y: 0 })
+    expect(punteroAEscena(sinZoom, lienzo, { x: 900, y: 900 })).toEqual({ x: 1, y: 1 })
+  })
+
+  it('devuelve null con dimensiones, escala o puntero inválidos', () => {
+    const p = { x: 10, y: 10 }
+    expect(punteroAEscena(sinZoom, { ancho: 0, alto: 480 }, p)).toBeNull()
+    expect(punteroAEscena(sinZoom, { ancho: 328, alto: 0 }, p)).toBeNull()
+    expect(punteroAEscena(sinZoom, { ancho: -1, alto: 480 }, p)).toBeNull()
+    expect(punteroAEscena(sinZoom, { ancho: Number.NaN, alto: 480 }, p)).toBeNull()
+    expect(punteroAEscena({ ...sinZoom, escala: 0 }, lienzo, p)).toBeNull()
+    expect(punteroAEscena(sinZoom, lienzo, { x: Number.NaN, y: 0 })).toBeNull()
+    expect(escenaAPuntero(sinZoom, { ancho: 0, alto: 0 }, 0.5, 0.5)).toBeNull()
+    expect(escenaAPuntero(sinZoom, lienzo, Number.NaN, 0.5)).toBeNull()
+  })
+
+  it('con zoom y desplazamiento apunta al mismo lugar de la fachada que el mapa', () => {
+    const vista = acotar({ escala: 2.5, x: -300, y: -40 }, lienzo)
+    // Un punto de la escena, llevado a píxeles como hace el mapa y de vuelta.
+    const px = escenaAPuntero(vista, lienzo, 0.6, 0.4)
+    expect(px).not.toBeNull()
+    expect(punteroAEscena(vista, lienzo, px!)).toEqual({
+      x: expect.closeTo(0.6, 10),
+      y: expect.closeTo(0.4, 10),
+    })
+  })
+
+  it('la conversión inversa recupera el puntero dentro de la ilustración', () => {
+    const vista = vistaInicial(lienzo)
+    for (const [x, y] of [
+      [0.1, 0.9],
+      [0.5, 0.5],
+      [0.93, 0.07],
+    ] as const) {
+      const px = escenaAPuntero(vista, lienzo, x, y)!
+      const vuelta = punteroAEscena(vista, lienzo, px)!
+      expect(vuelta.x).toBeCloseTo(x, 10)
+      expect(vuelta.y).toBeCloseTo(y, 10)
+    }
+  })
+
+  it('coincide con el centrado de enfocarPunto: el punto enfocado queda en el centro del lienzo', () => {
+    const vista = enfocarPunto(vistaInicial(lienzo), lienzo, 0.5, 0.5)
+    expect(punteroAEscena(vista, lienzo, { x: lienzo.ancho / 2, y: lienzo.alto / 2 })).toEqual({
+      x: expect.closeTo(0.5, 10),
+      y: expect.closeTo(0.5, 10),
+    })
   })
 })

@@ -2,15 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Route, Routes, useNavigate } from 'react-router'
 import { LogOut } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { alCambiarSesion, cerrarSesion, obtenerSesion, type SesionGestor } from '@/datos/sesion'
 import { FijarEncabezado, type ContextoEncabezado } from '@/gestor/contexto'
-import { EditorPunto } from '@/gestor/EditorPunto'
-import { EditorTextos } from '@/gestor/EditorTextos'
-import { ListaPuntos } from '@/gestor/ListaPuntos'
 import { PantallaEntrar } from '@/gestor/PantallaEntrar'
+import { RutasGestor } from '@/gestor/RutasGestor'
 import '@/gestor/i18n'
 import './gestor.css'
 
@@ -73,7 +70,6 @@ function EncabezadoGestor({
 
 export function Gestor() {
   const { t } = useTranslation('gestor')
-  const navegar = useNavigate()
   const [estado, setEstado] = useState<Estado>({ tipo: 'cargando' })
   const [intento, setIntento] = useState(0)
   const [contexto, setContexto] = useState<ContextoEncabezado | null>(null)
@@ -136,24 +132,12 @@ export function Gestor() {
   }
 
   const { sesion } = estado
-  // Los textos de las pantallas solo los cambia un admin (RLS de textos_interfaz).
-  const lista = (
-    <ListaPuntos
-      alAbrir={(punto) => navegar(`/gestor/punto/${punto.id}`)}
-      alAbrirTextos={sesion.rol === 'admin' ? () => navegar('/gestor/textos') : undefined}
-    />
-  )
   return (
     <FijarEncabezado.Provider value={setContexto}>
       <div className="gestor">
         <EncabezadoGestor sesion={sesion} contexto={contexto} alSalir={() => void salir()} />
         {sesion.rol ? (
-          <Routes>
-            <Route index element={lista} />
-            <Route path="punto/:idPunto" element={<EditorPunto rol={sesion.rol} />} />
-            <Route path="textos" element={<EditorTextos rol={sesion.rol} />} />
-            <Route path="*" element={lista} />
-          </Routes>
+          <RutasGestor rol={sesion.rol} />
         ) : (
           <section className="gestor__titulos">
             <h1 className="gestor__titulo texto-title-1">{t('sesion.sinRolTitulo')}</h1>
