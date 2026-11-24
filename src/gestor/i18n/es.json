@@ -284,6 +284,75 @@
     "opcional": "Falta (opcional)",
     "ir": "Ir a {{paso}}"
   },
+  "textos": {
+    "enlace": "Textos de las pantallas",
+    "enlaceAyuda": "Cambia los títulos que ve el visitante, viendo la pantalla.",
+    "volver": "Puntos y fichas",
+    "titulo": "Textos de las pantallas",
+    "texto": "Elige una pantalla y un idioma, y cambia sus textos: la vista previa muestra cómo quedan. Los visitantes ven lo guardado la próxima vez que abren la app.",
+    "sinPermisoTitulo": "Solo para administradores",
+    "sinPermisoTexto": "Los textos de las pantallas los cambia un administrador. Pídeselo al responsable del proyecto.",
+    "error": "No se pudieron cargar los textos.",
+    "pantallas": "Pantallas",
+    "pantalla": {
+      "bienvenida": "Bienvenida",
+      "idioma": "Idioma",
+      "ruta": "Ruta",
+      "zona": "Zona",
+      "confirmacion": "Confirmación"
+    },
+    "idioma": "Idioma de los textos",
+    "idiomas": {
+      "es": "Español",
+      "en": "Inglés",
+      "cak": "Kaqchikel"
+    },
+    "cambios_one": "{{count}} cambio",
+    "cambios_other": "{{count}} cambios",
+    "sinCambios": "Sin cambios",
+    "vistaPrevia": "Vista previa de la pantalla {{pantalla}}",
+    "vistaPreviaAyuda": "Así se ve en un teléfono. Al escribir en un campo, su texto se marca en la pantalla.",
+    "campos": "Textos de {{pantalla}} en {{idioma}}",
+    "clave": {
+      "bienvenida": {
+        "titulo": "Título",
+        "subtitulo": "Subtítulo",
+        "empezar": "Botón para empezar"
+      },
+      "idioma": { "titulo": "Título" },
+      "ruta": {
+        "titulo": "Título",
+        "intro": "Pregunta bajo el título"
+      },
+      "zona": { "titulo": "Título" },
+      "punto": {
+        "confirmacion": {
+          "pregunta": "Pregunta bajo la foto"
+        }
+      }
+    },
+    "original": "Original: «{{texto}}»",
+    "origen": {
+      "original": "Original",
+      "editado": "Cambiado",
+      "sinTraduccion": "Sin traducción: se muestra en español"
+    },
+    "sinGuardar": "Sin guardar",
+    "problema": {
+      "vacio": "Escribe un texto.",
+      "marcadores": "Debe conservar las partes entre llaves dobles del original."
+    },
+    "restaurar": "Volver al original",
+    "restaurarAyuda": "Quita el texto cambiado y vuelve al de la app.",
+    "guardar": "Guardar cambios",
+    "descartar": "Descartar cambios",
+    "guardado_one": "Se guardó {{count}} texto. Los visitantes lo verán la próxima vez que abran la app.",
+    "guardado_other": "Se guardaron {{count}} textos. Los visitantes los verán la próxima vez que abran la app.",
+    "restaurado": "Se volvió al texto original.",
+    "errorGuardar": "No se pudo guardar: {{mensaje}}",
+    "errorRestaurar": "No se pudo volver al original: {{mensaje}}",
+    "confirmarSalir": "Tienes textos sin guardar. Si sales, se pierden. ¿Salir de todos modos?"
+  },
   "avance": {
     "etiqueta": "Ficha completa",
     "valor": "{{hechos}} de {{total}} listos"
@@ -291,7 +360,8 @@
   "navegacion": {
     "etiqueta": "Secciones del gestor",
     "fichas": "Fichas",
-    "ubicacion": "Ubicación"
+    "ubicacion": "Ubicación",
+    "textos": "Textos"
   },
   "ubicaciones": {
     "titulo": "Ubicación de los puntos",

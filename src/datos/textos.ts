@@ -19,3 +19,32 @@ export async function leerTextosInterfaz(): Promise<FilaTexto[]> {
   if (error) throw new Error(`No se pudieron leer los textos de la interfaz: ${error.message}`)
   return data
 }
+
+/**
+ * Guarda (crea o reemplaza) el texto de una clave en un idioma. Solo el admin puede (RLS); la base anota
+ * quién y cuándo. El visitante lo ve la próxima vez que abre la app.
+ */
+export async function guardarTextoInterfaz(fila: FilaTexto): Promise<void> {
+  const { error } = await supabase
+    .from('textos_interfaz')
+    .upsert(fila, { onConflict: 'clave,idioma' })
+
+  if (error) throw new Error(`No se pudo guardar el texto: ${error.message}`)
+}
+
+/** Borra el texto de la base: la app vuelve a mostrar el de los JSON. */
+export async function restaurarTextoInterfaz(
+  clave: string,
+  idioma: FilaTexto['idioma'],
+): Promise<void> {
+  const { data, error } = await supabase
+    .from('textos_interfaz')
+    .delete()
+    .eq('clave', clave)
+    .eq('idioma', idioma)
+    .select('clave')
+
+  if (error) throw new Error(`No se pudo restaurar el texto: ${error.message}`)
+  // Sin permiso, la base no borra nada pero tampoco da error.
+  if (data.length === 0) throw new Error('No se pudo restaurar el texto: la base no lo borró')
+}
