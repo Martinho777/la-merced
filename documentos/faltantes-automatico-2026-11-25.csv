@@ -1,0 +1,14 @@
+﻿Ficha,Título,Idioma,Campo o archivo,Problema,Acción requerida,Prioridad
+01,Punto de prueba,cak,Texto alternativo de la foto del punto,Falta,URL: entregar la traducción al kaqchikel,recomendado
+01,Punto de prueba,todos,Fuente «Fuente de prueba (reemplazar por una referencia real)»,Es una fuente de prueba,Reemplazar por la referencia real,obligatorio
+01,Punto de prueba,todos,Fuente «Libro Prueba»,Es una fuente de prueba,Reemplazar por la referencia real,obligatorio
+01,Punto de prueba,es,Textos,"Contenido de prueba, no material de la URL",Reemplazar por la ficha real antes de aprobar,obligatorio
+01,Punto de prueba,es,Narración (01-es.mp3),Falta,URL: audio y su texto exacto,recomendado
+01,Punto de prueba,es,Estado,En revisión,Revisor del equipo: aprobar o devolver,revision
+01,Punto de prueba,en,Textos,"Contenido de prueba, no material de la URL",Reemplazar por la ficha real antes de aprobar,obligatorio
+01,Punto de prueba,en,Narración (01-en.mp3),Falta,URL: audio y su texto exacto,recomendado
+01,Punto de prueba,en,Qué ves,El largo difiere mucho del español: puede faltar o sobrar contenido,Revisión editorial: confirmar que dice lo mismo,revision
+01,Punto de prueba,en,Historia,El largo difiere mucho del español: puede faltar o sobrar contenido,Revisión editorial: confirmar que dice lo mismo,revision
+01,Punto de prueba,en,Estado,En revisión,Revisor del equipo: aprobar o devolver,revision
+01,Punto de prueba,cak,Ficha,Falta la traducción al kaqchikel,URL: entregar la ficha en kaqchikel,obligatorio
+01,Punto de prueba,cak,Narración (01-cak.mp3),Falta,URL: audio y su texto exacto,recomendado

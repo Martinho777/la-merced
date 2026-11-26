@@ -48,18 +48,19 @@ El navegador avisará que el certificado no es de confianza: acéptalo para esa 
 
 ## Scripts
 
-| Script                      | Qué hace                                                            |
-| --------------------------- | ------------------------------------------------------------------- |
-| `npm run dev`               | Servidor de desarrollo.                                             |
-| `npm run lint`              | ESLint + revisión de formato con Prettier.                          |
-| `npm run format`            | Formatea todo con Prettier.                                         |
-| `npm run typecheck`         | Revisa tipos con `tsc`.                                             |
-| `npm run test`              | Pruebas con Vitest.                                                 |
-| `npm run build`             | Compila a `dist/`.                                                  |
-| `npm run db:push`           | Aplica las migraciones pendientes al proyecto enlazado.             |
-| `npm run db:types`          | Regenera `src/lib/tipos-db.ts` desde el esquema.                    |
-| `npm run db:probar-rls`     | Prueba las reglas de acceso con los usuarios de prueba.             |
-| `npm run db:semilla-textos` | Genera `supabase/semilla-textos.sql` desde los JSON de `src/i18n/`. |
+| Script                      | Qué hace                                                                            |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| `npm run dev`               | Servidor de desarrollo.                                                             |
+| `npm run lint`              | ESLint + revisión de formato con Prettier.                                          |
+| `npm run format`            | Formatea todo con Prettier.                                                         |
+| `npm run typecheck`         | Revisa tipos con `tsc`.                                                             |
+| `npm run test`              | Pruebas con Vitest.                                                                 |
+| `npm run build`             | Compila a `dist/`.                                                                  |
+| `npm run db:push`           | Aplica las migraciones pendientes al proyecto enlazado.                             |
+| `npm run db:types`          | Regenera `src/lib/tipos-db.ts` desde el esquema.                                    |
+| `npm run db:probar-rls`     | Prueba las reglas de acceso con los usuarios de prueba.                             |
+| `npm run db:semilla-textos` | Genera `supabase/semilla-textos.sql` desde los JSON de `src/i18n/`.                 |
+| `npm run importar`          | Importa una entrega de la URL al gestor ([formato](docs/ia/IMPORTACION-FICHAS.md)). |
 
 La CI (GitHub Actions) corre `lint`, `typecheck`, `test` y `build` en cada PR y en cada push a `main`.
 
@@ -205,8 +206,19 @@ Panel para que el equipo cargue y apruebe el contenido sin tocar código. Se abr
   [`docs/ia/MIGRACION-S4B3-4-REORDENAR-PUNTOS.md`](docs/ia/MIGRACION-S4B3-4-REORDENAR-PUNTOS.md). Ya está aplicada
   en `la-merced-dev` (desde el SQL Editor: un futuro `db:push` la repetiría sin efecto, porque es idempotente).
   Hasta regenerar `src/lib/tipos-db.ts` con `npm run db:types`, la llamada usa un envoltorio sin tipos.
-- **Ficha por idioma:** nombre, qué ves, historia y dato de Santi, en español e inglés. Kaqchikel se activa
-  (`IDIOMAS_GESTOR` en `src/datos/gestor.ts`) cuando llegue el material.
+- **Ficha por idioma:** nombre, qué ves, historia y dato de Santi, en español, inglés y kaqchikel; cada
+  pestaña dice el estado de ese idioma («Sin ficha», «En revisión»…). El kaqchikel no se aprueba sin la
+  revisión de una persona competente (el reporte de faltantes lo recuerda).
+- **Narración y transcripción:** un audio por ficha e idioma (MP3 o M4A, hasta 50 MB) con barra de avance,
+  reproductor, reemplazo y retiro; la transcripción (texto exacto del audio) se edita al lado. El servidor
+  vuelve a revisar tamaño, formato, carpeta y permisos (bucket y reglas de Storage); con la migración
+  `20261125000001` la base también exige que el audio sea del mismo punto e idioma. Quitar o cambiar un
+  audio no borra un archivo que otra ficha siga usando.
+- **Faltantes** (`/gestor/faltantes`, todos los roles): qué le falta a cada ficha por idioma (textos,
+  traducciones, narraciones, transcripciones, fotos, créditos, fuentes), descargable en CSV y Markdown.
+- **Publicar** (`/gestor/publicar`, solo admin; el servidor lo vuelve a comprobar): genera el JSON de lo
+  aprobado, lo despliega en Vercel y solo dice «Publicada» cuando el sitio sirve ese JSON exacto. Detalle y
+  configuración pendiente en [`docs/ia/MIGRACION-S4-AUDIOS-PUBLICACION.md`](docs/ia/MIGRACION-S4-AUDIOS-PUBLICACION.md).
 - **Estados:** el editor envía un borrador a revisión; el revisor (o admin) lo aprueba o lo devuelve a
   borrador. Editar una ficha aprobada la regresa a revisión. La base registra quién aprobó y cuándo.
 - **Fotos:** foto del detalle (pantalla de confirmación, una por punto) y fotos históricas, con texto
@@ -248,4 +260,8 @@ Necesita Node 22 o más reciente.
 
 - **Vercel** está conectado al repo: `main` va a producción y cada PR genera una vista previa con HTTPS.
 - `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` están cargadas en Production y Preview.
-- `vercel.json` reescribe todas las rutas a `/index.html`, para que recargar `/gestor` no dé 404.
+- `vercel.json` reescribe todas las rutas (salvo `/api/*`) a `/index.html`, para que recargar `/gestor` no dé 404.
+- **Publicar y respaldo:** la función `api/publicar.ts` (solo admin) dispara el deploy hook de producción
+  (`VERCEL_DEPLOY_HOOK_URL`, variable solo del servidor, **pendiente de configurar**). El build corre
+  `scripts/incluir-instantanea.mjs`, que copia la publicación a `dist/respaldo/publicacion.json`. Si la base
+  falla o tarda más de 6 s, la app del visitante lee ese archivo (`src/datos/respaldo.ts`).
