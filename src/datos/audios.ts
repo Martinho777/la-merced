@@ -5,6 +5,7 @@
 // Cambiar o quitar la narración de una ficha publicada la devuelve a revisión, como cualquier otro
 // cambio a contenido publicado (regla del README).
 
+import { ErrorSubida, motivoDeRechazo, subirConProgreso } from '@/datos/subida'
 import { BUCKET_MEDIOS } from '@/lib/storage'
 import { supabase } from '@/lib/supabase'
 import {
@@ -33,6 +34,27 @@ export function rutaAudio(
   return `audios/${slugPunto}-${idioma}-${ahora}.${EXTENSION[tipoMime]}`
 }
 
+/**
+ * Si otra ficha usa el mismo medio, no se borra: quitarlo de una ficha no debe romper otra. También
+ * se conserva si no se pudo comprobar.
+ */
+async function enUsoPorOtraFicha(idMedio: string, idFicha: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('fichas')
+    .select('id')
+    .eq('audio_id', idMedio)
+    .neq('id', idFicha)
+    .limit(1)
+  if (error || !Array.isArray(data)) return true
+  return data.length > 0
+}
+
+/** Borra el medio y su archivo, salvo que otra ficha lo use. */
+async function borrarSiNoSeUsa(medio: { id: string; ruta: string }, idFicha: string) {
+  if (await enUsoPorOtraFicha(medio.id, idFicha)) return
+  await borrarMedio(medio)
+}
+
 async function borrarMedio(medio: { id: string; ruta: string }): Promise<void> {
   const { error } = await supabase.from('medios').delete().eq('id', medio.id)
   if (error) throw new Error(`No se pudo borrar el audio: ${error.message}`)
@@ -59,12 +81,25 @@ export async function subirAudioFicha(
   idioma: IdiomaFicha,
   ficha: FichaGestor,
   audio: AudioPreparado,
+  alAvanzar?: (fraccion: number) => void,
 ): Promise<FichaGestor> {
   const ruta = rutaAudio(punto.slug, idioma, audio.tipoMime)
-  const subida = await supabase.storage
-    .from(BUCKET_MEDIOS)
-    .upload(ruta, audio.archivo, { contentType: audio.tipoMime })
-  if (subida.error) throw new Error(`No se pudo subir el audio: ${subida.error.message}`)
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // En el navegador: con progreso.
+    await subirConProgreso(ruta, audio.archivo, audio.tipoMime, alAvanzar)
+  } else {
+    const subida = await supabase.storage
+      .from(BUCKET_MEDIOS)
+      .upload(ruta, audio.archivo, { contentType: audio.tipoMime })
+    if (subida.error) {
+      const estado = Number((subida.error as { statusCode?: string }).statusCode ?? 0)
+      throw new ErrorSubida(
+        motivoDeRechazo(estado, subida.error.message),
+        estado,
+        `No se pudo subir el audio: ${subida.error.message}`,
+      )
+    }
+  }
 
   const registro = await supabase
     .from('medios')
@@ -92,14 +127,14 @@ export async function subirAudioFicha(
 
   // La ficha ya usa el audio nuevo. Si no se puede borrar el anterior solo queda un archivo sin uso;
   // no se avisa como error porque el cambio pedido sí se hizo.
-  if (ficha.audio) await borrarMedio(ficha.audio).catch(() => {})
+  if (ficha.audio) await borrarSiNoSeUsa(ficha.audio, ficha.id).catch(() => {})
   return fichaGestor(data)
 }
 
-/** Quita la narración de la ficha y borra su archivo. */
+/** Quita la narración de la ficha y borra su archivo (si ninguna otra ficha lo usa). */
 export async function quitarAudioFicha(ficha: FichaGestor): Promise<FichaGestor> {
   const { data, error } = await cambiarAudioDeFicha(ficha, null)
   if (error) throw new Error(`No se pudo quitar el audio de la ficha: ${error.message}`)
-  if (ficha.audio) await borrarMedio(ficha.audio)
+  if (ficha.audio) await borrarSiNoSeUsa(ficha.audio, ficha.id)
   return fichaGestor(data)
 }

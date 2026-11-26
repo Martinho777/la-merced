@@ -9,10 +9,11 @@ export type IdiomaFicha = Enums<'idioma'>
 export type EstadoFicha = Enums<'estado_contenido'>
 
 /**
- * Idiomas que el gestor deja editar. Kaqchikel se agrega aquí cuando llegue el material del equipo
- * de investigación (decisión del equipo, nov. 2026); la base ya lo admite.
+ * Idiomas que el gestor deja editar: los tres de la guía (Sprint 4, «Gestor: audios, publicación y
+ * carga de las fichas»). Una ficha en kaqchikel no se da por buena sin revisión lingüística de una
+ * persona competente: el reporte de faltantes lo recuerda (src/gestor/faltantes.ts).
  */
-export const IDIOMAS_GESTOR = ['es', 'en'] as const satisfies readonly IdiomaFicha[]
+export const IDIOMAS_GESTOR = ['es', 'en', 'cak'] as const satisfies readonly IdiomaFicha[]
 
 export type ResumenFicha = { id: string; estado: EstadoFicha; titulo: string }
 
@@ -37,7 +38,7 @@ export function fichasPorIdioma(fichas: readonly FilaFicha[]): PuntoGestor['fich
     const ficha = fichas.find((f) => f.idioma === idioma)
     return ficha ? { id: ficha.id, estado: ficha.estado, titulo: ficha.titulo } : null
   }
-  return { es: resumen('es'), en: resumen('en') }
+  return { es: resumen('es'), en: resumen('en'), cak: resumen('cak') }
 }
 
 /** Todos los puntos, ordenados por zona y por número, con el estado de sus fichas. */
@@ -69,6 +70,8 @@ export type CamposFicha = {
   que_ves: string
   historia: string
   dato_santi: string
+  /** Texto exacto de lo que se dice en la narración de este idioma. */
+  transcripcion: string
 }
 
 export type FichaGestor = CamposFicha & {
@@ -98,6 +101,7 @@ type FilaFichaCompleta = {
   que_ves: string | null
   historia: string | null
   dato_santi: string | null
+  transcripcion: string | null
   revisado_en: string | null
   revisor: { nombre: string | null } | null
   audio: { id: string; ruta: string; duracion_s: number | null } | null
@@ -111,6 +115,7 @@ export function fichaGestor(fila: FilaFichaCompleta): FichaGestor {
     que_ves: fila.que_ves ?? '',
     historia: fila.historia ?? '',
     dato_santi: fila.dato_santi ?? '',
+    transcripcion: fila.transcripcion ?? '',
     revision: fila.revisado_en
       ? { nombre: fila.revisor?.nombre ?? null, fecha: fila.revisado_en }
       : null,
@@ -126,7 +131,7 @@ export function fichaGestor(fila: FilaFichaCompleta): FichaGestor {
 }
 
 export const COLUMNAS_FICHA =
-  'id, idioma, estado, titulo, que_ves, historia, dato_santi, revisado_en, revisor:perfiles!fichas_revisado_por_fkey(nombre), audio:medios!fichas_audio_id_fkey(id, ruta, duracion_s)'
+  'id, idioma, estado, titulo, que_ves, historia, dato_santi, transcripcion, revisado_en, revisor:perfiles!fichas_revisado_por_fkey(nombre), audio:medios!fichas_audio_id_fkey(id, ruta, duracion_s)'
 
 /** Un punto con sus fichas completas en los idiomas del gestor. Null si no existe. */
 export async function obtenerPuntoGestor(idPunto: string): Promise<DetallePunto | null> {
@@ -149,7 +154,7 @@ export async function obtenerPuntoGestor(idPunto: string): Promise<DetallePunto 
     slug: data.slug,
     orden: data.orden,
     zona: data.zonas.slug,
-    fichas: { es: deIdioma('es'), en: deIdioma('en') },
+    fichas: { es: deIdioma('es'), en: deIdioma('en'), cak: deIdioma('cak') },
   }
 }
 
@@ -161,6 +166,7 @@ export function limpiarCampos(campos: CamposFicha) {
     que_ves: opcional(campos.que_ves),
     historia: opcional(campos.historia),
     dato_santi: opcional(campos.dato_santi),
+    transcripcion: opcional(campos.transcripcion),
   }
 }
 

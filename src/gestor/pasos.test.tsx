@@ -21,25 +21,34 @@ const ficha = (campos: Partial<FichaGestor> = {}): FichaGestor => ({
   que_ves: 'La Virgen en el nicho.',
   historia: 'Texto.',
   dato_santi: '',
+  transcripcion: '',
   revision: null,
   audio: null,
   ...campos,
 })
-const punto = (es: FichaGestor | null, en: FichaGestor | null = null): DetallePunto => ({
+const punto = (
+  es: FichaGestor | null,
+  en: FichaGestor | null = null,
+  cak: FichaGestor | null = null,
+): DetallePunto => ({
   id: 'p1',
   slug: 'nicho',
   orden: 2,
   zona: 'fachada-principal',
-  fichas: { es, en },
+  fichas: { es, en, cak },
 })
 const completos: ResumenMedios = { fotos: { detalle: true, historicas: 0 }, fuentes: 1 }
 
 describe('pasos del editor', () => {
   it('textos: completo con nombre, qué ves e historia; falta algo si no', () => {
     expect(estadoDePaso('textos', punto(ficha()), completos)).toBe('opcional')
+    // Sin kaqchikel sigue faltando algo opcional; con los tres idiomas, completo.
     expect(estadoDePaso('textos', punto(ficha({ dato_santi: 'Dato' }), ficha()), completos)).toBe(
-      'completo',
+      'opcional',
     )
+    expect(
+      estadoDePaso('textos', punto(ficha({ dato_santi: 'Dato' }), ficha(), ficha()), completos),
+    ).toBe('completo')
     expect(estadoDePaso('textos', punto(ficha({ historia: ' ' })), completos)).toBe('pendiente')
     expect(estadoDePaso('textos', punto(null), completos)).toBe('pendiente')
   })
@@ -47,7 +56,11 @@ describe('pasos del editor', () => {
   it('la narración es opcional', () => {
     expect(estadoDePaso('narracion', punto(ficha()), completos)).toBe('opcional')
     const conAudio = ficha({ audio: { id: 'a', ruta: 'r', url: 'u', duracionS: 1 } })
-    expect(estadoDePaso('narracion', punto(conAudio), completos)).toBe('completo')
+    // Con audio pero sin transcripción todavía falta lo opcional.
+    expect(estadoDePaso('narracion', punto(conAudio), completos)).toBe('opcional')
+    expect(
+      estadoDePaso('narracion', punto({ ...conAudio, transcripcion: 'Texto' }), completos),
+    ).toBe('completo')
   })
 
   it('fotos: falta la del detalle; las históricas son opcionales', () => {
@@ -86,15 +99,22 @@ describe('pasos del editor', () => {
 
 describe('línea de avance', () => {
   it('cuenta lo cumplido, obligatorio y opcional, sobre el total', () => {
-    expect(avanceDe(punto(ficha()), completos)).toEqual({ hechos: 5, total: 9 })
-    expect(avanceDe(punto(null), { fotos: null, fuentes: null })).toEqual({ hechos: 0, total: 9 })
+    expect(avanceDe(punto(ficha()), completos)).toEqual({ hechos: 5, total: 11 })
+    expect(avanceDe(punto(null), { fotos: null, fuentes: null })).toEqual({ hechos: 0, total: 11 })
   })
 
   it('avanza con lo escrito aunque no esté guardado', () => {
-    const vacio = { titulo: '', que_ves: '', historia: '', dato_santi: '' }
+    const vacio = { titulo: '', que_ves: '', historia: '', dato_santi: '', transcripcion: '' }
     const borradores = {
-      es: { titulo: 'Nicho', que_ves: 'Algo', historia: 'Texto', dato_santi: 'Dato' },
+      es: {
+        titulo: 'Nicho',
+        que_ves: 'Algo',
+        historia: 'Texto',
+        dato_santi: 'Dato',
+        transcripcion: '',
+      },
       en: vacio,
+      cak: vacio,
     }
     const conTexto = conBorradores(punto(null), borradores)
     expect(avanceDe(conTexto, completos).hechos).toBe(avanceDe(punto(null), completos).hechos + 4)

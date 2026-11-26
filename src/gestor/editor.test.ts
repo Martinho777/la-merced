@@ -9,13 +9,20 @@ const ficha: FichaGestor = {
   que_ves: 'La portada.',
   historia: '',
   dato_santi: '',
+  transcripcion: '',
   revision: null,
   audio: null,
 }
 
 describe('editor de fichas', () => {
   it('una ficha que no existe empieza con los campos vacíos', () => {
-    expect(camposDe(null)).toEqual({ titulo: '', que_ves: '', historia: '', dato_santi: '' })
+    expect(camposDe(null)).toEqual({
+      titulo: '',
+      que_ves: '',
+      historia: '',
+      dato_santi: '',
+      transcripcion: '',
+    })
   })
 
   it('detecta cambios sin contar espacios al inicio o al final', () => {

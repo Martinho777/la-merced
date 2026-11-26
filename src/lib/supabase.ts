@@ -14,4 +14,8 @@ if (!url || !clavePublica) {
   )
 }
 
+/** URL del proyecto y clave pública (para subir archivos con progreso, ver src/datos/subida.ts). */
+export const URL_SUPABASE: string = url
+export const CLAVE_PUBLICA: string = clavePublica
+
 export const supabase = createClient<Database>(url, clavePublica)

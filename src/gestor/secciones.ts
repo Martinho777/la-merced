@@ -3,18 +3,24 @@
 
 import type { Rol } from '@/datos/sesion'
 
-export type Seccion = 'fichas' | 'ubicacion' | 'textos'
+export type Seccion = 'fichas' | 'ubicacion' | 'faltantes' | 'textos' | 'publicar'
 
 export const RUTA_SECCION: Record<Seccion, string> = {
   fichas: '/gestor',
   ubicacion: '/gestor/ubicaciones',
+  faltantes: '/gestor/faltantes',
   textos: '/gestor/textos',
+  publicar: '/gestor/publicar',
 }
 
-/** Secciones que ve cada rol: editor y revisor, fichas y ubicación; admin, además, los textos. Sin rol, ninguna. */
+/**
+ * Secciones que ve cada rol: editor y revisor, fichas, ubicación y faltantes; admin, además, los
+ * textos y «Publicar». Sin rol, ninguna. Ocultar no protege: el servidor y la base vuelven a revisar.
+ */
 export function seccionesVisibles(rol: Rol | null): Seccion[] {
   if (!rol) return []
-  return rol === 'admin' ? ['fichas', 'ubicacion', 'textos'] : ['fichas', 'ubicacion']
+  const comunes: Seccion[] = ['fichas', 'ubicacion', 'faltantes']
+  return rol === 'admin' ? [...comunes, 'textos', 'publicar'] : comunes
 }
 
 const enRuta = (pathname: string, ruta: string) =>
@@ -28,5 +34,7 @@ export function seccionDe(pathname: string): Seccion | 'punto' {
   if (enRuta(pathname, '/gestor/punto')) return 'punto'
   if (enRuta(pathname, RUTA_SECCION.ubicacion)) return 'ubicacion'
   if (enRuta(pathname, RUTA_SECCION.textos)) return 'textos'
+  if (enRuta(pathname, RUTA_SECCION.faltantes)) return 'faltantes'
+  if (enRuta(pathname, RUTA_SECCION.publicar)) return 'publicar'
   return 'fichas'
 }

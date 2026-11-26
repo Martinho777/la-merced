@@ -5,6 +5,8 @@ import { EditorTextos } from '@/gestor/EditorTextos'
 import { EditorUbicaciones } from '@/gestor/EditorUbicaciones'
 import { ListaPuntos } from '@/gestor/ListaPuntos'
 import { NavegacionGestor } from '@/gestor/NavegacionGestor'
+import { PantallaFaltantes } from '@/gestor/PantallaFaltantes'
+import { PantallaPublicar } from '@/gestor/PantallaPublicar'
 
 /**
  * Barra de secciones y rutas del gestor para un usuario con rol (van dentro de `/gestor/*`).
@@ -23,6 +25,8 @@ export function RutasGestor({ rol }: { rol: Rol }) {
         <Route path="punto/:idPunto" element={<EditorPunto rol={rol} />} />
         <Route path="ubicaciones" element={<EditorUbicaciones />} />
         <Route path="textos" element={<EditorTextos rol={rol} />} />
+        <Route path="faltantes" element={<PantallaFaltantes />} />
+        <Route path="publicar" element={<PantallaPublicar rol={rol} />} />
         <Route path="*" element={lista} />
       </Routes>
     </>

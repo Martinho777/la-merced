@@ -36,3 +36,6 @@ supabase/.branches
 # Configuración personal de Claude Code: no se comparte (la compartida es .claude/settings.json)
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Instantánea escrita por «Publicar» en desarrollo (DESPLIEGUE_LOCAL=1); en Vercel va en dist/
+public/respaldo

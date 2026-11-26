@@ -2,10 +2,16 @@ import { describe, expect, it } from 'vitest'
 import { RUTA_SECCION, seccionDe, seccionesVisibles } from '@/gestor/secciones'
 
 describe('secciones del gestor', () => {
-  it('editor y revisor ven Fichas y Ubicación; solo el admin ve además Textos', () => {
-    expect(seccionesVisibles('editor')).toEqual(['fichas', 'ubicacion'])
-    expect(seccionesVisibles('revisor')).toEqual(['fichas', 'ubicacion'])
-    expect(seccionesVisibles('admin')).toEqual(['fichas', 'ubicacion', 'textos'])
+  it('editor y revisor ven Fichas, Ubicación y Faltantes; solo el admin ve Textos y Publicar', () => {
+    expect(seccionesVisibles('editor')).toEqual(['fichas', 'ubicacion', 'faltantes'])
+    expect(seccionesVisibles('revisor')).toEqual(['fichas', 'ubicacion', 'faltantes'])
+    expect(seccionesVisibles('admin')).toEqual([
+      'fichas',
+      'ubicacion',
+      'faltantes',
+      'textos',
+      'publicar',
+    ])
   })
 
   it('sin rol no hay secciones', () => {
@@ -16,7 +22,9 @@ describe('secciones del gestor', () => {
     expect(RUTA_SECCION).toEqual({
       fichas: '/gestor',
       ubicacion: '/gestor/ubicaciones',
+      faltantes: '/gestor/faltantes',
       textos: '/gestor/textos',
+      publicar: '/gestor/publicar',
     })
   })
 
@@ -26,6 +34,8 @@ describe('secciones del gestor', () => {
     expect(seccionDe('/gestor/ubicaciones')).toBe('ubicacion')
     expect(seccionDe('/gestor/textos')).toBe('textos')
     expect(seccionDe('/gestor/textos/')).toBe('textos')
+    expect(seccionDe('/gestor/faltantes')).toBe('faltantes')
+    expect(seccionDe('/gestor/publicar')).toBe('publicar')
   })
 
   it('editar una ficha no es una sección de la barra', () => {

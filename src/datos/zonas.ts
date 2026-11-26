@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { urlPublica } from '@/lib/storage'
+import { conRespaldo, zonaDesdeInstantanea, zonasDesdeInstantanea } from '@/datos/respaldo'
 import type { Enums, Tables } from '@/lib/tipos-db'
 
 type Idioma = Enums<'idioma'>
@@ -18,8 +19,15 @@ export type ZonaConContorno = Pick<Tables<'zonas'>, 'slug' | 'usa_camara'> & {
   urlIlustracion: string | null
 }
 
-/** Todas las zonas en orden, para el selector (las no disponibles se muestran como "próximamente"). */
-export async function obtenerZonas(): Promise<ResumenZona[]> {
+/**
+ * Todas las zonas en orden, para el selector (las no disponibles se muestran como "próximamente").
+ * Si la base falla o tarda, salen de la última publicación (src/datos/respaldo.ts).
+ */
+export function obtenerZonas(): Promise<ResumenZona[]> {
+  return conRespaldo(zonasDeLaBase, zonasDesdeInstantanea)
+}
+
+async function zonasDeLaBase(senal: AbortSignal): Promise<ResumenZona[]> {
   const { data, error } = await supabase
     .from('zonas')
     .select(
@@ -28,6 +36,7 @@ export async function obtenerZonas(): Promise<ResumenZona[]> {
        ilustracion:medios!zonas_ilustracion_id_fkey(ruta, texto_alternativo)`,
     )
     .order('orden', { ascending: true })
+    .abortSignal(senal)
 
   if (error) throw new Error(`No se pudieron leer las zonas: ${error.message}`)
 
@@ -45,8 +54,15 @@ export async function obtenerZonas(): Promise<ResumenZona[]> {
   }))
 }
 
-/** Una zona con lo que necesitan la cámara y el mapa. Null si el slug no existe. */
-export async function obtenerZona(slug: string): Promise<ZonaConContorno | null> {
+/** Una zona con lo que necesitan la cámara y el mapa. Null si el slug no existe. Con respaldo. */
+export function obtenerZona(slug: string): Promise<ZonaConContorno | null> {
+  return conRespaldo(
+    (senal) => zonaDeLaBase(slug, senal),
+    (instantanea) => zonaDesdeInstantanea(instantanea, slug),
+  )
+}
+
+async function zonaDeLaBase(slug: string, senal: AbortSignal): Promise<ZonaConContorno | null> {
   const { data, error } = await supabase
     .from('zonas')
     .select(
@@ -55,6 +71,7 @@ export async function obtenerZona(slug: string): Promise<ZonaConContorno | null>
        ilustracion:medios!zonas_ilustracion_id_fkey(ruta)`,
     )
     .eq('slug', slug)
+    .abortSignal(senal)
     .maybeSingle()
 
   if (error) throw new Error(`No se pudo leer la zona "${slug}": ${error.message}`)
