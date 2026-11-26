@@ -28,6 +28,23 @@
 - Textos de la interfaz desde la base (Sprint 4 · bloque 1, rama `feat/ficha-textos`): migración de `textos_interfaz`
   (lectura pública, escritura solo admin), semilla generada desde los JSON y carga al abrir la app con respaldo
   en los JSON (`i18n/textosBase.ts`). Migraciones y semilla aplicadas en `la-merced-dev` (16 nov 2026).
+- **Gestor más claro (rama `feat/gestor-usabilidad`)**: el gestor abre en un inicio con una tarjeta por tarea
+  («Escribir los puntos», «Ubicar los puntos en el mapa», «Ver qué falta», «Textos que ve el visitante» y
+  «Publicar»), cada una con «Inicio» para volver (`gestor/InicioGestor.tsx`, `gestor/secciones.ts`); la lista
+  de puntos pasó a `/gestor/puntos` y es una tabla con una columna por idioma. «Ver qué falta» es un cuadro
+  punto × parte de la ficha (texto, audio y aprobación por idioma; foto; fuentes) hecho con las mismas reglas
+  del reporte (`cuadroDePunto` en `gestor/faltantes.ts`; el CSV y el Markdown no cambian). Textos: explicación
+  con Santi y miniaturas reales de cada pantalla. Ubicación: mapa más grande, «Agregar punto» (borrador que
+  se crea al final de la ruta al guardar, `crearPunto` en `datos/ubicaciones.ts`) y, solo para admin,
+  «Cambiar la imagen del mapa» (2:1, con descripción; `datos/mapas.ts`). Sin migraciones: las reglas de
+  acceso ya permitían crear puntos al equipo y cambiar zonas al admin.
+  Además: explicación con Santi en cada sección (`gestor/IntroSanti.tsx`, se cierra y se recuerda en el
+  navegador); «Publicar» se presenta como «Copia de respaldo» en «Mantenimiento» (los visitantes ya ven lo
+  aprobado sin publicar; la copia es la de `datos/respaldo.ts`) y da un saltito con «Hay cambios desde la
+  última copia» después de guardar algo (`gestor/publicacionPendiente.ts`, recordatorio por navegador). En el
+  editor de un punto, la barra de pasos solo dice el nombre (el círculo: check verde, anillo naranja
+  discontinuo si falta lo opcional, rojo si falta lo obligatorio) y la revisión se ve por idioma
+  (`requisitosDeIdioma`).
 - **Editor de textos de las pantallas** (`/gestor/textos`, solo admin, rama `feat/textos-pantallas`): bienvenida (título,
   subtítulo, botón), título de idioma, título y pregunta de ruta, título de zona y pregunta de la confirmación, en es, en
   y cak. La pantalla real se ve en un iframe con `?vista-previa` (`i18n/vistaPrevia.ts`) que recibe los borradores por

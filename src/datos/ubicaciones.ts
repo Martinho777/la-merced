@@ -156,3 +156,50 @@ export async function guardarUbicaciones(
   }
   return resultado
 }
+
+/** Un punto nuevo que el editor ubicó y todavía no existe en la base. */
+export type PuntoNuevo = {
+  zonaId: string
+  zonaSlug: string
+  pos_x: number
+  pos_y: number
+  es_esencial: boolean
+}
+
+/** Identificador corto y legible para la URL del punto: zona y un sufijo al azar (único). */
+export function slugNuevo(zonaSlug: string, azar: string = crypto.randomUUID()): string {
+  return `${zonaSlug}-${azar.replace(/-/g, '').slice(0, 8)}`
+}
+
+/**
+ * Crea un punto al final de la ruta de su zona, ya ubicado. Sin ficha: se escribe después en «Escribir
+ * los puntos». Lanza un `Error` si la base lo rechaza (p. ej. sin permiso). Devuelve su id.
+ */
+export async function crearPunto(nuevo: PuntoNuevo): Promise<string> {
+  const { pos_x, pos_y } = validarCambioUbicacion({ pos_x: nuevo.pos_x, pos_y: nuevo.pos_y })
+
+  const { data: ultimo, error: errorOrden } = await supabase
+    .from('puntos')
+    .select('orden')
+    .eq('zona_id', nuevo.zonaId)
+    .order('orden', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (errorOrden) throw new Error(`No se pudo crear el punto: ${errorOrden.message}`)
+
+  const { data, error } = await supabase
+    .from('puntos')
+    .insert({
+      zona_id: nuevo.zonaId,
+      slug: slugNuevo(nuevo.zonaSlug),
+      orden: (ultimo?.orden ?? 0) + 1,
+      pos_x: pos_x ?? null,
+      pos_y: pos_y ?? null,
+      es_esencial: nuevo.es_esencial,
+    })
+    .select('id')
+    .single()
+
+  if (error) throw new Error(`No se pudo crear el punto: ${error.message}`)
+  return data.id
+}

@@ -1,12 +1,17 @@
-// Secciones de la barra del gestor y quién las ve. Va aparte de la pantalla para probarlo sin DOM.
+// Secciones del gestor y quién las ve. Va aparte de la pantalla para probarlo sin DOM.
 // Solo decide qué se muestra: la escritura la protegen las reglas de acceso (RLS) de la base.
+//
+// El gestor abre en un inicio con una tarjeta por tarea (InicioGestor): pensado para personas que no
+// conocen los nombres técnicos. Cada sección tiene su propia dirección y vuelve al inicio.
 
 import type { Rol } from '@/datos/sesion'
 
 export type Seccion = 'fichas' | 'ubicacion' | 'faltantes' | 'textos' | 'publicar'
 
+export const RUTA_INICIO = '/gestor'
+
 export const RUTA_SECCION: Record<Seccion, string> = {
-  fichas: '/gestor',
+  fichas: '/gestor/puntos',
   ubicacion: '/gestor/ubicaciones',
   faltantes: '/gestor/faltantes',
   textos: '/gestor/textos',
@@ -27,14 +32,13 @@ const enRuta = (pathname: string, ruta: string) =>
   pathname === ruta || pathname.startsWith(`${ruta}/`)
 
 /**
- * Sección a la que pertenece una dirección. `punto` es la edición de una ficha: no forma parte de la
- * barra. Cualquier dirección desconocida del gestor muestra la lista de fichas.
+ * Dónde está el usuario. `punto` es la edición de una ficha (tiene su propio botón de volver a la
+ * lista). Cualquier dirección desconocida del gestor muestra el inicio.
  */
-export function seccionDe(pathname: string): Seccion | 'punto' {
+export function seccionDe(pathname: string): Seccion | 'punto' | 'inicio' {
   if (enRuta(pathname, '/gestor/punto')) return 'punto'
-  if (enRuta(pathname, RUTA_SECCION.ubicacion)) return 'ubicacion'
-  if (enRuta(pathname, RUTA_SECCION.textos)) return 'textos'
-  if (enRuta(pathname, RUTA_SECCION.faltantes)) return 'faltantes'
-  if (enRuta(pathname, RUTA_SECCION.publicar)) return 'publicar'
-  return 'fichas'
+  for (const seccion of Object.keys(RUTA_SECCION) as Seccion[]) {
+    if (enRuta(pathname, RUTA_SECCION[seccion])) return seccion
+  }
+  return 'inicio'
 }

@@ -20,7 +20,7 @@ describe('secciones del gestor', () => {
 
   it('cada sección tiene la ruta que le corresponde', () => {
     expect(RUTA_SECCION).toEqual({
-      fichas: '/gestor',
+      fichas: '/gestor/puntos',
       ubicacion: '/gestor/ubicaciones',
       faltantes: '/gestor/faltantes',
       textos: '/gestor/textos',
@@ -29,8 +29,9 @@ describe('secciones del gestor', () => {
   })
 
   it('la sección activa sale de la dirección', () => {
-    expect(seccionDe('/gestor')).toBe('fichas')
-    expect(seccionDe('/gestor/')).toBe('fichas')
+    expect(seccionDe('/gestor')).toBe('inicio')
+    expect(seccionDe('/gestor/')).toBe('inicio')
+    expect(seccionDe('/gestor/puntos')).toBe('fichas')
     expect(seccionDe('/gestor/ubicaciones')).toBe('ubicacion')
     expect(seccionDe('/gestor/textos')).toBe('textos')
     expect(seccionDe('/gestor/textos/')).toBe('textos')
@@ -38,14 +39,13 @@ describe('secciones del gestor', () => {
     expect(seccionDe('/gestor/publicar')).toBe('publicar')
   })
 
-  it('editar una ficha no es una sección de la barra', () => {
+  it('editar una ficha no es una tarea del inicio', () => {
     expect(seccionDe('/gestor/punto/abc')).toBe('punto')
   })
 
-  it('una dirección desconocida del gestor muestra la lista de fichas', () => {
-    expect(seccionDe('/gestor/otra-cosa')).toBe('fichas')
+  it('una dirección desconocida del gestor muestra el inicio', () => {
+    expect(seccionDe('/gestor/otra-cosa')).toBe('inicio')
     // No se confunde por prefijo con otra sección.
-    expect(seccionDe('/gestor/ubicaciones-viejas')).toBe('fichas')
-    expect(seccionDe('/gestor/puntos')).toBe('fichas')
+    expect(seccionDe('/gestor/ubicaciones-viejas')).toBe('inicio')
   })
 })

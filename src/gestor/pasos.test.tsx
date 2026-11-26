@@ -11,6 +11,7 @@ import {
   estadoDePaso,
   pasoDe,
   requisitos,
+  requisitosDeIdioma,
   type ResumenMedios,
 } from '@/gestor/pasos'
 
@@ -164,5 +165,27 @@ describe('campo con requisito', () => {
   it('sin requisito no muestra nada de esto', () => {
     const html = renderToStaticMarkup(<Campo etiqueta="Correo" value="" onChange={() => {}} />)
     expect(html).not.toContain('Por llenar')
+  })
+})
+
+describe('revisión por idioma', () => {
+  it('lista la ficha del idioma elegido y, aparte, lo común a todos', () => {
+    const datos = punto(ficha(), ficha({ historia: '' }), null)
+    const en = requisitosDeIdioma(datos, completos, 'en')
+    const faltan = (lista: typeof en) =>
+      lista.filter((r) => !r.cumplido && r.obligatorio).map((r) => r.clave)
+    expect(faltan(en.filter((r) => !r.comun))).toEqual(['historia'])
+    // Sin ficha en kaqchikel: faltan sus textos obligatorios.
+    expect(faltan(requisitosDeIdioma(datos, completos, 'cak'))).toEqual([
+      'nombre',
+      'queVes',
+      'historia',
+    ])
+    // Fotos y fuentes son del punto: iguales en todos los idiomas.
+    expect(en.filter((r) => r.comun).map((r) => r.clave)).toEqual([
+      'fotoDetalle',
+      'fotosHistoricas',
+      'fuentes',
+    ])
   })
 })

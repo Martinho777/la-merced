@@ -1,0 +1,128 @@
+/* Cuadro de lo que falta (PantallaFaltantes.tsx). Solo tokens. Colores de los íconos sobre surface
+   según contraste.md: success, error, orange-700 (advertencia) e info; cada estado tiene además su
+   propia forma de ícono. */
+
+.cuadro__resumen {
+  margin: 0;
+  color: var(--ink);
+}
+
+.cuadro__leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cuadro__leyenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* En un teléfono el cuadro se desliza de lado dentro de su marco; la página no. */
+.cuadro__marco {
+  overflow-x: auto;
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.cuadro {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.cuadro th,
+.cuadro td {
+  padding: var(--space-2);
+  border-block-end: var(--border-hairline) solid var(--border);
+  text-align: center;
+}
+
+.cuadro thead th {
+  background: var(--surface-sunken);
+  color: var(--ink-muted);
+}
+
+/* Separa los grupos de cada idioma. */
+.cuadro thead tr:first-child th + th,
+.cuadro__subcolumna:nth-of-type(3n + 1) {
+  border-inline-start: var(--border-hairline) solid var(--border);
+}
+
+.cuadro__punto {
+  min-width: calc(var(--content-max) * 0.4);
+  text-align: start;
+}
+
+.cuadro__abrir {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--touch-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-align: start;
+  cursor: pointer;
+}
+
+.cuadro__icono {
+  flex-shrink: 0;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  vertical-align: middle;
+}
+
+.cuadro__casilla--listo {
+  color: var(--success);
+}
+
+.cuadro__casilla--obligatorio {
+  color: var(--error);
+}
+
+.cuadro__casilla--recomendado {
+  color: var(--orange-700);
+}
+
+.cuadro__casilla--revision {
+  color: var(--info);
+}
+
+.cuadro__casilla--sinFicha {
+  color: var(--ink-muted);
+}
+
+.cuadro__detalle td {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-sunken);
+  text-align: start;
+}
+
+.cuadro__faltantes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cuadro__faltante {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.cuadro__descargas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

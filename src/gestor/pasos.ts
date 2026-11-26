@@ -129,3 +129,51 @@ export function conBorradores(
   }
   return { ...punto, fichas }
 }
+
+export type IdiomaFicha = keyof DetallePunto['fichas']
+
+/** Lo que se revisa de una ficha en un idioma, más lo que comparten todos los idiomas. */
+export type RequisitoIdioma = {
+  clave:
+    | 'nombre'
+    | 'queVes'
+    | 'historia'
+    | 'datoSanti'
+    | 'narracion'
+    | 'transcripcion'
+    | 'fotoDetalle'
+    | 'fotosHistoricas'
+    | 'fuentes'
+  paso: Paso
+  obligatorio: boolean
+  cumplido: boolean
+  /** Fotos y fuentes son del punto: valen para todos los idiomas. */
+  comun: boolean
+}
+
+/** La lista de la revisión para un idioma: su ficha y, aparte, lo común a todos. */
+export function requisitosDeIdioma(
+  punto: DetallePunto,
+  medios: ResumenMedios,
+  idioma: IdiomaFicha,
+): RequisitoIdioma[] {
+  const ficha = punto.fichas[idioma]
+  const req = (
+    clave: RequisitoIdioma['clave'],
+    paso: Paso,
+    obligatorio: boolean,
+    cumplido: boolean,
+    comun = false,
+  ): RequisitoIdioma => ({ clave, paso, obligatorio, cumplido, comun })
+  return [
+    req('nombre', 'textos', true, lleno(ficha?.titulo)),
+    req('queVes', 'textos', true, lleno(ficha?.que_ves)),
+    req('historia', 'textos', true, lleno(ficha?.historia)),
+    req('datoSanti', 'textos', false, lleno(ficha?.dato_santi)),
+    req('narracion', 'narracion', false, Boolean(ficha?.audio)),
+    req('transcripcion', 'narracion', false, lleno(ficha?.transcripcion)),
+    req('fotoDetalle', 'fotos', true, medios.fotos?.detalle ?? false, true),
+    req('fotosHistoricas', 'fotos', false, (medios.fotos?.historicas ?? 0) > 0, true),
+    req('fuentes', 'fuentes', true, (medios.fuentes ?? 0) > 0, true),
+  ]
+}

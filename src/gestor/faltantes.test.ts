@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   aCsv,
   aMarkdown,
+  cuadroDePunto,
   faltantesDePunto,
   largoDispar,
   type FichaReporte,
@@ -159,5 +160,43 @@ describe('reporte de faltantes', () => {
     const md = aMarkdown(faltantesDePunto(punto()), '2026-11-25')
     expect(md).toContain('| Ficha | Título | Idioma |')
     expect(md).toContain('| 07 | Portada principal | cak | Revisión lingüística |')
+  })
+})
+
+describe('cuadro de la pantalla', () => {
+  it('una ficha completa queda lista, salvo la revisión del kaqchikel', () => {
+    const cuadro = cuadroDePunto(punto())
+    expect(cuadro.idiomas.es).toEqual({ texto: 'listo', audio: 'listo', aprobacion: 'listo' })
+    expect(cuadro.idiomas.cak.aprobacion).toBe('revision')
+    expect(cuadro.foto).toBe('listo')
+    expect(cuadro.fuentes).toBe('listo')
+    expect(cuadro.cuenta).toEqual({ obligatorio: 0, recomendado: 0, revision: 1 })
+  })
+
+  it('cada casilla muestra lo más grave de su parte', () => {
+    const cuadro = cuadroDePunto(
+      punto({
+        fichas: [
+          ficha('es', { historia: '', estado: 'revision' }),
+          ficha('en', { audio: null, transcripcion: null }),
+        ],
+        fotos: [],
+        fuentes: [],
+      }),
+    )
+    // Historia vacía (obligatorio) pesa más que "en revisión".
+    expect(cuadro.idiomas.es.texto).toBe('obligatorio')
+    expect(cuadro.idiomas.es.aprobacion).toBe('revision')
+    expect(cuadro.idiomas.en.audio).toBe('recomendado')
+    // Sin ficha en kaqchikel: falta el texto y la aprobación no aplica.
+    expect(cuadro.idiomas.cak.texto).toBe('obligatorio')
+    expect(cuadro.idiomas.cak.aprobacion).toBe('sinFicha')
+    expect(cuadro.foto).toBe('obligatorio')
+    expect(cuadro.fuentes).toBe('obligatorio')
+  })
+
+  it('no cambia el reporte: las mismas filas que se descargan', () => {
+    const datos = punto({ fotos: [] })
+    expect(cuadroDePunto(datos).filas).toEqual(faltantesDePunto(datos))
   })
 })

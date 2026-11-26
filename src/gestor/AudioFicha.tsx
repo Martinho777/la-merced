@@ -10,6 +10,7 @@ import { ErrorAudio, prepararAudio, TIPOS_AUDIO_ACEPTADOS } from '@/gestor/audio
 import { Campo } from '@/gestor/componentes/Campo'
 import type { IdiomaGestor } from '@/gestor/editor'
 import { formatearTiempo } from '@/visitante/audio'
+import { marcarCambiosSinPublicar } from '@/gestor/publicacionPendiente'
 
 type Aviso =
   | 'subido'
@@ -71,6 +72,7 @@ export function AudioFicha({
     try {
       const preparado = await prepararAudio(archivo)
       alCambiarFicha(await subirAudioFicha(punto, idioma, ficha, preparado, setProgreso))
+      marcarCambiosSinPublicar()
       setAviso('subido')
     } catch (e) {
       setAviso(avisoDeError(e))
@@ -86,6 +88,7 @@ export function AudioFicha({
     setOcupado('quitar')
     try {
       alCambiarFicha(await quitarAudioFicha(ficha))
+      marcarCambiosSinPublicar()
       setAviso('quitado')
     } catch {
       setAviso('errorQuitar')
@@ -99,14 +102,7 @@ export function AudioFicha({
   const duracion = formatearTiempo(ficha?.audio?.duracionS)
 
   return (
-    <section className="gestor__seccion" aria-labelledby="audio-titulo">
-      <div className="gestor__titulos">
-        <h2 id="audio-titulo" className="gestor__subtitulo texto-title-2">
-          {t('audio.titulo', { idioma: nombreIdioma })}
-        </h2>
-        <p className="gestor__texto texto-body">{t('audio.texto')}</p>
-      </div>
-
+    <section className="gestor__seccion" aria-label={t('audio.titulo', { idioma: nombreIdioma })}>
       {!ficha ? (
         <p className="gestor__texto texto-body">{t('audio.sinFicha', { idioma: nombreIdioma })}</p>
       ) : (

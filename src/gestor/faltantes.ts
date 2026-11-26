@@ -40,6 +40,12 @@ export type PuntoReporte = {
 
 export type Gravedad = 'obligatorio' | 'recomendado' | 'revision'
 
+/**
+ * De qué parte de la ficha es el faltante: la columna del cuadro de la pantalla. `aprobacion` es la
+ * revisión del equipo (estado de la ficha y revisión lingüística del kaqchikel). No va en el CSV.
+ */
+export type Categoria = 'texto' | 'audio' | 'aprobacion' | 'foto' | 'fuentes'
+
 export type Faltante = {
   /** Número de la ficha con dos dígitos, como lo nombra la URL (p. ej. "07"). */
   numero: string
@@ -50,6 +56,7 @@ export type Faltante = {
   problema: string
   accion: string
   gravedad: Gravedad
+  categoria: Categoria
 }
 
 const NOMBRE_IDIOMA: Record<IdiomaReporte, string> = {
@@ -80,13 +87,26 @@ export function faltantesDePunto(punto: PuntoReporte): Faltante[] {
   const fichaEs = punto.fichas.find((f) => f.idioma === 'es')
   const titulo = fichaEs?.titulo.trim() || punto.fichas[0]?.titulo.trim() || punto.slug
   const filas: Faltante[] = []
+  // Cada bloque de abajo fija su categoría antes de agregar sus filas.
+  let categoria: Categoria = 'foto'
   const agregar = (
     idioma: Faltante['idioma'],
     campo: string,
     problema: string,
     accion: string,
     gravedad: Gravedad = 'obligatorio',
-  ) => filas.push({ numero, slug: punto.slug, titulo, idioma, campo, problema, accion, gravedad })
+  ) =>
+    filas.push({
+      numero,
+      slug: punto.slug,
+      titulo,
+      idioma,
+      campo,
+      problema,
+      accion,
+      gravedad,
+      categoria,
+    })
 
   // --- Fotos ---------------------------------------------------------------
   const detalle = punto.fotos.find((f) => f.tipo === 'foto')
@@ -134,6 +154,7 @@ export function faltantesDePunto(punto: PuntoReporte): Faltante[] {
     })
 
   // --- Fuentes -------------------------------------------------------------
+  categoria = 'fuentes'
   if (punto.fuentes.length === 0) {
     agregar('todos', 'Fuentes', 'Ninguna fuente', 'URL: fuente y nivel de confianza de cada dato')
   }
@@ -155,6 +176,7 @@ export function faltantesDePunto(punto: PuntoReporte): Faltante[] {
   for (const idioma of IDIOMAS_REPORTE) {
     const nombre = NOMBRE_IDIOMA[idioma]
     const ficha = punto.fichas.find((f) => f.idioma === idioma)
+    categoria = 'texto'
     if (!ficha) {
       agregar(
         idioma,
@@ -162,6 +184,7 @@ export function faltantesDePunto(punto: PuntoReporte): Faltante[] {
         idioma === 'es' ? 'No hay ficha' : `Falta la traducción al ${nombre}`,
         idioma === 'es' ? 'URL: entregar la ficha' : `URL: entregar la ficha en ${nombre}`,
       )
+      categoria = 'audio'
       agregar(
         idioma,
         `Narración (${numero}-${idioma}.mp3)`,
@@ -193,6 +216,7 @@ export function faltantesDePunto(punto: PuntoReporte): Faltante[] {
       )
     }
 
+    categoria = 'audio'
     if (!ficha.audio) {
       agregar(
         idioma,
@@ -227,6 +251,7 @@ export function faltantesDePunto(punto: PuntoReporte): Faltante[] {
       )
     }
 
+    categoria = 'texto'
     if (idioma !== 'es' && fichaEs) {
       for (const [campo, etiqueta] of [
         ['que_ves', 'Qué ves'],
@@ -246,6 +271,7 @@ export function faltantesDePunto(punto: PuntoReporte): Faltante[] {
       }
     }
 
+    categoria = 'aprobacion'
     if (idioma === 'cak') {
       agregar(
         idioma,
@@ -317,4 +343,69 @@ export function aMarkdown(filas: readonly Faltante[], fecha: string): string {
     ...cuerpo,
     '',
   ].join('\n')
+}
+
+/** Lo que muestra una casilla del cuadro: lo más grave de sus faltantes, o `listo`. */
+export type EstadoCasilla = Gravedad | 'listo' | 'sinFicha'
+
+const PESO: Record<Gravedad, number> = { obligatorio: 3, recomendado: 2, revision: 1 }
+
+function peorDe(filas: readonly Faltante[]): EstadoCasilla {
+  return filas.reduce<EstadoCasilla>(
+    (peor, fila) =>
+      peor === 'listo' || PESO[fila.gravedad] > PESO[peor as Gravedad] ? fila.gravedad : peor,
+    'listo',
+  )
+}
+
+export type CuadroPunto = {
+  numero: string
+  titulo: string
+  /** Por idioma: texto, narración y aprobación. Sin ficha, la aprobación no aplica. */
+  idiomas: Record<IdiomaReporte, Record<'texto' | 'audio' | 'aprobacion', EstadoCasilla>>
+  foto: EstadoCasilla
+  fuentes: EstadoCasilla
+  filas: Faltante[]
+  cuenta: Record<Gravedad, number>
+}
+
+/** Una fila del cuadro de la pantalla: el estado de cada parte de la ficha y sus faltantes. */
+export function cuadroDePunto(punto: PuntoReporte): CuadroPunto {
+  const filas = faltantesDePunto(punto)
+  const de = (categoria: Categoria, idioma: Faltante['idioma']) =>
+    peorDe(filas.filter((f) => f.categoria === categoria && f.idioma === idioma))
+  const idiomas = Object.fromEntries(
+    IDIOMAS_REPORTE.map((idioma) => {
+      const tieneFicha = punto.fichas.some((f) => f.idioma === idioma)
+      return [
+        idioma,
+        {
+          texto: de('texto', idioma),
+          audio: de('audio', idioma),
+          aprobacion: tieneFicha ? de('aprobacion', idioma) : 'sinFicha',
+        },
+      ]
+    }),
+  ) as CuadroPunto['idiomas']
+  const fichaEs = punto.fichas.find((f) => f.idioma === 'es')
+  return {
+    numero: numeroDe(punto.orden),
+    titulo: fichaEs?.titulo.trim() || punto.fichas[0]?.titulo.trim() || punto.slug,
+    idiomas,
+    foto: de('foto', 'todos'),
+    fuentes: de('fuentes', 'todos'),
+    filas,
+    cuenta: {
+      obligatorio: filas.filter((f) => f.gravedad === 'obligatorio').length,
+      recomendado: filas.filter((f) => f.gravedad === 'recomendado').length,
+      revision: filas.filter((f) => f.gravedad === 'revision').length,
+    },
+  }
+}
+
+/** El cuadro de todos los puntos, en el mismo orden que el reporte. */
+export function cuadroDeTodo(puntos: readonly PuntoReporte[]): CuadroPunto[] {
+  return [...puntos]
+    .sort((a, b) => a.zona.localeCompare(b.zona) || a.orden - b.orden)
+    .map(cuadroDePunto)
 }

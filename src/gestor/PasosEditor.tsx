@@ -3,8 +3,9 @@ import { Check } from 'lucide-react'
 import { PASOS, type EstadoPaso, type Paso } from '@/gestor/pasos'
 
 /**
- * Barra de pasos del editor: número, nombre y estado de cada paso (listo, falta u opcional, en
- * palabras y con icono, nunca solo color). Se puede saltar a cualquiera; el actual lleva
+ * Barra de pasos del editor: número y nombre de cada paso. El estado va en el círculo: check verde si
+ * está listo, anillo naranja discontinuo si falta algo opcional y anillo rojo si falta algo
+ * obligatorio (forma además de color), y en palabras para el lector de pantalla. Se puede saltar a cualquiera; el actual lleva
  * aria-current="step".
  */
 export function PasosEditor({
@@ -44,17 +45,14 @@ export function PasosEditor({
                 <span className="pasos__numero texto-small-strong" aria-hidden="true">
                   {estado === 'completo' ? <Check className="pasos__check" /> : i + 1}
                 </span>
-                <span className="pasos__textos">
-                  <span className="pasos__nombre texto-body-strong">
-                    {t(`pasos.${paso}.nombre`)}
-                  </span>
-                  <span className="pasos__estado texto-small">
-                    {paso === sinGuardar
-                      ? t('pasos.estado.sinGuardar')
-                      : paso === 'revision' && estado === 'completo'
-                        ? t('pasos.estado.publicada')
-                        : t(`pasos.estado.${estado}`)}
-                  </span>
+                <span className="pasos__nombre texto-body-strong">{t(`pasos.${paso}.nombre`)}</span>
+                <span className="visualmente-oculto">
+                  {': '}
+                  {paso === sinGuardar
+                    ? t('pasos.estado.sinGuardar')
+                    : paso === 'revision' && estado === 'completo'
+                      ? t('pasos.estado.publicada')
+                      : t(`pasos.estado.${estado}`)}
                 </span>
               </button>
             </li>
