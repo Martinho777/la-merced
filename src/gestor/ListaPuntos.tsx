@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Boton } from '@/componentes/Boton'
 import { Insignia } from '@/componentes/Insignia'
-import { Tarjeta } from '@/componentes/Tarjeta'
+import { ChevronRight } from 'lucide-react'
 import { IDIOMAS_GESTOR, listarPuntosGestor, type PuntoGestor } from '@/datos/gestor'
+import { EncabezadoSeccion } from '@/gestor/IntroSanti'
 import { agruparPorZona, TONO_ESTADO } from '@/gestor/lista'
 import type es from '@/i18n/es.json'
+import '@/gestor/lista.css'
 
 type Estado = { tipo: 'cargando' } | { tipo: 'error' } | { tipo: 'listo'; puntos: PuntoGestor[] }
 
@@ -38,10 +40,7 @@ export function ListaPuntos({ alAbrir }: { alAbrir?: (punto: PuntoGestor) => voi
 
   return (
     <section className="gestor__seccion">
-      <div className="gestor__titulos">
-        <h1 className="gestor__titulo texto-title-1">{t('lista.titulo')}</h1>
-        <p className="gestor__texto texto-body">{t('lista.texto')}</p>
-      </div>
+      <EncabezadoSeccion seccion="fichas" titulo={t('lista.titulo')} texto={t('lista.texto')} />
 
       {estado.tipo === 'cargando' && (
         <p className="gestor__texto texto-body" role="status">
@@ -105,35 +104,75 @@ export function ListaPuntos({ alAbrir }: { alAbrir?: (punto: PuntoGestor) => voi
             <h2 className="gestor__subtitulo texto-heading">
               {tGuia(`zonas.${zona}` as ClaveZona, { defaultValue: zona })}
             </h2>
-            <ul className="gestor__lista">
-              {puntos.map((punto) => (
-                <li key={punto.id}>
-                  <Tarjeta
-                    titulo={punto.fichas.es?.titulo ?? t('lista.sinTitulo', { slug: punto.slug })}
-                    subtitulo={t('lista.punto', { numero: punto.orden })}
-                    onPresionar={alAbrir && (() => alAbrir(punto))}
-                    final={
-                      <span className="gestor__insignias">
-                        {IDIOMAS_GESTOR.map((idioma) => {
-                          const ficha = punto.fichas[idioma]
-                          const clave = ficha?.estado ?? 'falta'
-                          return (
-                            <Insignia key={idioma} tono={TONO_ESTADO[clave]}>
-                              {t('lista.estadoIdioma', {
-                                codigo: idioma.toUpperCase(),
-                                estado: t(`estados.${clave}`),
-                              })}
-                            </Insignia>
-                          )
-                        })}
-                      </span>
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
+            <TablaPuntos puntos={puntos} alAbrir={alAbrir} />
           </section>
         ))}
     </section>
+  )
+}
+
+/**
+ * Los puntos de una zona como filas de una tabla: número, nombre y el estado de la ficha en cada
+ * idioma, en columnas. En un teléfono, los idiomas pasan debajo del nombre (cada estado dice su idioma
+ * para el lector de pantalla). Toda la fila abre el punto.
+ */
+function TablaPuntos({
+  puntos,
+  alAbrir,
+}: {
+  puntos: readonly PuntoGestor[]
+  alAbrir?: (punto: PuntoGestor) => void
+}) {
+  const { t } = useTranslation('gestor')
+  return (
+    <div className="tabla-puntos">
+      <div
+        className="tabla-puntos__fila tabla-puntos__encabezado texto-small-strong"
+        aria-hidden="true"
+      >
+        <span className="tabla-puntos__principal">
+          <span className="tabla-puntos__numero">#</span>
+          <span>{t('lista.columnaPunto')}</span>
+        </span>
+        <span className="tabla-puntos__idiomas">
+          {IDIOMAS_GESTOR.map((idioma) => (
+            <span key={idioma}>{idioma.toUpperCase()}</span>
+          ))}
+        </span>
+        <span className="tabla-puntos__flecha" />
+      </div>
+      <ul className="tabla-puntos__lista">
+        {puntos.map((punto) => (
+          <li key={punto.id}>
+            <button
+              type="button"
+              className="tabla-puntos__fila tabla-puntos__boton"
+              onClick={alAbrir && (() => alAbrir(punto))}
+            >
+              <span className="tabla-puntos__principal">
+                <span className="tabla-puntos__numero texto-body-strong">{punto.orden}</span>
+                <span className="tabla-puntos__nombre texto-body-strong">
+                  {punto.fichas.es?.titulo ?? t('lista.sinTitulo', { slug: punto.slug })}
+                </span>
+              </span>
+              <span className="tabla-puntos__idiomas">
+                {IDIOMAS_GESTOR.map((idioma) => {
+                  const clave = punto.fichas[idioma]?.estado ?? 'falta'
+                  return (
+                    <span key={idioma}>
+                      <Insignia tono={TONO_ESTADO[clave]}>
+                        <span className="visualmente-oculto">{t(`lista.idioma.${idioma}`)}: </span>
+                        {t(`estados.${clave}`)}
+                      </Insignia>
+                    </span>
+                  )
+                })}
+              </span>
+              <ChevronRight className="tabla-puntos__flecha" aria-hidden="true" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

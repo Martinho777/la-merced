@@ -6,6 +6,7 @@ import { LogOut } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { alCambiarSesion, cerrarSesion, obtenerSesion, type SesionGestor } from '@/datos/sesion'
 import { FijarEncabezado, type ContextoEncabezado } from '@/gestor/contexto'
+import { NavegacionGestor } from '@/gestor/NavegacionGestor'
 import { PantallaEntrar } from '@/gestor/PantallaEntrar'
 import { RutasGestor } from '@/gestor/RutasGestor'
 import '@/gestor/i18n'
@@ -32,17 +33,10 @@ function EncabezadoGestor({
   return (
     <header className="gestor__encabezado">
       <div className="gestor__encabezado-izquierda">
-        <div className="gestor__titulos">
-          <p className="gestor__marca texto-small-strong">{t('titulo')}</p>
-          {sesion.rol && (
-            <p className="gestor__texto texto-small">
-              {t('sesion.usuario', {
-                nombre: sesion.nombre ?? sesion.correo,
-                rol: t(`roles.${sesion.rol}`),
-              })}
-            </p>
-          )}
-        </div>
+        {sesion.rol && <NavegacionGestor />}
+        {sesion.rol && (
+          <p className="gestor__marca texto-body-strong">{t(`roles.${sesion.rol}`)}</p>
+        )}
         {contexto && (
           <div className="gestor__contexto">
             <div className="gestor__titulos">

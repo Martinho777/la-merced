@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
 import { Send } from 'lucide-react'
-import { BarraSuperior } from '@/componentes/BarraSuperior'
+import { EncabezadoSeccion } from '@/gestor/IntroSanti'
+import { limpiarCambiosSinPublicar } from '@/gestor/publicacionPendiente'
 import { Boton } from '@/componentes/Boton'
 import { Insignia, type TonoInsignia } from '@/componentes/Insignia'
 import {
@@ -41,19 +41,10 @@ type Fase =
  */
 export function PantallaPublicar({ rol }: { rol: Rol }) {
   const { t } = useTranslation('gestor')
-  const navegar = useNavigate()
-  const barra = (
-    <BarraSuperior
-      etiqueta={t('textos.volver')}
-      etiquetaAccesible={t('textos.volver')}
-      onVolver={() => navegar('/gestor')}
-    />
-  )
 
   if (rol !== 'admin') {
     return (
       <section className="gestor__seccion">
-        {barra}
         <div className="gestor__titulos">
           <h1 className="gestor__titulo texto-title-1">{t('publicar.sinPermisoTitulo')}</h1>
           <p className="gestor__texto texto-body">{t('publicar.sinPermisoTexto')}</p>
@@ -61,10 +52,10 @@ export function PantallaPublicar({ rol }: { rol: Rol }) {
       </section>
     )
   }
-  return <Publicar barra={barra} />
+  return <Publicar />
 }
 
-function Publicar({ barra }: { barra: ReactNode }) {
+function Publicar() {
   const { t } = useTranslation('gestor')
   const [historial, setHistorial] = useState<Publicacion[] | 'error' | null>(null)
   const [fase, setFase] = useState<Fase>({ tipo: 'inactiva' })
@@ -108,6 +99,7 @@ function Publicar({ barra }: { barra: ReactNode }) {
         if (!vigente || resultado === 'esperando') return
         if (resultado === 'publicada') {
           const confirmada = await confirmarPublicacion(publicacion.id)
+          limpiarCambiosSinPublicar()
           if (vigente) setFase({ tipo: 'publicada', publicacion: confirmada })
         } else {
           const motivo = t('publicar.vencida')
@@ -159,11 +151,11 @@ function Publicar({ barra }: { barra: ReactNode }) {
 
   return (
     <section className="gestor__seccion">
-      {barra}
-      <div className="gestor__titulos">
-        <h1 className="gestor__titulo texto-title-1">{t('publicar.titulo')}</h1>
-        <p className="gestor__texto texto-body">{t('publicar.texto')}</p>
-      </div>
+      <EncabezadoSeccion
+        seccion="publicar"
+        titulo={t('publicar.titulo')}
+        texto={t('publicar.texto')}
+      />
 
       <div className="gestor__estado">
         <Boton icono={Send} cargando={ocupado} disabled={ocupado} onClick={() => void publicar()}>

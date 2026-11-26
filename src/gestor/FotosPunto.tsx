@@ -16,6 +16,7 @@ import {
 import { Campo } from '@/gestor/componentes/Campo'
 import { datosVacios, faltantesFoto, siguienteOrden } from '@/gestor/fotos'
 import { ErrorImagen, prepararImagen, TIPOS_ACEPTADOS } from '@/gestor/imagen'
+import { marcarCambiosSinPublicar } from '@/gestor/publicacionPendiente'
 
 type Punto = { id: string; slug: string }
 
@@ -128,6 +129,7 @@ function EditarFoto({
     setGuardando(true)
     try {
       alGuardar(await actualizarFoto(foto.id, datos))
+      marcarCambiosSinPublicar()
     } catch {
       setAviso('errorGuardar')
       setGuardando(false)
@@ -234,6 +236,7 @@ function SubirFoto({
     setSubiendo(true)
     try {
       alSubir(await subirFoto(punto, tipo, imagen, datos, orden, anterior))
+      marcarCambiosSinPublicar()
     } catch {
       setAviso('errorSubir')
       setSubiendo(false)
@@ -445,6 +448,7 @@ function FotoDelDetalle({
         ? await subirFoto(punto, 'foto', imagen, datos, 0, foto)
         : await actualizarFoto(foto!.id, datos)
       alCambiar(foto, nueva)
+      marcarCambiosSinPublicar()
       setImagen(null)
       setVistaPrevia(null)
       setClaveArchivo((n) => n + 1)
@@ -461,6 +465,7 @@ function FotoDelDetalle({
     setOcupado('borrar')
     try {
       await borrarFoto(foto)
+      marcarCambiosSinPublicar()
       alCambiar(foto, null)
       setDatos(datosVacios)
       setAviso('borrada')
@@ -630,6 +635,7 @@ export function FotosPunto({
   const borrar = async (foto: FotoGestor) => {
     try {
       await borrarFoto(foto)
+      marcarCambiosSinPublicar()
       quitar(foto.id)
       if (panel?.tipo === 'editar' && panel.id === foto.id) cerrar()
       setAviso('borrada')

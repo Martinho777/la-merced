@@ -22,6 +22,7 @@ import {
 } from '@/datos/fuentes'
 import { Campo, CampoArea, Selector } from '@/gestor/componentes/Campo'
 import { FUENTE_VACIA, fuentesDisponibles } from '@/gestor/fuentes'
+import { marcarCambiosSinPublicar } from '@/gestor/publicacionPendiente'
 
 type Aviso = 'agregada' | 'guardada' | 'quitada' | 'faltaCita' | 'faltaFuente' | 'error' | null
 
@@ -270,6 +271,7 @@ function EditarFuente({
     try {
       const corregida = corrigiendo ? await actualizarFuente(fuente.id, datos) : fuente
       await actualizarVinculo(idPunto, fuente.id, nivel, nota)
+      marcarCambiosSinPublicar()
       alGuardar({ fuente: corregida, nivel, nota: nota.trim() })
     } catch {
       setAviso('error')
@@ -359,6 +361,7 @@ function AgregarFuente({
     try {
       const fuente = existente ?? (await crearFuente(datos))
       await vincularFuente(idPunto, fuente.id, nivel, nota)
+      marcarCambiosSinPublicar()
       alAgregar({ fuente, nivel, nota: nota.trim() }, !existente)
     } catch {
       setAviso('error')
@@ -522,6 +525,7 @@ export function FuentesPunto({
   async function quitar(vinculo: FuentePunto) {
     try {
       await desvincularFuente(idPunto, vinculo.fuente.id)
+      marcarCambiosSinPublicar()
       setVinculos((actuales) => (actuales ?? []).filter((v) => v.fuente.id !== vinculo.fuente.id))
       if (enEdicion?.fuente.id === vinculo.fuente.id) cerrar()
       setAviso('quitada')

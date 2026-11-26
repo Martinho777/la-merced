@@ -4,14 +4,14 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useBlocker, useNavigate, useSearchParams } from 'react-router'
-import { BarraSuperior } from '@/componentes/BarraSuperior'
+import { useBlocker, useSearchParams } from 'react-router'
 import { Boton } from '@/componentes/Boton'
-import { Insignia, type TonoInsignia } from '@/componentes/Insignia'
 import { listarPuntosGestor } from '@/datos/gestor'
 import type { Rol } from '@/datos/sesion'
 import { guardarTextoInterfaz, leerTextosInterfaz, restaurarTextoInterfaz } from '@/datos/textos'
 import { Campo } from '@/gestor/componentes/Campo'
+import { EncabezadoSeccion } from '@/gestor/IntroSanti'
+import { marcarCambiosSinPublicar } from '@/gestor/publicacionPendiente'
 import {
   cambiosDe,
   conTexto,
@@ -25,7 +25,6 @@ import {
   textosParaVistaPrevia,
   valorCampo,
   type ClaveEditable,
-  type Origen,
   type PantallaEditable,
   type Textos,
 } from '@/gestor/textos'
@@ -40,12 +39,6 @@ import '@/gestor/textos.css'
 /** Punto que se muestra en la confirmación si la base todavía no tiene puntos (los de prueba). */
 const PUNTO_DE_PRUEBA = { zona: 'fachada-principal', punto: 'demo-01' }
 
-const TONO_ORIGEN: Record<Origen, TonoInsignia> = {
-  original: 'neutral',
-  editado: 'info',
-  sinTraduccion: 'advertencia',
-}
-
 type Estado =
   | { tipo: 'cargando' }
   | { tipo: 'error' }
@@ -55,16 +48,10 @@ type Aviso = { tipo: 'exito' | 'error'; texto: string } | null
 
 export function EditorTextos({ rol }: { rol: Rol }) {
   const { t } = useTranslation('gestor')
-  const navegar = useNavigate()
 
   if (rol !== 'admin') {
     return (
       <section className="gestor__seccion">
-        <BarraSuperior
-          etiqueta={t('textos.volver')}
-          etiquetaAccesible={t('textos.volver')}
-          onVolver={() => navegar('/gestor')}
-        />
         <div className="gestor__titulos">
           <h1 className="gestor__titulo texto-title-1">{t('textos.sinPermisoTitulo')}</h1>
           <p className="gestor__texto texto-body">{t('textos.sinPermisoTexto')}</p>
@@ -87,7 +74,6 @@ function direccionDe(pantalla: PantallaEditable, confirmacion: { zona: string; p
 
 function Editor() {
   const { t } = useTranslation('gestor')
-  const navegar = useNavigate()
   const [parametros, setParametros] = useSearchParams()
   const pantalla = pantallaDe(parametros.get('pantalla'))
   const idioma: Idioma = IDIOMAS.find((i) => i === parametros.get('idioma')) ?? 'es'
@@ -145,18 +131,9 @@ function Editor() {
     return () => window.removeEventListener('beforeunload', avisar)
   }, [pendientes])
 
-  const barra = (
-    <BarraSuperior
-      etiqueta={t('textos.volver')}
-      etiquetaAccesible={t('textos.volver')}
-      onVolver={() => navegar('/gestor')}
-    />
-  )
-
   if (estado.tipo !== 'listo') {
     return (
       <section className="gestor__seccion">
-        {barra}
         {estado.tipo === 'cargando' ? (
           <p className="gestor__texto texto-body" role="status">
             {t('comun.cargando')}
@@ -210,6 +187,7 @@ function Editor() {
       for (const clave of cambios) {
         const texto = valorCampo(nuevaBase, nuevosBorradores, idioma, clave).trim()
         await guardarTextoInterfaz({ clave, idioma, texto })
+        marcarCambiosSinPublicar()
         nuevaBase = conTexto(nuevaBase, idioma, clave, texto)
         nuevosBorradores = conTexto(nuevosBorradores, idioma, clave, undefined)
         guardados += 1
@@ -234,6 +212,7 @@ function Editor() {
     setAviso(null)
     try {
       await restaurarTextoInterfaz(clave, idioma)
+      marcarCambiosSinPublicar()
       setEstado({ ...estado, base: conTexto(estado.base, idioma, clave, undefined) })
       setBorradores((actuales) => conTexto(actuales, idioma, clave, undefined))
       setAviso({ tipo: 'exito', texto: t('textos.restaurado') })
@@ -253,14 +232,11 @@ function Editor() {
 
   return (
     <section className="gestor__seccion">
-      {barra}
-      <div className="gestor__titulos">
-        <h1 className="gestor__titulo texto-title-1">{t('textos.titulo')}</h1>
-        <p className="gestor__texto texto-body">{t('textos.texto')}</p>
-      </div>
+      <EncabezadoSeccion seccion="textos" titulo={t('textos.titulo')} texto={t('textos.texto')} />
 
-      <nav className="pasos" aria-label={t('textos.pantallas')}>
-        <ol className="pasos__lista">
+      <fieldset className="textos__pantallas">
+        <legend className="texto-heading">{t('textos.pantallas')}</legend>
+        <ol className="textos__miniaturas">
           {PANTALLAS_EDITABLES.map((p, i) => {
             const actual = p.id === pantalla.id
             const n = cambiosDe(estado.base, borradores, idioma, p.claves).length
@@ -268,27 +244,34 @@ function Editor() {
               <li key={p.id}>
                 <button
                   type="button"
-                  className={actual ? 'pasos__paso pasos__paso--actual' : 'pasos__paso'}
-                  aria-current={actual ? 'step' : undefined}
+                  className={
+                    actual ? 'textos__miniatura textos__miniatura--actual' : 'textos__miniatura'
+                  }
+                  aria-pressed={actual}
                   onClick={() => elegir({ pantalla: p.id })}
                 >
-                  <span className="pasos__numero texto-small-strong" aria-hidden="true">
-                    {i + 1}
+                  <span className="textos__miniatura-pantalla" aria-hidden="true">
+                    <iframe
+                      className="textos__miniatura-marco"
+                      src={direccionDe(p, estado.confirmacion)}
+                      title={t(`textos.pantalla.${p.id}`)}
+                      loading="lazy"
+                      tabIndex={-1}
+                      inert
+                    />
                   </span>
-                  <span className="pasos__textos">
-                    <span className="pasos__nombre texto-body-strong">
-                      {t(`textos.pantalla.${p.id}`)}
-                    </span>
-                    <span className="pasos__estado texto-small">
-                      {n > 0 ? t('textos.cambios', { count: n }) : t('textos.sinCambios')}
-                    </span>
+                  <span className="textos__miniatura-nombre texto-body-strong">
+                    {i + 1}. {t(`textos.pantalla.${p.id}`)}
+                  </span>
+                  <span className="texto-small textos__miniatura-estado">
+                    {n > 0 ? t('textos.cambios', { count: n }) : t('textos.sinCambios')}
                   </span>
                 </button>
               </li>
             )
           })}
         </ol>
-      </nav>
+      </fieldset>
 
       <fieldset className="textos__idiomas">
         <legend className="texto-heading">{t('textos.idioma')}</legend>
@@ -326,10 +309,6 @@ function Editor() {
             void guardar()
           }}
         >
-          <h2 className="gestor__subtitulo texto-heading">
-            {t('textos.campos', { pantalla: nombrePantalla, idioma: nombreIdioma })}
-          </h2>
-
           {pantalla.claves.map((clave) => {
             const valor = valorCampo(estado.base, borradores, idioma, clave)
             const cambiado = estaCambiado(estado.base, borradores, idioma, clave)
@@ -338,13 +317,13 @@ function Editor() {
             const original = textoOriginal(idioma, clave) ?? textoOriginal('es', clave) ?? ''
             return (
               <div key={clave} className="textos__campo">
-                <span className="gestor__insignias textos__insignias">
-                  <Insignia tono={TONO_ORIGEN[origen]}>{t(`textos.origen.${origen}`)}</Insignia>
-                  {cambiado && <Insignia tono="marca">{t('textos.sinGuardar')}</Insignia>}
-                </span>
                 <Campo
                   etiqueta={t(`textos.clave.${clave}`)}
-                  ayuda={t('textos.original', { texto: original })}
+                  ayuda={
+                    origen === 'sinTraduccion'
+                      ? `${t('textos.original', { texto: original })} ${t('textos.origen.sinTraduccion')}`
+                      : t('textos.original', { texto: original })
+                  }
                   error={problema ? t(`textos.problema.${problema}`) : undefined}
                   value={valor}
                   lang={idioma}

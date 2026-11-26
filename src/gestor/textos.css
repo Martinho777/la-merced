@@ -74,3 +74,76 @@
   flex-wrap: wrap;
   gap: var(--space-3);
 }
+
+/* Elegir la pantalla por su dibujo: miniaturas de la app real (iframes reducidos). */
+.textos__pantallas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.textos__pantallas legend {
+  margin-block-end: var(--space-3);
+  justify-self: center;
+  padding: 0;
+  color: var(--ink);
+}
+
+.textos__miniaturas {
+  --miniatura-escala: 0.3;
+  --miniatura-ancho: calc(var(--content-max) * 0.8);
+
+  display: flex;
+  justify-content: safe center;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  overflow-x: auto;
+  list-style: none;
+}
+
+.textos__miniatura {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.textos__miniatura--actual {
+  border: var(--border-control) solid var(--border-strong);
+  background: var(--surface-sunken);
+}
+
+.textos__miniatura-pantalla {
+  display: block;
+  width: calc(var(--miniatura-ancho) * var(--miniatura-escala));
+  aspect-ratio: 9 / 19.5;
+  overflow: hidden;
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.textos__miniatura-marco {
+  display: block;
+  width: var(--miniatura-ancho);
+  aspect-ratio: 9 / 19.5;
+  border: 0;
+  transform: scale(var(--miniatura-escala));
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.textos__miniatura-estado {
+  color: var(--ink-muted);
+}

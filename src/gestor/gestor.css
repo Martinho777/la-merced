@@ -787,3 +787,127 @@
   gap: var(--space-2);
   margin-block-start: var(--space-2);
 }
+
+/* --- Ubicación: mapa más grande, agregar puntos y cambiar el mapa --- */
+
+/* El mapa ocupa dos tercios cuando caben las dos columnas; en el teléfono, todo el ancho. */
+.gestor .ubicacion__cuerpo {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ubicacion__cuerpo > .ubicacion__lienzo {
+  display: flex;
+  flex: 2 1 calc(var(--gestor-columna) * 1.25);
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.ubicacion__cuerpo > .gestor__grupo {
+  flex: 1 1 calc(var(--gestor-columna) * 0.8);
+  min-width: 0;
+}
+
+/* «Agregar punto» en la esquina superior derecha del mapa: casi todo por fuera, apenas montado
+   sobre el borde. El lienzo deja arriba el espacio que ocupa. */
+.ubicacion__cuerpo > .ubicacion__lienzo {
+  position: relative;
+  padding-block-start: calc(var(--button-h-sm) * 0.75);
+}
+
+.ubicacion__herramientas {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 0;
+  inset-inline-end: var(--space-3);
+}
+
+.ubicacion__lienzo > .gestor__aviso {
+  margin: 0;
+}
+
+/* Mientras se agrega un punto, la ilustración invita a tocarla. */
+.ubicacion__escena--colocando {
+  outline: var(--border-focus) dashed var(--focus);
+  outline-offset: var(--border-control);
+  cursor: crosshair;
+}
+
+.ubicacion__mapa {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.ubicacion__mapa--abierto {
+  align-items: stretch;
+  padding: var(--pad-card);
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.ubicacion__mapa p,
+.ubicacion__mapa h3 {
+  margin: 0;
+}
+
+/* Pasos: el círculo dice el estado. Fondo surface propio para que naranja y rojo vayan sobre surface
+   (contraste.md) también en el paso actual. */
+.pasos__numero {
+  background: var(--surface);
+}
+
+.pasos__paso--opcional .pasos__numero {
+  border-style: dashed;
+  border-color: var(--orange-700);
+  color: var(--orange-700);
+}
+
+.pasos__paso--pendiente .pasos__numero {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.pasos__lista {
+  grid-auto-columns: minmax(calc(var(--content-max) * 0.26), 1fr);
+}
+
+/* Volver (Inicio, Puntos): a la izquierda, fuera del margen del contenido, hasta space-16 en
+   computadora y sin pegarse al borde en el teléfono. */
+.gestor__barra-pasos > .barra-superior {
+  --volver-afuera: min(var(--space-16), (100vw - 100%) / 2 - var(--space-2));
+
+  padding-inline: 0;
+  margin-inline-start: calc(-1 * var(--volver-afuera));
+}
+
+/* En la fila de los pasos, el botón sale a la izquierda pero las tarjetas de los pasos no se mueven. */
+.gestor__barra-pasos > .barra-superior {
+  margin-inline-end: var(--volver-afuera);
+}
+
+/* Encabezado de sección: título a la izquierda y «¿Cómo funciona?» a la derecha. */
+.seccion__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+}
+
+.seccion__encabezado > .gestor__titulos {
+  flex: 1 1 var(--gestor-columna);
+}
+
+.seccion__ayuda {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+/* «Inicio» en el encabezado, a la izquierda: botón de tamaño normal para que se encuentre fácil. */
+.gestor__inicio {
+  flex-shrink: 0;
+}

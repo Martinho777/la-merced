@@ -27,6 +27,8 @@ import { AudioFicha } from '@/gestor/AudioFicha'
 import { FotosPunto } from '@/gestor/FotosPunto'
 import { FuentesPunto } from '@/gestor/FuentesPunto'
 import { accionesDisponibles, DESTINO, type AccionEstado } from '@/gestor/estados'
+import { RUTA_SECCION } from '@/gestor/secciones'
+import { marcarCambiosSinPublicar } from '@/gestor/publicacionPendiente'
 import { BarraAvance } from '@/gestor/BarraAvance'
 import { FijarEncabezado } from '@/gestor/contexto'
 import { PasosEditor } from '@/gestor/PasosEditor'
@@ -36,7 +38,7 @@ import {
   estadoDePaso,
   PASOS,
   pasoDe,
-  requisitos,
+  requisitosDeIdioma,
   type EstadoPaso,
   type Paso,
   type ResumenMedios,
@@ -128,7 +130,7 @@ export function EditorPunto({ rol }: { rol: Rol }) {
     <BarraSuperior
       etiqueta={t('editor.volver')}
       etiquetaAccesible={t('editor.volverAccesible')}
-      onVolver={() => navegar('/gestor')}
+      onVolver={() => navegar(RUTA_SECCION.fichas)}
     />
   )
 
@@ -197,6 +199,7 @@ export function EditorPunto({ rol }: { rol: Rol }) {
           },
       )
       setAviso('guardado')
+      marcarCambiosSinPublicar()
     } catch {
       setAviso('errorGuardar')
     } finally {
@@ -231,6 +234,7 @@ export function EditorPunto({ rol }: { rol: Rol }) {
           },
       )
       setAvisoTranscripcion('guardada')
+      marcarCambiosSinPublicar()
     } catch {
       setAvisoTranscripcion('error')
     } finally {
@@ -247,6 +251,7 @@ export function EditorPunto({ rol }: { rol: Rol }) {
     setCambiandoEstado(accion)
     try {
       const actualizada = await cambiarEstadoFicha(ficha.id, DESTINO[accion])
+      marcarCambiosSinPublicar()
       setEstado({
         tipo: 'listo',
         punto: { ...punto, fichas: { ...punto.fichas, [idioma]: actualizada } },
@@ -263,7 +268,6 @@ export function EditorPunto({ rol }: { rol: Rol }) {
   const esError = aviso === 'errorGuardar' || aviso === 'errorEstado'
   const sinGuardar = hayCambios(campos, ficha, CAMPOS_TEXTOS)
   const transcripcionSinGuardar = hayCambios(campos, ficha, CAMPOS_NARRACION)
-  const lista = requisitos(punto, medios)
   const avance = avanceDe(conBorradores(punto, borradores), medios)
   const nombrePunto = punto.fichas.es?.titulo
     ? t('editor.nombrePunto', { numero: punto.orden, nombre: punto.fichas.es.titulo })
@@ -462,35 +466,57 @@ export function EditorPunto({ rol }: { rol: Rol }) {
 
       <div className="gestor__paso" hidden={paso !== 'revision'}>
         <EncabezadoPaso paso="revision" />
-        <ul className="gestor__requisitos">
-          {lista.map((requisito) => {
-            const tipo = requisito.cumplido ? 'listo' : requisito.obligatorio ? 'falta' : 'opcional'
-            return (
-              <li key={requisito.clave} className={`gestor__requisito gestor__requisito--${tipo}`}>
-                {requisito.cumplido ? (
-                  <CircleCheck className="gestor__requisito-icono" aria-hidden="true" />
-                ) : (
-                  <CircleDashed className="gestor__requisito-icono" aria-hidden="true" />
-                )}
-                <span className="gestor__requisito-texto">
-                  <span className="texto-body">{t(`requisitos.${requisito.clave}`)}</span>
-                  <span className="gestor__requisito-estado texto-small-strong">
-                    {t(`requisitos.${tipo}`)}
-                  </span>
-                </span>
-                {!requisito.cumplido && (
-                  <Boton variante="fantasma" tamano="sm" onClick={() => irA(requisito.paso)}>
-                    {t('requisitos.ir', { paso: t(`pasos.${requisito.paso}.nombre`) })}
-                  </Boton>
-                )}
-              </li>
-            )
-          })}
-        </ul>
+        {pestanasIdioma}
+        {[false, true].map((comun) => (
+          <section key={String(comun)} className="gestor__grupo">
+            <h3 className="gestor__subtitulo texto-heading">
+              {comun
+                ? t('requisitos.comunes')
+                : t('requisitos.delIdioma', { idioma: nombreIdioma.toLowerCase() })}
+            </h3>
+            <ul className="gestor__requisitos">
+              {requisitosDeIdioma(punto, medios, idioma)
+                .filter((requisito) => requisito.comun === comun)
+                .map((requisito) => {
+                  const tipo = requisito.cumplido
+                    ? 'listo'
+                    : requisito.obligatorio
+                      ? 'falta'
+                      : 'opcional'
+                  return (
+                    <li
+                      key={requisito.clave}
+                      className={`gestor__requisito gestor__requisito--${tipo}`}
+                    >
+                      {requisito.cumplido ? (
+                        <CircleCheck className="gestor__requisito-icono" aria-hidden="true" />
+                      ) : (
+                        <CircleDashed className="gestor__requisito-icono" aria-hidden="true" />
+                      )}
+                      <span className="gestor__requisito-texto">
+                        <span className="texto-body">
+                          {t(`requisitos.idioma.${requisito.clave}`)}
+                        </span>
+                        <span className="gestor__requisito-estado texto-small-strong">
+                          {t(`requisitos.${tipo}`)}
+                        </span>
+                      </span>
+                      {!requisito.cumplido && (
+                        <Boton variante="fantasma" tamano="sm" onClick={() => irA(requisito.paso)}>
+                          {t('requisitos.ir', { paso: t(`pasos.${requisito.paso}.nombre`) })}
+                        </Boton>
+                      )}
+                    </li>
+                  )
+                })}
+            </ul>
+          </section>
+        ))}
 
         <div className="gestor__estado">
-          <h3 className="gestor__subtitulo texto-heading">{t('editor.publicar')}</h3>
-          {pestanasIdioma}
+          <h3 className="gestor__subtitulo texto-heading">
+            {t('editor.publicarIdioma', { idioma: nombreIdioma.toLowerCase() })}
+          </h3>
           <Insignia tono={TONO_ESTADO[ficha?.estado ?? 'falta']}>
             {t('editor.estado', { estado: t(`estados.${ficha?.estado ?? 'falta'}`) })}
           </Insignia>

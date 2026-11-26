@@ -6,11 +6,16 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useBlocker } from 'react-router'
-import { ArrowDown, ArrowUp, Image } from 'lucide-react'
+import { ArrowDown, ArrowUp, Image, Plus, Trash2 } from 'lucide-react'
 import { Boton } from '@/componentes/Boton'
 import { Insignia } from '@/componentes/Insignia'
 import { Tarjeta } from '@/componentes/Tarjeta'
 import { listarPuntosGestor, type PuntoGestor } from '@/datos/gestor'
+import type { Rol } from '@/datos/sesion'
+import { crearPunto, type PuntoNuevo } from '@/datos/ubicaciones'
+import { CambiarMapa } from '@/gestor/CambiarMapa'
+import { EncabezadoSeccion } from '@/gestor/IntroSanti'
+import { marcarCambiosSinPublicar } from '@/gestor/publicacionPendiente'
 import { obtenerZonas } from '@/datos/zonas'
 import { MarcadorEditable } from '@/gestor/componentes/MarcadorEditable'
 import {
@@ -55,8 +60,12 @@ type Aviso =
   | { tipo: TipoResultado; resultado: ResultadoCambios }
   | { tipo: 'descartado' }
   | { tipo: 'movido'; texto: string }
+  | { tipo: 'nuevos'; creados: number; error: string | null }
 
-export function EditorUbicaciones() {
+/** Punto agregado en el editor que todavía no está en la base (se crea al guardar). */
+type Nuevo = PuntoNuevo & { clave: string }
+
+export function EditorUbicaciones({ rol }: { rol: Rol }) {
   const { t } = useTranslation('gestor')
   const { t: tGuia } = useTranslation()
   const [estado, setEstado] = useState<Estado>({ tipo: 'cargando' })
@@ -70,7 +79,12 @@ export function EditorUbicaciones() {
   const [seleccion, setSeleccion] = useState<string | null>(null)
   const [guardando, setGuardando] = useState(false)
   const [aviso, setAviso] = useState<Aviso | null>(null)
+  const [nuevos, setNuevos] = useState<Nuevo[]>([])
+  const [colocando, setColocando] = useState(false)
+  const [descripciones, setDescripciones] = useState<Record<string, string>>({})
   const escenaRef = useRef<HTMLDivElement>(null)
+  // Numera los puntos nuevos del borrador (solo para distinguirlos hasta crearlos).
+  const contadorNuevos = useRef(0)
   const listaRef = useRef<HTMLUListElement>(null)
   // Botón de orden que acaba de usarse: al reordenar la fila cambia de lugar, y el foco vuelve a él.
   const focoRef = useRef<{ id: string; sentido: -1 | 1 } | null>(null)
@@ -87,6 +101,9 @@ export function EditorUbicaciones() {
         setUrlsIlustracion(
           Object.fromEntries(zonas.map((z) => [z.slug, z.ilustracion?.url ?? null])),
         )
+        setDescripciones(
+          Object.fromEntries(zonas.map((z) => [z.slug, z.ilustracion?.textoAlternativo.es ?? ''])),
+        )
         setZona((actual) => zonaElegida(zonasDe(lista), actual))
         setEstado({ tipo: 'listo' })
       })
@@ -101,9 +118,11 @@ export function EditorUbicaciones() {
   const ordenCambiado = useMemo(() => puntosConOrdenCambiado(puntos, orden), [puntos, orden])
   const numeros = useMemo(() => ordenProyectado(puntos, orden), [puntos, orden])
   const hayPendientes = hayCambios(puntos, borrador, orden)
+  // Cambios de puntos existentes o puntos nuevos sin crear: los dos cuentan como pendientes.
+  const hayAlgoPendiente = hayPendientes || nuevos.length > 0
 
   // Con cambios sin guardar: confirmar antes de salir a otra pantalla del gestor...
-  const bloqueo = useBlocker(hayPendientes && !guardando)
+  const bloqueo = useBlocker(hayAlgoPendiente && !guardando)
   useEffect(() => {
     if (bloqueo.state !== 'blocked') return
     if (window.confirm(t('ubicaciones.confirmarSalir'))) bloqueo.proceed()
@@ -112,11 +131,11 @@ export function EditorUbicaciones() {
 
   // ...y antes de recargar o cerrar la pestaña.
   useEffect(() => {
-    if (!hayPendientes) return
+    if (!hayAlgoPendiente) return
     const alSalir = (evento: BeforeUnloadEvent) => evento.preventDefault()
     window.addEventListener('beforeunload', alSalir)
     return () => window.removeEventListener('beforeunload', alSalir)
-  }, [hayPendientes])
+  }, [hayAlgoPendiente])
 
   // Tras mover un punto, el foco sigue en su botón; si ya no puede moverse más en ese sentido (llegó al
   // primero o al último lugar, y el botón queda deshabilitado), pasa al botón contrario.
@@ -175,10 +194,14 @@ export function EditorUbicaciones() {
   const ubicacionElegida = elegido ? borrador[elegido.id] : undefined
   const elegidoSinUbicar = ubicacionElegida?.pos_x === null || ubicacionElegida?.pos_y === null
   const ilustracion = zona ? ilustracionDeZona(urlsIlustracion[zona], zona) : null
+  const nuevosZona = nuevos.filter((n) => n.zonaId === zonaId)
+  // Los nuevos van al final de la ruta: su número sigue al último punto de la zona.
+  const numeroNuevo = (i: number) => puntosZona.length + i + 1
 
   function cambiarZona(slug: string) {
     setZona(slug)
     setSeleccion(null)
+    setColocando(false)
     setAviso(null)
   }
 
@@ -186,6 +209,16 @@ export function EditorUbicaciones() {
   function posicionBajo(cliente: { x: number; y: number }) {
     const caja = escenaRef.current?.getBoundingClientRect()
     return caja ? posicionDelPuntero(caja, cliente) : null
+  }
+
+  function cambiarNuevo(clave: string, cambio: Partial<PuntoNuevo>) {
+    setNuevos((actuales) => actuales.map((n) => (n.clave === clave ? { ...n, ...cambio } : n)))
+    setAviso(null)
+  }
+
+  function arrastrarNuevo(clave: string, cliente: { x: number; y: number }) {
+    const posicion = posicionBajo(cliente)
+    if (posicion) cambiarNuevo(clave, { pos_x: posicion.x, pos_y: posicion.y })
   }
 
   function arrastrar(id: string, cliente: { x: number; y: number }) {
@@ -197,7 +230,23 @@ export function EditorUbicaciones() {
 
   // Un punto sin ubicar se coloca tocando la ilustración: no hay posición inicial inventada.
   function colocarSeleccionado(evento: PointerEvent<HTMLDivElement>) {
-    if (guardando || !elegido || !elegidoSinUbicar) return
+    if (guardando) return
+    // Con «Agregar punto» activo, tocar la ilustración crea el punto nuevo ahí (sin guardar todavía).
+    if (colocando && zona && zonaId) {
+      const posicion = posicionBajo({ x: evento.clientX, y: evento.clientY })
+      if (!posicion) return
+      contadorNuevos.current += 1
+      const clave = `nuevo-${contadorNuevos.current}`
+      setNuevos((actuales) => [
+        ...actuales,
+        { clave, zonaId, zonaSlug: zona, pos_x: posicion.x, pos_y: posicion.y, es_esencial: false },
+      ])
+      setColocando(false)
+      setSeleccion(clave)
+      setAviso(null)
+      return
+    }
+    if (!elegido || !elegidoSinUbicar) return
     const posicion = posicionBajo({ x: evento.clientX, y: evento.clientY })
     if (!posicion) return
     setBorrador((actual) => colocarPunto(actual, elegido.id, posicion.x, posicion.y))
@@ -222,24 +271,64 @@ export function EditorUbicaciones() {
   }
 
   async function guardar() {
-    if (!hayPendientes) return
+    if (!hayAlgoPendiente) return
     setGuardando(true)
     setAviso(null)
     try {
-      const resultado = await guardarCambios(puntos, borrador, orden)
-      const siguiente = aplicarCambios(puntos, borrador, orden, resultado)
-      setPuntos(siguiente.puntos)
-      setBorrador(siguiente.borrador)
-      setOrden(siguiente.orden)
-      setAviso({ tipo: tipoDeCambios(resultado), resultado })
+      if (hayPendientes) {
+        const resultado = await guardarCambios(puntos, borrador, orden)
+        const siguiente = aplicarCambios(puntos, borrador, orden, resultado)
+        setPuntos(siguiente.puntos)
+        setBorrador(siguiente.borrador)
+        setOrden(siguiente.orden)
+        setAviso({ tipo: tipoDeCambios(resultado), resultado })
+        if (resultado.ubicaciones.guardados.length + resultado.orden.guardadas.length > 0) {
+          marcarCambiosSinPublicar()
+        }
+        // Si algo falló, los puntos nuevos esperan: se crean cuando lo demás quedó guardado.
+        if (tipoDeCambios(resultado) !== 'exito') return
+      }
+      if (nuevos.length > 0) await crearNuevos()
     } finally {
       setGuardando(false)
     }
   }
 
+  /** Crea los puntos nuevos al final de la ruta de su zona y vuelve a leer la lista de la base. */
+  async function crearNuevos() {
+    let creados = 0
+    let error: string | null = null
+    const quedan: Nuevo[] = []
+    for (const nuevo of nuevos) {
+      if (error) {
+        quedan.push(nuevo)
+        continue
+      }
+      try {
+        await crearPunto(nuevo)
+        creados += 1
+      } catch (fallo) {
+        error = (fallo as Error).message
+        quedan.push(nuevo)
+      }
+    }
+    setNuevos(quedan)
+    if (creados > 0) {
+      marcarCambiosSinPublicar()
+      const lista = await listarPuntosGestor()
+      setPuntos(lista)
+      setBorrador(crearBorrador(lista))
+      setOrden(crearOrden(lista))
+      setSeleccion(null)
+    }
+    setAviso({ tipo: 'nuevos', creados, error })
+  }
+
   function descartar() {
     setBorrador(crearBorrador(puntos))
     setOrden(crearOrden(puntos))
+    setNuevos([])
+    setColocando(false)
     setAviso({ tipo: 'descartado' })
   }
 
@@ -278,9 +367,26 @@ export function EditorUbicaciones() {
 
           <div className="ubicacion__cuerpo">
             <div className="ubicacion__lienzo">
+              <div className="ubicacion__herramientas">
+                <Boton
+                  tamano="sm"
+                  variante={colocando ? 'secundario' : 'acento'}
+                  icono={Plus}
+                  aria-pressed={colocando}
+                  disabled={guardando || !zonaId}
+                  onClick={() => {
+                    setColocando((actual) => !actual)
+                    setAviso(null)
+                  }}
+                >
+                  {colocando ? t('ubicaciones.cancelarAgregar') : t('ubicaciones.agregar')}
+                </Boton>
+              </div>
               <div
                 ref={escenaRef}
-                className="ubicacion__escena"
+                className={
+                  colocando ? 'ubicacion__escena ubicacion__escena--colocando' : 'ubicacion__escena'
+                }
                 role="group"
                 aria-label={t('ubicaciones.escena')}
                 onPointerDown={colocarSeleccionado}
@@ -326,7 +432,47 @@ export function EditorUbicaciones() {
                     />
                   )
                 })}
+                {nuevosZona.map((nuevo, i) => (
+                  <MarcadorEditable
+                    key={nuevo.clave}
+                    numero={numeroNuevo(i)}
+                    esencial={nuevo.es_esencial}
+                    seleccionado={nuevo.clave === seleccion}
+                    x={nuevo.pos_x}
+                    y={nuevo.pos_y}
+                    etiquetaAccesible={t('ubicaciones.marcadorNuevo', {
+                      numero: numeroNuevo(i),
+                      clasificacion: clasificacionDe(nuevo.es_esencial),
+                    })}
+                    deshabilitado={guardando}
+                    alSeleccionar={() => setSeleccion(nuevo.clave)}
+                    alArrastrar={(cliente) => arrastrarNuevo(nuevo.clave, cliente)}
+                    alDesplazar={(dx, dy) =>
+                      cambiarNuevo(nuevo.clave, {
+                        pos_x: Math.min(1, Math.max(0, nuevo.pos_x + dx)),
+                        pos_y: Math.min(1, Math.max(0, nuevo.pos_y + dy)),
+                      })
+                    }
+                  />
+                ))}
               </div>
+              {colocando && (
+                <p className="gestor__aviso texto-small-strong" role="status">
+                  {t('ubicaciones.instruccionAgregar')}
+                </p>
+              )}
+              {rol === 'admin' && zona && (
+                <CambiarMapa
+                  zona={zona}
+                  nombreZona={nombreZona(zona)}
+                  descripcionActual={descripciones[zona] ?? ''}
+                  deshabilitado={guardando}
+                  alCambiar={(url, descripcion) => {
+                    setUrlsIlustracion((actuales) => ({ ...actuales, [zona]: url }))
+                    setDescripciones((actuales) => ({ ...actuales, [zona]: descripcion }))
+                  }}
+                />
+              )}
             </div>
 
             <div className="gestor__grupo">
@@ -386,10 +532,56 @@ export function EditorUbicaciones() {
                     </li>
                   )
                 })}
+                {nuevosZona.map((nuevo, i) => (
+                  <li key={nuevo.clave}>
+                    <Tarjeta
+                      titulo={t('ubicaciones.nuevoTitulo')}
+                      subtitulo={t('lista.punto', { numero: numeroNuevo(i) })}
+                      seleccionada={nuevo.clave === seleccion}
+                      onPresionar={() => setSeleccion(nuevo.clave)}
+                      final={
+                        <span className="gestor__insignias">
+                          <Insignia tono="info">{t('ubicaciones.nuevo')}</Insignia>
+                          <Insignia tono={nuevo.es_esencial ? 'marca' : 'neutral'}>
+                            {clasificacionDe(nuevo.es_esencial)}
+                          </Insignia>
+                        </span>
+                      }
+                    />
+                    <div className="ubicacion__orden">
+                      {[true, false].map((esencial) => (
+                        <Boton
+                          key={String(esencial)}
+                          tamano="sm"
+                          variante={esencial === nuevo.es_esencial ? 'primario' : 'secundario'}
+                          aria-pressed={esencial === nuevo.es_esencial}
+                          disabled={guardando}
+                          onClick={() => cambiarNuevo(nuevo.clave, { es_esencial: esencial })}
+                        >
+                          {clasificacionDe(esencial)}
+                        </Boton>
+                      ))}
+                      <Boton
+                        tamano="sm"
+                        variante="fantasma"
+                        icono={Trash2}
+                        disabled={guardando}
+                        onClick={() => {
+                          setNuevos((actuales) => actuales.filter((n) => n.clave !== nuevo.clave))
+                          if (seleccion === nuevo.clave) setSeleccion(null)
+                        }}
+                      >
+                        {t('ubicaciones.quitarNuevo')}
+                      </Boton>
+                    </div>
+                  </li>
+                ))}
               </ul>
 
               <div className="ubicacion__detalle">
-                {!elegido || !ubicacionElegida ? (
+                {nuevosZona.some((n) => n.clave === seleccion) ? (
+                  <p className="gestor__texto texto-body">{t('ubicaciones.instruccionNuevo')}</p>
+                ) : !elegido || !ubicacionElegida ? (
                   <p className="gestor__texto texto-body">{t('ubicaciones.sinSeleccion')}</p>
                 ) : (
                   <>
@@ -442,8 +634,13 @@ export function EditorUbicaciones() {
           </div>
 
           <div className="ubicacion__acciones">
-            {hayPendientes ? (
+            {hayAlgoPendiente ? (
               <div>
+                {nuevos.length > 0 && (
+                  <p className="gestor__aviso texto-small-strong">
+                    {t('ubicaciones.nuevosPendientes', { count: nuevos.length })}
+                  </p>
+                )}
                 {pendientes.length > 0 && (
                   <p className="gestor__aviso texto-small-strong">
                     {t('ubicaciones.pendientes', { count: pendientes.length })}
@@ -459,12 +656,16 @@ export function EditorUbicaciones() {
               <p className="gestor__texto texto-small">{t('ubicaciones.sinCambios')}</p>
             )}
             <div className="gestor__pestanas">
-              <Boton cargando={guardando} disabled={!hayPendientes} onClick={() => void guardar()}>
+              <Boton
+                cargando={guardando}
+                disabled={!hayAlgoPendiente}
+                onClick={() => void guardar()}
+              >
                 {t('ubicaciones.guardar')}
               </Boton>
               <Boton
                 variante="secundario"
-                disabled={!hayPendientes || guardando}
+                disabled={!hayAlgoPendiente || guardando}
                 onClick={descartar}
               >
                 {t('ubicaciones.descartar')}
@@ -477,6 +678,16 @@ export function EditorUbicaciones() {
               <p className="gestor__texto texto-body">{t('ubicaciones.descartado')}</p>
             )}
             {aviso?.tipo === 'movido' && <p className="gestor__texto texto-small">{aviso.texto}</p>}
+            {aviso?.tipo === 'nuevos' && aviso.creados > 0 && (
+              <p className="gestor__texto texto-body">
+                {t('ubicaciones.nuevosCreados', { count: aviso.creados })}
+              </p>
+            )}
+            {aviso?.tipo === 'nuevos' && aviso.error && (
+              <p className="gestor__error texto-body">
+                {t('ubicaciones.nuevosError', { mensaje: aviso.error })}
+              </p>
+            )}
             {aviso?.tipo === 'exito' && (
               <p className="gestor__texto texto-body">{t('ubicaciones.resultadoExito')}</p>
             )}
@@ -534,9 +745,10 @@ export function EditorUbicaciones() {
 function Titulo() {
   const { t } = useTranslation('gestor')
   return (
-    <div className="gestor__titulos">
-      <h1 className="gestor__titulo texto-title-1">{t('ubicaciones.titulo')}</h1>
-      <p className="gestor__texto texto-body">{t('ubicaciones.texto')}</p>
-    </div>
+    <EncabezadoSeccion
+      seccion="ubicacion"
+      titulo={t('ubicaciones.titulo')}
+      texto={t('ubicaciones.texto')}
+    />
   )
 }

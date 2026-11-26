@@ -1,0 +1,85 @@
+/* Lista de puntos como tabla (ListaPuntos.tsx). Solo tokens. Las columnas se alinean porque el
+   encabezado y cada fila usan las mismas medidas; si no caben, los idiomas bajan bajo el nombre. */
+
+.tabla-puntos {
+  overflow: hidden;
+  border: var(--border-hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.tabla-puntos__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tabla-puntos__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+}
+
+.tabla-puntos__encabezado {
+  border-block-end: var(--border-hairline) solid var(--border);
+  background: var(--surface-sunken);
+  color: var(--ink-muted);
+}
+
+.tabla-puntos__lista li + li {
+  border-block-start: var(--border-hairline) solid var(--border);
+}
+
+.tabla-puntos__boton {
+  min-height: var(--touch-min);
+  border: 0;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: start;
+  cursor: pointer;
+}
+
+.tabla-puntos__boton:hover {
+  background: var(--surface-sunken);
+}
+
+.tabla-puntos__principal {
+  display: flex;
+  flex: 1 1 calc(var(--content-max) * 0.5);
+  align-items: baseline;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.tabla-puntos__numero {
+  flex-shrink: 0;
+  width: var(--icon-lg);
+  color: var(--ink-muted);
+}
+
+.tabla-puntos__nombre {
+  overflow-wrap: anywhere;
+}
+
+/* Una columna por idioma, del mismo ancho en el encabezado y en las filas. */
+.tabla-puntos__idiomas {
+  display: grid;
+  flex: 1 1 calc(var(--content-max) * 0.7);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.tabla-puntos__flecha {
+  flex-shrink: 0;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  color: var(--ink-muted);
+}
+
+/* Inicio: tarjetas de tareas en dos columnas cuando caben. */
+.inicio__tareas {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--gestor-columna)), 1fr));
+}

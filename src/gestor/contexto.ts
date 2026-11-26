@@ -3,6 +3,7 @@
 // los títulos de cada paso.
 
 import { createContext } from 'react'
+import type { Rol } from '@/datos/sesion'
 
 export type ContextoEncabezado = {
   titulo: string
@@ -13,3 +14,6 @@ export type ContextoEncabezado = {
 export const FijarEncabezado = createContext<(contexto: ContextoEncabezado | null) => void>(
   () => {},
 )
+
+/** Rol de quien usa el gestor, para textos que cambian según lo que puede hacer (p. ej. publicar). */
+export const RolGestor = createContext<Rol | null>(null)

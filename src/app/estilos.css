@@ -17,6 +17,11 @@
   max-width: calc(var(--gestor-max) + 2 * var(--pad-screen-x));
 }
 
+/* En «Ubicar los puntos» el mapa necesita más ancho que el resto del gestor. */
+.layout:has(> .gestor .ubicacion__cuerpo) {
+  max-width: calc(var(--gestor-max) * 1.35 + 2 * var(--pad-screen-x));
+}
+
 .error {
   color: var(--error);
 }

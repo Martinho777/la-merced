@@ -1,0 +1,63 @@
+/* Explicación con Santi al entrar a cada sección del gestor (IntroSanti.tsx) y aviso de la copia de
+   respaldo en el inicio. Solo tokens. Texto ink sobre sky-50 (contraste.md: panel de información). */
+
+.intro-santi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--sky-50);
+  color: var(--ink);
+}
+
+.intro-santi__santi {
+  flex-shrink: 0;
+}
+
+.intro-santi__cuerpo {
+  display: flex;
+  flex: 1 1 var(--gestor-columna);
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.intro-santi__cuerpo h2,
+.intro-santi__cuerpo p {
+  margin: 0;
+}
+
+.intro-santi__pasos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
+
+.intro-santi__boton {
+  align-self: flex-start;
+}
+
+/* La copia de respaldo da un saltito cuando hay cambios desde la última (sin movimiento reducido:
+   base.css apaga las animaciones). */
+.inicio__respaldo--llamar {
+  animation: inicio-saltito var(--duration-slow) var(--ease-standard) 3;
+}
+
+@keyframes inicio-saltito {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(calc(var(--space-2) * -1));
+  }
+}
+
+/* La copia de respaldo ocupa todo el ancho: su aviso no aprieta el texto. */
+.inicio__respaldo {
+  grid-column: 1 / -1;
+}
