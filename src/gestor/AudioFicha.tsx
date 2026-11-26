@@ -1,16 +1,43 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trash2, Upload } from 'lucide-react'
+import { BarraProgreso } from '@/componentes/BarraProgreso'
 import { Boton } from '@/componentes/Boton'
 import { quitarAudioFicha, subirAudioFicha } from '@/datos/audios'
 import type { FichaGestor } from '@/datos/gestor'
+import { ErrorSubida } from '@/datos/subida'
 import { ErrorAudio, prepararAudio, TIPOS_AUDIO_ACEPTADOS } from '@/gestor/audio'
 import { Campo } from '@/gestor/componentes/Campo'
 import type { IdiomaGestor } from '@/gestor/editor'
 import { formatearTiempo } from '@/visitante/audio'
 
 type Aviso =
-  'subido' | 'quitado' | 'errorFormato' | 'errorTamano' | 'errorSubir' | 'errorQuitar' | null
+  | 'subido'
+  | 'quitado'
+  | 'errorFormato'
+  | 'errorTamano'
+  | 'errorPermiso'
+  | 'errorConexion'
+  | 'errorIdioma'
+  | 'errorSubir'
+  | 'errorQuitar'
+  | null
+
+/** Mensaje para un error al subir: lo que dijo el navegador o el servidor. */
+function avisoDeError(e: unknown): Aviso {
+  if (e instanceof ErrorAudio) return e.motivo === 'formato' ? 'errorFormato' : 'errorTamano'
+  if (e instanceof ErrorSubida) {
+    if (e.motivo === 'tamano') return 'errorTamano'
+    if (e.motivo === 'formato') return 'errorFormato'
+    if (e.motivo === 'permiso') return 'errorPermiso'
+    if (e.motivo === 'conexion') return 'errorConexion'
+  }
+  // La base rechaza un audio de otro idioma o de otro punto (validar_audio_de_ficha).
+  if (e instanceof Error && /audio es en|otro punto|no es un audio/i.test(e.message)) {
+    return 'errorIdioma'
+  }
+  return 'errorSubir'
+}
 
 /**
  * Narración de la ficha del idioma elegido: se sube un MP3 o M4A, se escucha aquí antes de enviarla a
@@ -31,6 +58,7 @@ export function AudioFicha({
   const [ocupado, setOcupado] = useState<'subir' | 'quitar' | null>(null)
   const [confirmando, setConfirmando] = useState(false)
   const [aviso, setAviso] = useState<Aviso>(null)
+  const [progreso, setProgreso] = useState<number | null>(null)
   // Cambiar la clave vacía el selector de archivo después de subir.
   const [claveArchivo, setClaveArchivo] = useState(0)
   const nombreIdioma = t(`idiomas.${idioma}`).toLowerCase()
@@ -39,15 +67,16 @@ export function AudioFicha({
     if (!archivo || !ficha) return
     setAviso(null)
     setOcupado('subir')
+    setProgreso(0)
     try {
       const preparado = await prepararAudio(archivo)
-      alCambiarFicha(await subirAudioFicha(punto, idioma, ficha, preparado))
+      alCambiarFicha(await subirAudioFicha(punto, idioma, ficha, preparado, setProgreso))
       setAviso('subido')
     } catch (e) {
-      if (e instanceof ErrorAudio) setAviso(e.motivo === 'formato' ? 'errorFormato' : 'errorTamano')
-      else setAviso('errorSubir')
+      setAviso(avisoDeError(e))
     } finally {
       setOcupado(null)
+      setProgreso(null)
       setClaveArchivo((n) => n + 1)
     }
   }
@@ -110,10 +139,18 @@ export function AudioFicha({
             onChange={(e) => void subir(e.target.files?.[0])}
           />
           {ocupado === 'subir' && (
-            <p className="gestor__texto texto-small" role="status">
-              <Upload className="gestor__icono-linea" aria-hidden="true" />
-              {t('audio.subiendo')}
-            </p>
+            <>
+              <p className="gestor__texto texto-small" role="status">
+                <Upload className="gestor__icono-linea" aria-hidden="true" />
+                {t('audio.subiendo')}
+              </p>
+              <BarraProgreso
+                valor={Math.round((progreso ?? 0) * 100)}
+                maximo={100}
+                contador={t('audio.porcentaje', { porcentaje: Math.round((progreso ?? 0) * 100) })}
+                etiquetaAccesible={t('audio.progreso')}
+              />
+            </>
           )}
           {ficha.estado === 'aprobado' && (
             <p className="gestor__texto texto-small">{t('audio.vuelveARevision')}</p>

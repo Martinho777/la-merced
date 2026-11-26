@@ -42,13 +42,17 @@ describe('datos del gestor', () => {
     respuesta = { data: [], error: null }
   })
 
-  it('reparte las fichas por idioma e ignora kaqchikel mientras no se edite en el gestor', () => {
+  it('reparte las fichas por idioma, kaqchikel incluido, y deja null el que falta', () => {
     expect(
       fichasPorIdioma([
         { id: 'f1', idioma: 'es', estado: 'aprobado', titulo: 'Portada' },
-        { id: 'f2', idioma: 'cak', estado: 'borrador', titulo: 'x' },
+        { id: 'f2', idioma: 'cak', estado: 'revision', titulo: 'x' },
       ]),
-    ).toEqual({ es: { id: 'f1', estado: 'aprobado', titulo: 'Portada' }, en: null })
+    ).toEqual({
+      es: { id: 'f1', estado: 'aprobado', titulo: 'Portada' },
+      en: null,
+      cak: { id: 'f2', estado: 'revision', titulo: 'x' },
+    })
   })
 
   it('ordena por zona y luego por número de punto', async () => {
@@ -84,7 +88,7 @@ describe('datos del gestor', () => {
       pos_x: 0.25,
       pos_y: 0.75,
       es_esencial: true,
-      fichas: { es: null, en: null },
+      fichas: { es: null, en: null, cak: null },
     })
     for (const columna of ['pos_x', 'pos_y', 'es_esencial', 'zonas!inner(id,']) {
       expect(columnasPedidas).toContain(columna)

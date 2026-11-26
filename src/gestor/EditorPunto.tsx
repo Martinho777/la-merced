@@ -15,7 +15,14 @@ import {
 } from '@/datos/gestor'
 import { Campo, CampoArea } from '@/gestor/componentes/Campo'
 import type { Rol } from '@/datos/sesion'
-import { camposDe, hayCambios, type IdiomaGestor } from '@/gestor/editor'
+import {
+  CAMPOS_NARRACION,
+  CAMPOS_TEXTOS,
+  camposDe,
+  camposParaGuardar,
+  hayCambios,
+  type IdiomaGestor,
+} from '@/gestor/editor'
 import { AudioFicha } from '@/gestor/AudioFicha'
 import { FotosPunto } from '@/gestor/FotosPunto'
 import { FuentesPunto } from '@/gestor/FuentesPunto'
@@ -53,6 +60,8 @@ type Aviso =
   | 'guardaPrimero'
   | null
 
+type AvisoTranscripcion = 'guardada' | 'error' | 'sinCambios' | null
+
 const FORMATO_FECHA = new Intl.DateTimeFormat('es-GT', { dateStyle: 'medium', timeStyle: 'short' })
 
 type ClaveZona = `zonas.${keyof typeof es.zonas}`
@@ -70,6 +79,8 @@ export function EditorPunto({ rol }: { rol: Rol }) {
   const [guardando, setGuardando] = useState(false)
   const [cambiandoEstado, setCambiandoEstado] = useState<AccionEstado | null>(null)
   const [aviso, setAviso] = useState<Aviso>(null)
+  const [avisoTranscripcion, setAvisoTranscripcion] = useState<AvisoTranscripcion>(null)
+  const [guardandoTranscripcion, setGuardandoTranscripcion] = useState(false)
   const [parametros, setParametros] = useSearchParams()
   const paso = pasoDe(parametros.get('paso'))
   // Fotos y fuentes se cargan en sus pasos y avisan cuántas hay, para el estado de cada paso.
@@ -101,7 +112,11 @@ export function EditorPunto({ rol }: { rol: Rol }) {
           return
         }
         setEstado({ tipo: 'listo', punto })
-        setBorradores({ es: camposDe(punto.fichas.es), en: camposDe(punto.fichas.en) })
+        setBorradores({
+          es: camposDe(punto.fichas.es),
+          en: camposDe(punto.fichas.en),
+          cak: camposDe(punto.fichas.cak),
+        })
       })
       .catch(() => vigente && setEstado({ tipo: 'error' }))
     return () => {
@@ -145,6 +160,7 @@ export function EditorPunto({ rol }: { rol: Rol }) {
 
   function cambiar(campo: keyof CamposFicha, valor: string) {
     setAviso(null)
+    setAvisoTranscripcion(null)
     setBorradores(
       (actuales) => actuales && { ...actuales, [idioma]: { ...actuales[idioma], [campo]: valor } },
     )
@@ -156,23 +172,69 @@ export function EditorPunto({ rol }: { rol: Rol }) {
       setAviso('faltaTitulo')
       return
     }
-    if (!hayCambios(campos, ficha)) {
+    if (!hayCambios(campos, ficha, CAMPOS_TEXTOS)) {
       setAviso('sinCambios')
       return
     }
     setGuardando(true)
     try {
-      const guardada = await guardarFicha(punto.id, idioma, campos, ficha)
+      const guardada = await guardarFicha(
+        punto.id,
+        idioma,
+        camposParaGuardar(campos, ficha, CAMPOS_TEXTOS),
+        ficha,
+      )
       setEstado({
         tipo: 'listo',
         punto: { ...punto, fichas: { ...punto.fichas, [idioma]: guardada } },
       })
-      setBorradores((actuales) => actuales && { ...actuales, [idioma]: camposDe(guardada) })
+      // Solo los campos de este paso: lo escrito en la transcripción sin guardar se conserva.
+      setBorradores(
+        (actuales) =>
+          actuales && {
+            ...actuales,
+            [idioma]: { ...camposDe(guardada), transcripcion: actuales[idioma].transcripcion },
+          },
+      )
       setAviso('guardado')
     } catch {
       setAviso('errorGuardar')
     } finally {
       setGuardando(false)
+    }
+  }
+
+  async function guardarTranscripcion(evento: FormEvent<HTMLFormElement>) {
+    evento.preventDefault()
+    if (!ficha) return
+    if (!hayCambios(campos, ficha, CAMPOS_NARRACION)) {
+      setAvisoTranscripcion('sinCambios')
+      return
+    }
+    setGuardandoTranscripcion(true)
+    try {
+      const guardada = await guardarFicha(
+        punto.id,
+        idioma,
+        camposParaGuardar(campos, ficha, CAMPOS_NARRACION),
+        ficha,
+      )
+      setEstado({
+        tipo: 'listo',
+        punto: { ...punto, fichas: { ...punto.fichas, [idioma]: guardada } },
+      })
+      setBorradores(
+        (actuales) =>
+          actuales && {
+            ...actuales,
+            [idioma]: { ...actuales[idioma], transcripcion: guardada.transcripcion },
+          },
+      )
+      setAvisoTranscripcion('guardada')
+    } catch {
+      setAvisoTranscripcion('error')
+    } finally {
+      setGuardandoTranscripcion(false)
     }
   }
 
@@ -199,7 +261,8 @@ export function EditorPunto({ rol }: { rol: Rol }) {
 
   const acciones = ficha ? accionesDisponibles(rol, ficha.estado) : []
   const esError = aviso === 'errorGuardar' || aviso === 'errorEstado'
-  const sinGuardar = hayCambios(campos, ficha)
+  const sinGuardar = hayCambios(campos, ficha, CAMPOS_TEXTOS)
+  const transcripcionSinGuardar = hayCambios(campos, ficha, CAMPOS_NARRACION)
   const lista = requisitos(punto, medios)
   const avance = avanceDe(conBorradores(punto, borradores), medios)
   const nombrePunto = punto.fichas.es?.titulo
@@ -231,9 +294,13 @@ export function EditorPunto({ rol }: { rol: Rol }) {
           onClick={() => {
             setIdioma(codigo)
             setAviso(null)
+            setAvisoTranscripcion(null)
           }}
         >
-          {t(`idiomas.${codigo}`)}
+          {t('editor.pestana', {
+            idioma: t(`idiomas.${codigo}`),
+            estado: t(`estados.${punto.fichas[codigo]?.estado ?? 'falta'}`),
+          })}
         </Boton>
       ))}
     </div>
@@ -248,7 +315,7 @@ export function EditorPunto({ rol }: { rol: Rol }) {
         <PasosEditor
           actual={paso}
           estados={estados}
-          sinGuardar={sinGuardar ? 'textos' : null}
+          sinGuardar={sinGuardar ? 'textos' : transcripcionSinGuardar ? 'narracion' : null}
           alElegir={irA}
         />
       </div>
@@ -264,6 +331,9 @@ export function EditorPunto({ rol }: { rol: Rol }) {
         )}
         {ficha?.estado === 'aprobado' && (
           <p className="gestor__aviso texto-small">{t('editor.publicada')}</p>
+        )}
+        {idioma === 'cak' && (
+          <p className="gestor__aviso texto-small">{t('editor.revisionKaqchikel')}</p>
         )}
 
         <form className="gestor__formulario" onSubmit={guardar} noValidate lang={idioma}>
@@ -330,6 +400,47 @@ export function EditorPunto({ rol }: { rol: Rol }) {
             })
           }
         />
+        {ficha && (
+          <form
+            className="gestor__formulario"
+            onSubmit={(e) => void guardarTranscripcion(e)}
+            noValidate
+            lang={idioma}
+          >
+            <CampoArea
+              etiqueta={t('editor.campos.transcripcion', { idioma: nombreIdioma.toLowerCase() })}
+              ayuda={t('editor.campos.transcripcionAyuda')}
+              requisito="opcional"
+              rows={8}
+              value={campos.transcripcion}
+              onChange={(e) => cambiar('transcripcion', e.target.value)}
+            />
+            {ficha.audio && !campos.transcripcion.trim() && (
+              <p className="gestor__aviso texto-small">{t('editor.audioSinTranscripcion')}</p>
+            )}
+            {!ficha.audio && campos.transcripcion.trim() && (
+              <p className="gestor__aviso texto-small">{t('editor.transcripcionSinAudio')}</p>
+            )}
+            {avisoTranscripcion && (
+              <p
+                className={
+                  avisoTranscripcion === 'error'
+                    ? 'gestor__error texto-body'
+                    : 'gestor__texto texto-body'
+                }
+                role={avisoTranscripcion === 'error' ? 'alert' : 'status'}
+              >
+                {t(`editor.transcripcion.${avisoTranscripcion}`)}
+              </p>
+            )}
+            {transcripcionSinGuardar && !avisoTranscripcion && (
+              <p className="gestor__aviso texto-small-strong">{t('editor.sinGuardar')}</p>
+            )}
+            <Boton type="submit" icono={Save} cargando={guardandoTranscripcion}>
+              {t('editor.transcripcion.guardar')}
+            </Boton>
+          </form>
+        )}
       </div>
 
       <div className="gestor__paso" hidden={paso !== 'fotos'}>

@@ -3,18 +3,22 @@ import type { FichaGestor } from '@/datos/gestor'
 
 // Cliente simulado: registra cada llamada como "tabla.metodo" y responde según la tabla.
 const llamadas: { metodo: string; args: unknown[] }[] = []
+let compartido = false
 const errores: Partial<Record<'upload' | 'medios.insert' | 'fichas.update', string>> = {}
 
 function tabla(nombre: string) {
   const c: Record<string, unknown> = {}
   let operacion = ''
-  for (const metodo of ['insert', 'update', 'delete', 'eq', 'select']) {
+  for (const metodo of ['insert', 'update', 'delete', 'eq', 'neq', 'select', 'limit']) {
     c[metodo] = (...args: unknown[]) => {
-      if (metodo !== 'eq' && metodo !== 'select') operacion = metodo
+      if (!['eq', 'neq', 'select', 'limit'].includes(metodo)) operacion = metodo
       llamadas.push({ metodo: `${nombre}.${metodo}`, args })
       return c
     }
   }
+  // Consulta sin .single(): ¿otra ficha usa el mismo audio? (`compartido` simula que sí).
+  c.then = (resolver: (valor: unknown) => unknown) =>
+    resolver({ data: operacion === '' && compartido ? [{ id: 'otra' }] : [], error: null })
   c.single = async () => {
     const error = errores[`${nombre}.${operacion}` as keyof typeof errores]
     if (error) return { data: null, error: { message: error } }
@@ -32,6 +36,7 @@ function tabla(nombre: string) {
         que_ves: null,
         historia: null,
         dato_santi: null,
+        transcripcion: null,
         revisado_en: null,
         revisor: null,
         audio: cambios.audio_id
@@ -41,7 +46,6 @@ function tabla(nombre: string) {
       error: null,
     }
   }
-  c.then = (resolver: (v: unknown) => unknown) => resolver({ error: null })
   return c
 }
 
@@ -79,6 +83,7 @@ const ficha = (estado: FichaGestor['estado'], conAudio = false): FichaGestor => 
   que_ves: '',
   historia: '',
   dato_santi: '',
+  transcripcion: '',
   revision: null,
   audio: conAudio ? { id: 'audio-viejo', ruta: 'audios/viejo.mp3', url: 'x', duracionS: 10 } : null,
 })
@@ -87,6 +92,7 @@ const metodos = () => llamadas.map((l) => l.metodo)
 describe('narración de una ficha en el gestor', () => {
   beforeEach(() => {
     llamadas.length = 0
+    compartido = false
     for (const clave of Object.keys(errores)) delete errores[clave as keyof typeof errores]
   })
 
@@ -155,5 +161,19 @@ describe('narración de una ficha en el gestor', () => {
     })
     expect(guardada.audio).toBeNull()
     expect(llamadas).toContainEqual({ metodo: 'storage.remove', args: [['audios/viejo.mp3']] })
+  })
+
+  it('no borra el audio anterior si otra ficha lo usa: solo cambia esta ficha', async () => {
+    compartido = true
+    await subirAudioFicha(punto, 'es', ficha('borrador', true), audio)
+    expect(llamadas).not.toContainEqual({ metodo: 'storage.remove', args: [['audios/viejo.mp3']] })
+    expect(metodos()).not.toContain('medios.delete')
+  })
+
+  it('quitar la narración de una ficha conserva un audio que otra ficha también usa', async () => {
+    compartido = true
+    const guardada = await quitarAudioFicha(ficha('borrador', true))
+    expect(guardada.audio).toBeNull()
+    expect(metodos()).not.toContain('storage.remove')
   })
 })

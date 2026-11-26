@@ -18,7 +18,8 @@
     "db:probar-rls": "node supabase/probar-rls.mjs",
     "db:semilla-textos": "node scripts/semilla-textos.mjs",
     "tokens": "node scripts/generar-tokens.mjs",
-    "santi": "node scripts/optimizar-santi.mjs"
+    "santi": "node scripts/optimizar-santi.mjs",
+    "importar": "node scripts/importar-fichas.ts"
   },
   "dependencies": {
     "@google/model-viewer": "^4.4.0",

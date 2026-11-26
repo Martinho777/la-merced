@@ -30,7 +30,7 @@ function punto(id: string, orden: number, extra: Partial<PuntoGestor> = {}): Pun
     pos_x: null,
     pos_y: null,
     es_esencial: false,
-    fichas: { es: null, en: null },
+    fichas: { es: null, en: null, cak: null },
     ...extra,
   }
 }

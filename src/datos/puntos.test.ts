@@ -6,7 +6,7 @@ let respuesta: { data: unknown; error: { message: string } | null }
 
 function constructorDeConsulta() {
   const consulta: Record<string, unknown> = {}
-  for (const metodo of ['select', 'eq', 'in', 'order']) {
+  for (const metodo of ['select', 'eq', 'in', 'order', 'abortSignal']) {
     consulta[metodo] = (...args: unknown[]) => {
       llamadas.push({ metodo, args })
       return consulta

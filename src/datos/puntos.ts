@@ -1,4 +1,5 @@
 import { ORDEN_NIVEL, type NivelConfianza } from '@/componentes/nivelConfianza'
+import { conRespaldo, puntosDesdeInstantanea } from '@/datos/respaldo'
 import { urlPublica } from '@/lib/storage'
 import { supabase } from '@/lib/supabase'
 import type { Enums, Json, Tables } from '@/lib/tipos-db'
@@ -126,11 +127,19 @@ export function elegirFicha(fichas: FichaVisitante[], idioma: Idioma): FichaVisi
 
 /**
  * Puntos de una zona ordenados por `orden`, cada uno con su ficha aprobada en `idioma`
- * (con respaldo a español).
+ * (con respaldo a español). Si la base falla o tarda, salen de la última publicación.
  */
-export async function obtenerPuntosDeZona(
+export function obtenerPuntosDeZona(slugZona: string, idioma: Idioma): Promise<PuntoConFicha[]> {
+  return conRespaldo(
+    (senal) => puntosDeLaBase(slugZona, idioma, senal),
+    (instantanea) => puntosDesdeInstantanea(instantanea, slugZona, idioma),
+  )
+}
+
+async function puntosDeLaBase(
   slugZona: string,
   idioma: Idioma,
+  senal: AbortSignal,
 ): Promise<PuntoConFicha[]> {
   const idiomas = idioma === IDIOMA_RESPALDO ? [idioma] : [idioma, IDIOMA_RESPALDO]
 
@@ -147,6 +156,7 @@ export async function obtenerPuntosDeZona(
     .eq('fichas.estado', 'aprobado')
     .in('fichas.idioma', idiomas)
     .order('orden', { ascending: true })
+    .abortSignal(senal)
 
   if (error) throw new Error(`No se pudieron leer los puntos de "${slugZona}": ${error.message}`)
 

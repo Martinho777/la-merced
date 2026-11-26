@@ -26,7 +26,13 @@ vi.mock('@/lib/supabase', () => ({ supabase: { from: () => consulta() } }))
 const { cambiarEstadoFicha, estadoAlGuardar, guardarFicha, limpiarCampos } =
   await import('@/datos/gestor')
 
-const campos = { titulo: ' Portada ', que_ves: '', historia: 'Texto', dato_santi: '  ' }
+const campos = {
+  titulo: ' Portada ',
+  que_ves: '',
+  historia: 'Texto',
+  dato_santi: '  ',
+  transcripcion: ' Hola ',
+}
 
 describe('guardar fichas', () => {
   beforeEach(() => {
@@ -41,6 +47,7 @@ describe('guardar fichas', () => {
       que_ves: null,
       historia: 'Texto',
       dato_santi: null,
+      transcripcion: 'Hola',
     })
   })
 

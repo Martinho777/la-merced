@@ -39,5 +39,11 @@ export default defineConfig([
     files: ['src/lib/**', 'src/datos/**'],
     rules: { 'no-restricted-imports': 'off' },
   },
+  {
+    // Funciones de Vercel y scripts: corren en Node, con su propio cliente.
+    files: ['api/**', 'scripts/**'],
+    languageOptions: { globals: globals.node },
+    rules: { 'no-restricted-imports': 'off' },
+  },
   prettier,
 ])

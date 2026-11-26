@@ -22,7 +22,9 @@ export type ClaveRequisito =
   | 'historiaEs'
   | 'datoSantiEs'
   | 'fichaEn'
+  | 'fichaCak'
   | 'narracionEs'
+  | 'transcripcionEs'
   | 'fotoDetalle'
   | 'fotosHistoricas'
   | 'fuentes'
@@ -40,13 +42,21 @@ const lleno = (texto: string | null | undefined) => Boolean(texto?.trim())
 export function requisitos(punto: DetallePunto, medios: ResumenMedios): Requisito[] {
   const es = punto.fichas.es
   const en = punto.fichas.en
+  const cak = punto.fichas.cak
   return [
     { clave: 'nombreEs', paso: 'textos', obligatorio: true, cumplido: lleno(es?.titulo) },
     { clave: 'queVesEs', paso: 'textos', obligatorio: true, cumplido: lleno(es?.que_ves) },
     { clave: 'historiaEs', paso: 'textos', obligatorio: true, cumplido: lleno(es?.historia) },
     { clave: 'datoSantiEs', paso: 'textos', obligatorio: false, cumplido: lleno(es?.dato_santi) },
     { clave: 'fichaEn', paso: 'textos', obligatorio: false, cumplido: lleno(en?.titulo) },
+    { clave: 'fichaCak', paso: 'textos', obligatorio: false, cumplido: lleno(cak?.titulo) },
     { clave: 'narracionEs', paso: 'narracion', obligatorio: false, cumplido: Boolean(es?.audio) },
+    {
+      clave: 'transcripcionEs',
+      paso: 'narracion',
+      obligatorio: false,
+      cumplido: lleno(es?.transcripcion),
+    },
     {
       clave: 'fotoDetalle',
       paso: 'fotos',

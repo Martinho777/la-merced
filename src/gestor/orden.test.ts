@@ -29,7 +29,7 @@ function punto(id: string, zona: string, orden: number, extra: Partial<PuntoGest
     pos_x: null,
     pos_y: null,
     es_esencial: false,
-    fichas: { es: null, en: null },
+    fichas: { es: null, en: null, cak: null },
     ...extra,
   } satisfies PuntoGestor
 }
